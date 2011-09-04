@@ -3,7 +3,9 @@
 #  you can use a git repository as Dropbox
 #
 
-INTERVAL="60"
+# sync interval
+INTERVAL=60
+
 LOG_DIR="$HOME/local/var/log"
 PID_DIR="$HOME/local/var/run"
 
