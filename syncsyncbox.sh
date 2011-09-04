@@ -48,7 +48,7 @@ sync(){
     local dry_run=`commit --porcelain`
     if [ -n $dry_run ]
     then
-        echo $dry_run
+        echo \"$dry_run\"
         commit --quiet
     fi
     git push --quiet 2>&1 | grep -v "^Everything up-to-date$"
