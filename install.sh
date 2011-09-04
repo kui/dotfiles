@@ -1,3 +1,4 @@
 #!/bin/sh
 # -*- coding:utf-8 -*-
-# install script for dot files
+# install script for setting files
+
