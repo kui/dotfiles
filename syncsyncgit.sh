@@ -66,6 +66,12 @@ sigint_hook(){
     exit 0
 }
 
+create_pid_file(){
+}
+
+delete_pid_file(){
+}
+
 sync(){
     git pull --ff 2>&1 | grep -v "^Already up-to-date.$"
     git add . 2>&1
