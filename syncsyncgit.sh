@@ -93,10 +93,10 @@ delete_pid_file(){
 }
 
 get_pid_file_name(){
-    echo $HOME | sed -e 's/\//\\\//g'
+    escaped_home=`echo $HOME | sed -e 's/\//\\\//g'`
     pwd | sed -e 's/[\\.\\/]/_/g' |\
       sed -e 's/$/_syncsyncgit.pid/'|\
-      sed -e $regex
+      sed -e ""
 }
 
 sync(){
