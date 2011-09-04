@@ -36,7 +36,8 @@ run(){
     
     count=0
     log_file=`get_log_file_name`
-    log_dir=`dirname "$log_file"`
+    check_dir "$log_file"
+
     while true
     do
         sync | logger "$log_file"
@@ -101,6 +102,7 @@ check_pid_file(){
 }
 create_pid_file(){
     local pid_file=`get_pid_file_name`
+    check_dir "$pid_file"
     echo "$1"  > "$pid_file"
 }
 
