@@ -24,8 +24,6 @@ main(){
 
 run(){
 
-    create_pid_file
-
     if ! is_git_dir
     then
         echo "the current dir is not a git ripository" >&2
@@ -46,6 +44,9 @@ run(){
         sleep $INTERVAL
         count=$[$count+1]
     done &
+
+    create_pid_file $!
+    
 }
 
 stop(){
