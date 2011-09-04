@@ -1,7 +1,7 @@
 while true
 do
     echo "yes"
-    sleep 3
+    sleep 10
 done &
 
-echo $?
+echo $!
