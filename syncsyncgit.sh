@@ -207,10 +207,11 @@ commit(){
 
 help(){
     echo -n "\
-$0 {start|stop|sync}
+$0 {start|stop|sync|log}
   start: start sync
   stop: stop sync
   sync: do sync just one time
+  log: show log
 "
 }
 
