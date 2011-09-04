@@ -115,6 +115,7 @@ check_pid_file(){
         exit 1
     fi
 }
+
 create_pid_file(){
     local pid_file=`get_pid_file_name`
     check_dir "$pid_file"
