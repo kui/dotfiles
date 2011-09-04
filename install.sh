@@ -17,10 +17,10 @@ main(){
 
     for file in "$file_list"
     do
-        if echo "$file" | grep "^dot"
+        local dest_file=``
         cmd="ln -s ${curr_dir}/${file} $HOME"
         echo $cmd
-        $cmd
+        # $cmd
     done
 
     cd $prev_dir
