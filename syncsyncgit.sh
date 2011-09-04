@@ -36,6 +36,7 @@ run(){
     
     count=0
     log_file=`get_log_file_name`
+    log_dir=`dirname "$log_file"`
     while true
     do
         sync | logger "$log_file"
