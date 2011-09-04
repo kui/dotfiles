@@ -37,7 +37,8 @@ run(){
     check_dir "$log_file"
 
     echo -n "start: "
-    
+
+    echo "start sync" | logger "$log_file"
     while true
     do
         sync | logger "$log_file"
@@ -61,7 +62,7 @@ run(){
         echo "FALSE"
         exit 1
     fi
-    
+
 }
 
 stop(){
