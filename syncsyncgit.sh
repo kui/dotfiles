@@ -80,7 +80,8 @@ check_pid_file(){
     pid_file=`get_pid_file_name`
     if [ -f "$pid_file" ]
     then
-        echo "error: Already started (pid:`get_pid`)"
+        echo "error: Already started (pid:`get_pid`)" >&2
+        exit 1
     fi
 }
 create_pid_file(){
