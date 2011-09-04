@@ -118,6 +118,7 @@ get_pid_file_name(){
     fi
 
     local escaped_path=`escape_path_for_regex "$pid_dir"`
+    echo $escaped_path
     local regex="s/^/$escaped_path/"
     echo $regex
     get_base_file_name |\
