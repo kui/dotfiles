@@ -23,7 +23,7 @@ main(){
         esac
     done
 
-    if [ run_flag -eq 1 ]
+    if [ $run_flag -eq 1 ]
     then
         echo "# dry-run. if you want to run these commands, attache -r option."
     fi
@@ -33,7 +33,7 @@ main(){
         local dest_file=`echo "$file" | sed -e 's/^dot/./'`
         cmd="ln -s ${curr_dir}/${file} ${HOME}/${dest_file}"
         echo $cmd
-        if [ run_flag -eq 1 ]
+        if [ $run_flag -eq 0 ]
         then
             echo run $cmd
         #$cmd
