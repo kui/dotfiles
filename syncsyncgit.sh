@@ -93,8 +93,7 @@ delete_pid_file(){
 }
 
 get_pid_file_name(){
-    regex="s/^/$HOME/./"
-    echo $regex
+    echo $HOME | sed -e 's/\\//\\\\\//g'
     pwd | sed -e 's/[\\.\\/]/_/g' |\
       sed -e 's/$/_syncsyncgit.pid/'|\
       sed -e $regex
