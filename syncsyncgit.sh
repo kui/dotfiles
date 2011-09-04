@@ -80,9 +80,9 @@ sync(){
     if [ -n "$dry_run" ]
     then
         echo $dry_run
-        commit --quiet
+        commit
     fi
-    git push 2>&1 | grep -v "^Everything up-to-date$"
+    git push --quiet 2>&1 | grep -v "^Everything up-to-date$"
 }
 
 help(){
