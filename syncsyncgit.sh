@@ -111,8 +111,13 @@ delete_pid_file(){
 }
 
 get_pid_file_name(){
-    local pid_dir
-    local escaped_path=`escape_path_for_regex "$PID_DIR/"`
+    local pid_dir=$PID_DIR
+    if ! echo $pid_dir | grep "/^"
+    then
+        local pid_dir="$pid_dir/"
+    fi
+
+    local escaped_path=`escape_path_for_regex "$pid_dir"`
     local regex="s/^/$escaped_path/"
     echo $regex
     get_base_file_name |\
