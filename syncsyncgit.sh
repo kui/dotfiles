@@ -13,6 +13,7 @@ main(){
 
     cd `dirname $0`
 
+    get_pid_file_name
     case $1 in
         start) run ;;
         stop) stop ;;
@@ -122,7 +123,9 @@ get_pid_file_name(){
     local regex="s/^/$escaped_path/"
     echo $regex
     get_base_file_name |\
-      sed -e 's/$/.pid/'|\
+      sed -e 's/$/.pid/'
+    get_base_file_name |\
+      sed -e 's/$/.pid/' |\
       sed -e "$regex"
 }
 
