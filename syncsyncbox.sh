@@ -46,7 +46,7 @@ sigint_hook(){
 sync(){
     git add . 2>&1
     local dry_run=`commit --porcelain`
-    echo $dry_run
+    echo -n $dry_run
     commit --quiet
     git push --quiet 2>&1 | grep -v "^Everything up-to-date$"
     git pull --ff 2>&1 | grep -v "^Already up-to-date.$"
