@@ -11,19 +11,13 @@ GC_INTERVAL=20
 main(){
 
     case $1 in
-        start) run "$2" ;;
+        start) run ;;
         stop) stop ;;
     esac
 
 }
 
 run(){
-    if [ -n $1 ]
-    then
-        cmd=`cd $1`
-        echo "$cmd" | logger
-        $cmd
-    fi
 
     if ! is_git_dir
     then
