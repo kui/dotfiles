@@ -10,6 +10,11 @@ GC_INTERVAL=20
 
 main(){
 
+    run $1
+
+}
+
+run(){
     if [ -n $1 ]
     then
         cmd=`cd $1`
@@ -73,4 +78,4 @@ commit(){
       grep -v "^nothing to commit (working directory clean)$"
  }
  
-main "$1"
+main "$@"
