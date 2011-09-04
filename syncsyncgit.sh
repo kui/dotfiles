@@ -71,11 +71,12 @@ sigint_hook(){
 create_pid_file(){
     pid=$1
     pid_file=`get_pid_file_name`
-    echo $1 > $pid_file
+    echo "$1" > "$pid_file"
 }
 
 get_pid(){
     pid_file=`get_pid_file_name`
+    cat "$pid_file"
 }
 
 delete_pid_file(){
