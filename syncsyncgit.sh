@@ -12,6 +12,7 @@ main(){
 
     cd `dirname $0`
 
+    echo `get_pid_file_name`
     case $1 in
         start) run ;;
         stop) stop ;;
@@ -67,6 +68,7 @@ sigint_hook(){
 }
 
 create_pid_file(){
+    echo `get_pid_file_name`
 }
 
 delete_pid_file(){
