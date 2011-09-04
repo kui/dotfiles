@@ -85,7 +85,7 @@ stop(){
     do
         kill -2 $pid
         sleep 0.03
-        if [ -z "`ps -p $pid -o comm=`" ] 
+        if [ -z "`ps -p $pid -o comm=`" ]
         then
             break
         fi
@@ -102,6 +102,11 @@ stop(){
     create_pid_file $!
 
     delete_pid_file
+}
+
+exist_pid(){
+    local pid=$1
+    [ -n "`ps -p $pid -o comm=`" ]
 }
 
 is_git_dir(){
