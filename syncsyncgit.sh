@@ -111,7 +111,8 @@ delete_pid_file(){
 }
 
 get_pid_file_name(){
-    regex="s/^/$escaped_home\\/\\./"
+    escaped_path=`escape_path_for_regex "$PID_DIR/"`
+    regex="s/^/$escaped_path/"
     echo $regex
     get_base_file_name |\
       sed -e 's/$/.pid/'|\
