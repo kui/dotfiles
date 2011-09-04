@@ -6,7 +6,7 @@ main(){
     prev_dir=`pwd`
     cd `dirname $0`
 
-    echo $1
+    
 
     cd $prev_dir
 }
