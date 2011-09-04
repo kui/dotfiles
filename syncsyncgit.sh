@@ -88,7 +88,7 @@ sigint_hook(){
 }
 
 check_pid_file(){
-    pid_file=`get_pid_file_name`
+    local pid_file=`get_pid_file_name`
     if [ -f "$pid_file" ]
     then
         echo "error: Already started (pid:`get_pid`)" >&2
@@ -96,23 +96,24 @@ check_pid_file(){
     fi
 }
 create_pid_file(){
-    pid_file=`get_pid_file_name`
+    local pid_file=`get_pid_file_name`
     echo "$1"  > "$pid_file"
 }
 
 get_pid(){
-    pid_file=`get_pid_file_name`
+    local pid_file=`get_pid_file_name`
     cat "$pid_file"
 }
 
 delete_pid_file(){
-    pid_file=`get_pid_file_name`
+    local pid_file=`get_pid_file_name`
     rm "$pid_file"
 }
 
 get_pid_file_name(){
-    escaped_path=`escape_path_for_regex "$PID_DIR/"`
-    regex="s/^/$escaped_path/"
+    local pid_dir
+    local escaped_path=`escape_path_for_regex "$PID_DIR/"`
+    local regex="s/^/$escaped_path/"
     echo $regex
     get_base_file_name |\
       sed -e 's/$/.pid/'|\
