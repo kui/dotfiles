@@ -4,8 +4,8 @@
 #
 
 INTERVAL="60"
-LOG_DIR="$HOME/local/log/"
-PID_DIR="$HOME/local/var/"
+LOG_DIR="$HOME/local/var/log"
+PID_DIR="$HOME/local/var/run"
 
 GC_INTERVAL=20
 
