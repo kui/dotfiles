@@ -216,14 +216,6 @@
   (add-hook 'ruby-mode-hook 'flymake-ruby-load)
   )
 
-;; inf-ruby 
-;; (autoload 'run-ruby "inf-ruby" "Run an inferior Ruby process")
-;; (autoload 'inf-ruby-keys "inf-ruby"
-;;   "Set local key defs for inf-ruby in ruby-mode")
-;; (add-hook 'ruby-mode-hook
-;;           '(lambda ()
-;; 	     (inf-ruby-keys)))
-
 ;; auto-complete-mode
 ;; http://cx4a.org/software/auto-complete/index.ja.html
 ;; (define-key ac-complete-mode-map "\M-/" 'ac-stop)
