@@ -8,6 +8,8 @@ INTERVAL="60"
 
 GC_INTERVAL=20
 
+PID_FILE="$HOME/.syncsyncbox.sh"
+
 main(){
 
     cd `dirname $0`
@@ -15,6 +17,7 @@ main(){
     case $1 in
         start) run ;;
         stop) stop ;;
+        sync) sync ;;
     esac
 
 }
