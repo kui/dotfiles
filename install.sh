@@ -13,11 +13,13 @@ main(){
     local prev_dir=`pwd`
     local curr_dir=`dirname $0`
     cd "$curr_dir"
+    local curr_dir=`pwd`
 
     for file in "$file_list"
     do
-        # cmd="ln -s "
-        echo $file
+        cmd="ln -s ${curr_dir}/${file}"
+        echo $cmd
+        $cmd
     done
 
     cd $prev_dir
