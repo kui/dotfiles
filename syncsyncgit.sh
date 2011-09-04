@@ -74,7 +74,7 @@ stop(){
     local pid=`get_pid`
     local retry_count=30
 
-    if [ -z "`ps -p $pid -o comm=`" ] 
+    if ! exist_pid $pid
     then
         echo "error: Already stop" >&2
         exit 1
@@ -85,7 +85,7 @@ stop(){
     do
         kill -2 $pid
         sleep 0.03
-        if [ -z "`ps -p $pid -o comm=`" ]
+        if ! exist_pid $pid
         then
             break
         fi
