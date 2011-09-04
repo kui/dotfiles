@@ -142,9 +142,11 @@ get_base_file_name(){
 check_dir(){
     local file=$1
     local dir=`dirname "$file"`
-    if [ -d "$dir" ]
+    if ! [ -d "$dir" ]
     then
-        mkdir -p "$dir"
+        local cmd="mkdir -p \"$dir\""
+        echo $cmd
+        $cmd
     fi
 }
 
