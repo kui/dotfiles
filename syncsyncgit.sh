@@ -76,6 +76,13 @@ sigint_hook(){
     exit 0
 }
 
+check_pid_file(){
+    pid_file=`get_pid_file_name`
+    if [ -f "$pid_file" ]
+    then
+        
+    fi
+}
 create_pid_file(){
     pid_file=`get_pid_file_name`
     echo "$1"  > "$pid_file"
