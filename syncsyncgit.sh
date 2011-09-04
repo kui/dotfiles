@@ -134,16 +134,18 @@ check_pid_file(){
 }
 
 create_pid_file(){
-    local pid_file=`get_pid_file_name`
+    # local pid_file=`get_pid_file_name`
     check_dir "$pid_file"
     echo "$1"  > "$pid_file"
 }
 
 get_pid(){
+    # local pid_file=`get_pid_file_name`
     cat "$pid_file" 2> /dev/null
 }
 
 delete_pid_file(){
+    # local pid_file=`get_pid_file_name`
     rm "$pid_file"
 }
 
