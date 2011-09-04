@@ -15,8 +15,8 @@ main(){
 
     cd `dirname $0`
 
-    pid_file=`get_pid_file_name`
-    log_file=`get_log_file_name`
+    PID_FILE=`get_pid_file_name`
+    LOG_FILE=`get_log_file_name`
     case $1 in
         start) run ;;
         stop) stop ;;
