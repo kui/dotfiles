@@ -42,14 +42,14 @@ run(){
 
     echo -n "start: "
 
-    echo "start sync" | logger "$log_file"
+    echo "start sync" | logger
     while true
     do
-        sync | logger "$log_file"
+        sync | logger
         if [ $count -gt $GC_INTERVAL ]
         then
-            git gc 2>&1 | logger "$log_file"
-            echo "git gc" | logger "$log_file"
+            git gc 2>&1 | logger
+            echo "git gc" | logger
             count=0
         fi
         sleep $INTERVAL
