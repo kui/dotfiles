@@ -38,7 +38,6 @@ run(){
     check_pid_file
 
     count=0
-    log_file=`get_log_file_name`
     check_dir "$log_file"
 
     echo -n "start: "
