@@ -79,8 +79,7 @@ help(){
     echo "
 start: start sync
 stop: stop sync
-sync: just one time sync
-"
+sync: do sync just one time"
 }
 
 commit(){
