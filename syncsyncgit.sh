@@ -4,6 +4,7 @@
 #
 
 INTERVAL="60"
+LOG_DIR="$HOME/local/log/"
 
 GC_INTERVAL=20
 
