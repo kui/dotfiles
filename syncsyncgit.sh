@@ -69,6 +69,7 @@ sigint_hook(){
 
 create_pid_file(){
     pid_file=`get_pid_file_name`
+    echo $$ > $pid_file
 }
 
 delete_pid_file(){
