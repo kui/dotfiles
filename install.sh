@@ -25,7 +25,7 @@ main(){
 
     if [ run_flag -eq 1 ]
     then
-        
+        echo "# dry-run. if you want to run these commands, attache -r option"
     fi
 
     for file in $file_list
