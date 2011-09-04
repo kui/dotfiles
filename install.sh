@@ -25,7 +25,7 @@ main(){
 
     if [ run_flag -eq 1 ]
     then
-        echo "# dry-run. if you want to run these commands, attache -r option"
+        echo "# dry-run. if you want to run these commands, attache -r option."
     fi
 
     for file in $file_list
@@ -33,7 +33,10 @@ main(){
         local dest_file=`echo "$file" | sed -e 's/^dot/./'`
         cmd="ln -s ${curr_dir}/${file} ${HOME}/${dest_file}"
         echo $cmd
-        # $cmd
+        if [ run_flag -eq 1 ]
+        then
+        #$cmd
+        fi
     done
 
     cd $prev_dir
