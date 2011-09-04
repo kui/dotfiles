@@ -51,10 +51,11 @@ run(){
 
 stop(){
     pid=`get_pid`
-    retry_count=10
+    retry_count=20
     while [ $retry_count -gt 0 ]
     do
         kill -2 $pid
+        sleep 0.02
     done
     kill -9 $pid
     delete_pid_file
