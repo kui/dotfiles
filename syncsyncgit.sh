@@ -106,7 +106,7 @@ stop(){
 
 exist_pid(){
     local pid=$1
-    [ -n "`ps -p $pid -o comm=`" ]
+    [ -n "$pid" ] && [ -n "`ps -p $pid -o comm=`" ]
 }
 
 is_git_dir(){
@@ -126,7 +126,7 @@ sigint_hook(){
 
 check_pid_file(){
     local pid=`get_pid`
-    if [ -n "$pid" ] && [ -n "`ps -p $pid -o comm=`" ]
+    if exist_pid $pid
     then
         echo "error: Already started (pid:$pid)" >&2
         exit 1
