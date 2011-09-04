@@ -28,7 +28,8 @@ run(){
         exit 1
     fi
 
-    echo "start: "
+    echo -n "start: "
+    
     count=0
     while true
     do
@@ -42,7 +43,8 @@ run(){
         sleep $INTERVAL
         count=$[$count+1]
     done &
-
+    pid=$1
+    if [ $? -eq]
     create_pid_file $!
     
 }
