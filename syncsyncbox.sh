@@ -1,18 +1,10 @@
 #!/bin/sh
 
 INTERVAL="60"
-TARGET_DIR="~/kui"
 
 GC_INTERVAL=20
 
 main(){
-
-    local log_dir=`dirname $LOG_FILE`
-    if ! [ -d "$log_dir" ] 
-    then
-        mkdir -p -v "$log_dir"
-    fi
-
     if ! is_git_dir
     then
         echo "$target_dir is not a git ripository" >&2
