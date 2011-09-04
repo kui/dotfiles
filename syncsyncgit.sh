@@ -114,7 +114,7 @@ is_git_dir(){
 
 logger(){
     local datetime=`date +'%F %T'`
-    sed -e "s/^/$datetime /" >> $1
+    sed -e "s/^/$datetime /" >> "$log_file"
 }
 
 sigint_hook(){
@@ -202,7 +202,6 @@ commit(){
 }
 
 help(){
-    echo $log_file
     echo -n "\
 $0 {start|stop|sync}
   start: start sync
