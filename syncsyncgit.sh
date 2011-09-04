@@ -111,7 +111,6 @@ delete_pid_file(){
 }
 
 get_pid_file_name(){
-    escaped_home=`echo "$PID_DIR" | sed -e 's/\//\\\\\//g'`
     regex="s/^/$escaped_home\\/\\./"
     echo $regex
     get_base_file_name |\
@@ -125,6 +124,7 @@ get_base_file_name(){
 }
 
 escape_path_for_regex(){
+    echo $1 | sed -e 's/\//\\\\\//g'
 }
 
 sync(){
