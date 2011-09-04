@@ -140,12 +140,10 @@ create_pid_file(){
 }
 
 get_pid(){
-    local pid_file=`get_pid_file_name`
     cat "$pid_file" 2> /dev/null
 }
 
 delete_pid_file(){
-    local pid_file=`get_pid_file_name`
     rm "$pid_file"
 }
 
