@@ -96,7 +96,7 @@ get_pid_file_name(){
     escaped_home=`echo $HOME | sed -e 's/\//\\\//g'`
     pwd | sed -e 's/[\\.\\/]/_/g' |\
       sed -e 's/$/_syncsyncgit.pid/'|\
-      sed -e ""
+      sed -e "s/^/$escaped_home/"
 }
 
 sync(){
