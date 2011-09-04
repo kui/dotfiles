@@ -75,11 +75,12 @@ sync(){
 }
 
 help(){
-    echo "$0 {start|stop|sync}"
-    echo "
-start: start sync
-stop: stop sync
-sync: do sync just one time"
+    echo -n "\
+$0 {start|stop|sync}
+  start: start sync
+  stop: stop sync
+  sync: do sync just one time
+"
 }
 
 commit(){
