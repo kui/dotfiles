@@ -50,6 +50,8 @@ run(){
 }
 
 stop(){
+    pid=`get_pid`
+    
     delete_pid_file
 }
 
