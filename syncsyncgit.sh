@@ -171,6 +171,7 @@ sync(){
         commit
     fi
     git push --quiet 2>&1 | grep -v "^Everything up-to-date$"
+
 }
 
 commit(){
