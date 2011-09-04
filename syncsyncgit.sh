@@ -76,7 +76,7 @@ stop(){
 
     if ! exist_pid $pid
     then
-        echo "error: Already stop" >&2
+        echo "error: Not started" >&2
         exit 1
     fi
 
