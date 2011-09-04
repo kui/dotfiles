@@ -17,7 +17,8 @@ main(){
 
     for file in "$file_list"
     do
-        cmd="ln -s ${curr_dir}/${file}"
+        if echo "$file" | grep "^dot"
+        cmd="ln -s ${curr_dir}/${file} $HOME"
         echo $cmd
         $cmd
     done
