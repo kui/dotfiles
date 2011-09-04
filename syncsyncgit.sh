@@ -129,7 +129,7 @@ get_file_name(){
     local suffix=$2
     if ! echo $dir | grep "/$" > /dev/null 2>&1
     then
-        local dir="$pid_dir/"
+        local dir="$dir/"
     fi
     echo "$dir`get_base_file_name`.$suffix"
 }
