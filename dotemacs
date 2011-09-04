@@ -175,6 +175,7 @@
 
 ;; flymakeでrubyの構文チェック
 (when (require 'flymake-ruby nil t)
+  (add-hook 'ruby-mode-hook 'flymake-ruby-load)
 
   ;; エラー行の初めのメッセージを取得する
   (defun flymake-get-first-errline-message ()
@@ -191,9 +192,6 @@
 	   )
       first-errline-first-message
       ))
-
-  ;; ruby-mode にフック
-  (add-hook 'ruby-mode-hook 'flymake-ruby-load)
   )
 
 ;; auto-complete-mode
