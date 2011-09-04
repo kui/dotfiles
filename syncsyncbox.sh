@@ -12,7 +12,7 @@ main(){
 
     if [ -n $1 ]
     then
-        local prev_dir=
+        cmd=
     fi
 
     if ! is_git_dir
