@@ -123,7 +123,7 @@ get_pid_file_name(){
 get_file_name(){
     local dir=$1
     local suffix=$2
-    if ! echo $dir | grep "/$"
+    if ! echo $dir | grep "/$" > /dev/null 2>&1
     then
         local dir="$pid_dir/"
     fi
