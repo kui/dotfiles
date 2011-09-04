@@ -11,11 +11,12 @@ dotzshrc
 
 main(){
     local prev_dir=`pwd`
-    cd `dirname $0`
+    local curr_dir=`dirname $0`
+    cd "$curr_dir"
 
     for file in $files
     do
-        echo $file
+        cmd="ln -s "
     done
 
     cd $prev_dir
