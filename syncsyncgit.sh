@@ -72,10 +72,11 @@ create_pid_file(){
 }
 
 delete_pid_file(){
+    echo `get_pid_file_name`
 }
 
 get_pid_file_name(){
-    pwd | sed -e 's/[\\.\\/]/_/'
+    pwd | sed -e 's/[\\.\\/]/_/g'
 }
 
 sync(){
