@@ -120,6 +120,24 @@ get_pid_file_name(){
     echo "${pid_dir}`get_base_file_name`.pid"
 }
 
+get_pid_file_name(){
+    local pid_dir=$PID_DIR
+    if ! echo $pid_dir | grep "/$"
+    then
+        local pid_dir="$pid_dir/"
+    fi
+    echo "${pid_dir}`get_base_file_name`.pid"
+}
+
+get_file_name(){
+    local dir=$1
+    if ! echo $dir | grep "/$"
+    then
+        local dir="$pid_dir/"
+    fi
+    echo "${dir}`get_base_file_name`.pid"
+}
+
 get_base_file_name(){
     pwd | sed -e 's/[\\.\\/]/_/g' |\
       sed -e 's/$/_syncsyncgit/'
