@@ -1,7 +1,7 @@
 ;;;; -*- mode: lisp-interaction; syntax: elisp; coding: utf-8-unix -*-
 
 ;;ライブラリパスを追加
-(add-to-list 'load-path "~/.site-lisp")
+(add-to-list 'load-path "~/.emacs.d")
 
 ;; 日本語設定 (UTF-8)
 (set-language-environment "Japanese")
