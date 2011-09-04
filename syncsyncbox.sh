@@ -45,7 +45,7 @@ sigint_hook(){
 
 sync(){
     git add . 2>&1
-    local dry_run=`commit --porcelain`
+    local dry_run=`commit --porcelain 2>&1`
     if [ -n "$dry_run" ]
     then
         echo $dry_run
