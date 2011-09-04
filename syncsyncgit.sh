@@ -19,6 +19,7 @@ main(){
         start) run ;;
         stop) stop ;;
         sync) sync ;;
+        #log) cat_log ;;
         *) help;;
     esac
 
@@ -159,7 +160,6 @@ check_dir(){
         eval $cmd
     fi
 }
-
 
 sync(){
     git pull --ff 2>&1 | grep -v "^Already up-to-date.$"
