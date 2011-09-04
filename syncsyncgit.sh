@@ -5,6 +5,7 @@
 
 INTERVAL="60"
 LOG_DIR="$HOME/local/log/"
+PID_DIR="$HOME/local/var/"
 
 GC_INTERVAL=20
 
@@ -110,7 +111,7 @@ delete_pid_file(){
 }
 
 get_pid_file_name(){
-    escaped_home=`echo $HOME | sed -e 's/\//\\\\\//g'`
+    escaped_home=`echo "$PID_DIR" | sed -e 's/\//\\\\\//g'`
     regex="s/^/$escaped_home\\/\\./"
     echo $regex
     pwd | sed -e 's/[\\.\\/]/_/g' |\
