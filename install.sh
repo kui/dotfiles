@@ -16,10 +16,10 @@ main(){
     local curr_dir=`pwd`
 
     local run_flag=1
-    while getopts opt
+    while getopts r opt
     do
         case $opt in
-            r | run) local run_flag=0 ;;
+            r) local run_flag=0 ;;
         esac
     done
 
