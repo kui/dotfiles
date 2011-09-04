@@ -35,6 +35,8 @@ run(){
         exit 1
     fi
 
+    check_pid_file
+
     count=0
     log_file=`get_log_file_name`
     check_dir "$log_file"
@@ -111,7 +113,7 @@ check_pid_file(){
     local pid=`get_pid 2> /dev/null`
     if [ -n "$pid" ] && [ -n `ps -p $pid -o comm=` ]
     then
-        echo "error: Already started (pid:`get_pid`)" >&2
+        echo "error: Already started (pid:$pid)" >&2
         exit 1
     fi
 }
