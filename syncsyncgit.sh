@@ -67,6 +67,7 @@ sigint_hook(){
 }
 
 create_pid_file(){
+    pid_file=""
 }
 
 delete_pid_file(){
