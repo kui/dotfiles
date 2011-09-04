@@ -12,7 +12,7 @@ main(){
 
     if [ -n $1 ]
     then
-        
+        local prev_dir=
     fi
 
     if ! is_git_dir
@@ -20,8 +20,6 @@ main(){
         echo "the current dir is not a git ripository" >&2
         exit 1
     fi
-
-    trap 'sigint_hook' 2
 
     echo "start sync (pid: $$)" | logger
     count=0
