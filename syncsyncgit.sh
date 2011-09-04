@@ -113,14 +113,11 @@ delete_pid_file(){
 
 get_pid_file_name(){
     local pid_dir=$PID_DIR
-    if ! echo $pid_dir | grep "/^"
+    if ! echo $pid_dir | grep "/$"
     then
         local pid_dir="$pid_dir/"
     fi
-
-    "$pid_dir"
-
-    echo "`get_base_file_name`.pid"
+    echo "${pid_dir}`get_base_file_name`.pid"
 }
 
 get_base_file_name(){
