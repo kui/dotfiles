@@ -114,12 +114,14 @@ get_pid_file_name(){
     escaped_home=`echo "$PID_DIR" | sed -e 's/\//\\\\\//g'`
     regex="s/^/$escaped_home\\/\\./"
     echo $regex
-    pwd | sed -e 's/[\\.\\/]/_/g' |\
-      sed -e 's/$/_syncsyncgit.pid/'|\
+    get_base_file_name |\
+      sed -e 's/$/.pid/'|\
       sed -e "$regex"
 }
 
 get_base_file_name(){
+    pwd | sed -e 's/[\\.\\/]/_/g' |\
+      sed -e 's/$/_syncsyncgit/'
 }
 
 sync(){
