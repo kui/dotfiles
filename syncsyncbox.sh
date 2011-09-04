@@ -59,6 +59,7 @@ sigint_hook(){
 }
 
 sync(){
+    git pull --ff 2>&1 | grep -v "^Already up-to-date.$"
     git add . 2>&1
     local dry_run=`commit --porcelain 2>&1`
     if [ -n "$dry_run" ]
@@ -67,7 +68,6 @@ sync(){
         commit --quiet
     fi
     git push 2>&1 | grep -v "^Everything up-to-date$"
-    git pull --ff 2>&1 | grep -v "^Already up-to-date.$"
 }
 
 commit(){
