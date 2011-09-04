@@ -10,10 +10,10 @@ files=(
 )
 
 main(){
-    prev_dir=`pwd`
+    local prev_dir=`pwd`
     cd `dirname $0`
 
-    
+    echo $files
 
     cd $prev_dir
 }
