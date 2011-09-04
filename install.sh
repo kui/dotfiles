@@ -2,11 +2,12 @@
 # -*- coding:utf-8 -*-
 # install script for setting files
 
-files="
+file_list="
 dotemacs
 dotscreenrc
 dotemacs.d
 dotzshrc
+hoge\ fuga
 "
 
 main(){
@@ -14,9 +15,10 @@ main(){
     local curr_dir=`dirname $0`
     cd "$curr_dir"
 
-    for file in $files
+    for file in "$file_list"
     do
-        cmd="ln -s "
+        # cmd="ln -s "
+        echo $file
     done
 
     cd $prev_dir
