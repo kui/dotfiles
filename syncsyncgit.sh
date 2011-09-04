@@ -127,7 +127,7 @@ sigint_hook(){
     exit 0
 }
 
-check_pid_file(){
+is_already_started(){
     local pid=`get_pid`
     if exist_pid $pid
     then
