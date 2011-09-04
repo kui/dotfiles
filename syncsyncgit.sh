@@ -1,6 +1,5 @@
 #!/bin/sh
 #
-# syncsyncbox.sh
 #  you can use a git repository as Dropbox
 #
 
@@ -29,7 +28,7 @@ run(){
         exit 1
     fi
 
-    echo "start sync (pid: $$)" | logger
+    echo "start sync (pid: $$)"
     count=0
     while true
     do
