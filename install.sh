@@ -3,11 +3,7 @@
 # install script for setting files
 
 main(){
-
+    prev_dir=`pwd`
     cd `dirname $0`
-
-}
-
-cd_target_dir(){
 
 }
