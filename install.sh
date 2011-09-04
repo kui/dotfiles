@@ -11,4 +11,4 @@ main(){
     cd $prev_dir
 }
 
-main "$*"
+main "$@"
