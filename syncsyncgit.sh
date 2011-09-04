@@ -38,7 +38,7 @@ run(){
     check_pid_file
 
     count=0
-    check_dir "$log_file"
+    check_dir "$LOG_FILE"
 
     echo -n "start: "
 
@@ -56,10 +56,12 @@ run(){
         count=$[$count+1]
     done &
 
+    pid=$!
+
     if [ $? -eq 0 ]
     then
         echo "OK"
-        create_pid_file $!
+        create_pid_file $pid
     else
         echo "FALSE"
         exit 1
