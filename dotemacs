@@ -133,7 +133,7 @@
 ;; BS で選択範囲を消す
 (delete-selection-mode 1)
 
-;; The local variables list in .emacs と言われるのを抑止
+;; "The local variables list in .emacs" と言われるのを抑止
 (add-to-list 'ignored-local-variables 'syntax) 
 
 ;; リセットされた場合に UTF-8 に戻す
