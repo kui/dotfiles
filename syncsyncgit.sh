@@ -68,11 +68,11 @@ sigint_hook(){
 }
 
 create_pid_file(){
-    echo `get_pid_file_name`
+    pid_file=`get_pid_file_name`
 }
 
 delete_pid_file(){
-    echo `get_pid_file_name`
+    pid_file=`get_pid_file_name`
 }
 
 get_pid_file_name(){
