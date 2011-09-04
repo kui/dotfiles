@@ -104,6 +104,7 @@ stop(){
 }
 
 cat_log(){
+    cat "$log_file"
 }
 
 exist_pid(){
