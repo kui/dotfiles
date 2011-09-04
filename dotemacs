@@ -250,9 +250,9 @@
       ))
 
 ;; nxhtml を読み込む
-(when (load "~/.site-lisp/nxhtml/autostart.el")
-  (setq mumamo-background-colors nil)
-  )
+;; (when (load "~/.site-lisp/nxhtml/autostart.el")
+;;  (setq mumamo-background-colors nil)
+;;  )
 
 ;; markdown-mode
 (autoload 'markdown-mode "markdown-mode.el"
