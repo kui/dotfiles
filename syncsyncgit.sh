@@ -77,14 +77,16 @@ stop(){
         sleep 0.03
         local retry_count=$(($retry_count-1))
     done
-    [ $retry_count -eq 0 ] && kill -9 $pid
-    if [ $? -eq 0 ]
+    if [ $retry_count -eq 0 ]
     then
-        echo "OK"
-        create_pid_file $!
-    else
-        echo "FALSE"
-        exit 1
+        if kill -9 $pid
+        then
+            echo "OK"
+            create_pid_file $!
+        else
+            echo "FALSE"
+            exit 1
+        fi
     fi
 
     delete_pid_file
