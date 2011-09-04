@@ -21,6 +21,7 @@ main(){
         if [ $count -gt $GC_INTERVAL ]
         then
             git gc 2>&1 | logger
+            echo "gc" | logger
             count=0
         fi
         sleep $INTERVAL
