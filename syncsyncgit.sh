@@ -28,7 +28,7 @@ run(){
         exit 1
     fi
 
-    echo "start sync (pid: $$)"
+    echo "start: "
     count=0
     while true
     do
