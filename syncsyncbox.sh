@@ -10,7 +10,10 @@ GC_INTERVAL=20
 
 main(){
 
-    run $1
+    case $1 in
+        start) run $2 ;;
+        stop) stop ;;
+    esac
 
 }
 
