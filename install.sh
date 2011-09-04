@@ -35,6 +35,7 @@ main(){
         echo $cmd
         if [ run_flag -eq 1 ]
         then
+            echo run $cmd
         #$cmd
         fi
     done
