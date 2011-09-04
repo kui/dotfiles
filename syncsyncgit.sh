@@ -81,15 +81,15 @@ stop(){
     done
     if [ $retry_count -eq 0 ]
     then
-        if kill -9 $pid
+        if ! kill -9 $pid
         then
-            echo "OK"
-            create_pid_file $!
-        else
             echo "FALSE"
             exit 1
         fi
     fi
+
+    echo "OK"
+    create_pid_file $!
 
     delete_pid_file
 }
