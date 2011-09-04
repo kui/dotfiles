@@ -9,7 +9,11 @@ INTERVAL="60"
 GC_INTERVAL=20
 
 main(){
-    
+
+    if [ -n $1 ]
+    then
+        
+    fi
 
     if ! is_git_dir
     then
