@@ -10,10 +10,13 @@ dotzshrc
 "
 
 main(){
+    option=$1
+
     local prev_dir=`pwd`
     local curr_dir=`dirname $0`
     cd "$curr_dir"
     local curr_dir=`pwd`
+
 
     for file in $file_list
     do
