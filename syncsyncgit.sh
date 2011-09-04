@@ -18,6 +18,7 @@ main(){
         start) run ;;
         stop) stop ;;
         sync) sync ;;
+        *) help;;
     esac
 
 }
@@ -71,6 +72,10 @@ sync(){
         commit --quiet
     fi
     git push 2>&1 | grep -v "^Everything up-to-date$"
+}
+
+help(){
+    
 }
 
 commit(){
