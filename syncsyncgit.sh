@@ -35,13 +35,14 @@ run(){
     echo -n "start: "
     
     count=0
+    log_file=`get_log_file_name`
     while true
     do
-        sync | logger
+        sync | logger "$log_file"
         if [ $count -gt $GC_INTERVAL ]
         then
-            git gc 2>&1 | logger
-            echo "git gc" | logger
+            git gc 2>&1 | logger "$log_file"
+            echo "git gc" | logger "$log_file"
             count=0
         fi
         sleep $INTERVAL
