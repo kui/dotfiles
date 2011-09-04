@@ -4,11 +4,10 @@
 #
 
 # sync interval
-INTERVAL=60
+INTERVAL=10
 
 LOG_DIR="$HOME/local/var/log"
 PID_DIR="$HOME/local/var/run"
-
 GC_INTERVAL=20
 
 main(){
