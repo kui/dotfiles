@@ -35,7 +35,7 @@ run(){
         exit 1
     fi
 
-    check_pid_file
+    is_already_started
 
     count=0
     check_dir "$LOG_FILE"
