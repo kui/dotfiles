@@ -74,6 +74,10 @@ create_pid_file(){
     echo $1 > $pid_file
 }
 
+get_pid(){
+    pid_file=`get_pid_file_name`
+}
+
 delete_pid_file(){
     pid_file=`get_pid_file_name`
 }
