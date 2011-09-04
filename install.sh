@@ -13,7 +13,10 @@ main(){
     local prev_dir=`pwd`
     cd `dirname $0`
 
-    echo $files
+    for file in $files
+    do
+        echo $file
+    done
 
     cd $prev_dir
 }
