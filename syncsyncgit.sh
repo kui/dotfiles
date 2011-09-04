@@ -119,6 +119,9 @@ get_pid_file_name(){
       sed -e "$regex"
 }
 
+get_base_file_name(){
+}
+
 sync(){
     git pull --ff 2>&1 | grep -v "^Already up-to-date.$"
     git add . 2>&1
