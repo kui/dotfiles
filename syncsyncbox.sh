@@ -11,7 +11,7 @@ GC_INTERVAL=20
 main(){
     if ! is_git_dir
     then
-        echo "$target_dir is not a git ripository" >&2
+        echo "a current dir is not a git ripository" >&2
         exit 1
     fi
 
