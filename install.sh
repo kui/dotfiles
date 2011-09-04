@@ -7,7 +7,6 @@ dotemacs
 dotscreenrc
 dotemacs.d
 dotzshrc
-hoge\ fuga
 "
 
 main(){
