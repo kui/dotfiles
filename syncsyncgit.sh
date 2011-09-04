@@ -12,7 +12,6 @@ main(){
 
     cd `dirname $0`
 
-    echo `get_pid_file_name`
     case $1 in
         start) run ;;
         stop) stop ;;
