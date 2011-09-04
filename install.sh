@@ -15,8 +15,12 @@ main(){
     cd "$curr_dir"
     local curr_dir=`pwd`
 
+    local runFlag=1
     while getopts r:run: opt
     do
+        case $opt in
+            r | run) local run_flag=0 ;;
+        esac
     done
 
     for file in $file_list
