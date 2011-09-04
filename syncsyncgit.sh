@@ -80,7 +80,7 @@ check_pid_file(){
     pid_file=`get_pid_file_name`
     if [ -f "$pid_file" ]
     then
-        
+        echo "error: Already started"
     fi
 }
 create_pid_file(){
@@ -119,6 +119,13 @@ sync(){
     git push --quiet 2>&1 | grep -v "^Everything up-to-date$"
 }
 
+commit(){
+    options="$*"
+    git commit --all --message "`date +'%F %T'` $0" $options 2>&1 |\
+      grep -v "^# On branch master$" |\
+      grep -v "^nothing to commit (working directory clean)$"
+ }
+
 help(){
     echo -n "\
 $0 {start|stop|sync}
@@ -128,11 +135,5 @@ $0 {start|stop|sync}
 "
 }
 
-commit(){
-    options="$*"
-    git commit --all --message "`date +'%F %T'` $0" $options 2>&1 |\
-      grep -v "^# On branch master$" |\
-      grep -v "^nothing to commit (working directory clean)$"
- }
  
 main "$@"
