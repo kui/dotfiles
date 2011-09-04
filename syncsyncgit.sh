@@ -68,6 +68,7 @@ run(){
 stop(){
     local pid=`get_pid`
     local retry_count=30
+    echo -n "stop: "
     while [ $retry_count -gt 0 ]
     do
         kill -2 $pid
@@ -75,6 +76,14 @@ stop(){
         local retry_count=$(($retry_count-1))
     done
     kill -9 $pid
+    if [ $? -eq 0 ]
+    then
+        echo "OK"
+        create_pid_file $!
+    else
+        echo "FALSE"
+        exit 1
+    fi
     delete_pid_file
 }
 
