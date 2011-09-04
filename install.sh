@@ -17,8 +17,8 @@ main(){
 
     for file in "$file_list"
     do
-        local dest_file=``
-        cmd="ln -s ${curr_dir}/${file} $HOME"
+        local dest_file=`echo "$file" | sed -e 's/^dot/./'`
+        cmd="ln -s ${curr_dir}/${file} ${HOME}/${dest_file}"
         echo $cmd
         # $cmd
     done
