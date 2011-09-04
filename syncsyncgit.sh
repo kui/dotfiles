@@ -14,6 +14,7 @@ main(){
     cd `dirname $0`
 
     get_pid_file_name
+    get_log_file_name
     case $1 in
         start) run ;;
         stop) stop ;;
@@ -112,20 +113,21 @@ delete_pid_file(){
 }
 
 get_log_file_name(){
-    get_file_name $LOG_DIR
+    get_file_name $LOG_DIR "log"
 }
 
 get_pid_file_name(){
-    get_file_name $PID_DIR
+    get_file_name $PID_DIR "pid"
 }
 
 get_file_name(){
     local dir=$1
+    local suffix=$2
     if ! echo $dir | grep "/$"
     then
         local dir="$pid_dir/"
     fi
-    echo "${dir}`get_base_file_name`.pid"
+    echo "$dir`get_base_file_name`.$suffix"
 }
 
 get_base_file_name(){
