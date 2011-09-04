@@ -31,7 +31,7 @@ main(){
         if [ $count -gt $GC_INTERVAL ]
         then
             git gc 2>&1 | logger
-            echo "gc" | logger
+            # echo "git gc" | logger
             count=0
         fi
         sleep $INTERVAL
@@ -65,7 +65,6 @@ sync(){
     git push --quiet 2>&1 | grep -v "^Everything up-to-date$"
     git pull --ff 2>&1 | grep -v "^Already up-to-date.$"
 }
-
 
 commit(){
     options="$*"
