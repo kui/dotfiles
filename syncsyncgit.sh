@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 # syncsyncbox.sh
-#  use a git repository
+#  you can use a git repository as Dropbox
 #
 
 INTERVAL="60"
@@ -125,7 +125,7 @@ commit(){
     git commit --all --message "`date +'%F %T'` $0" $options 2>&1 |\
       grep -v "^# On branch master$" |\
       grep -v "^nothing to commit (working directory clean)$"
- }
+}
 
 help(){
     echo -n "\
