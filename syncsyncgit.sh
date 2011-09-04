@@ -76,7 +76,8 @@ stop(){
 
     if [ -z "`ps -p $pid -o comm=`" ] 
     then
-        break
+        echo "error: Already stop" >&2
+        exit 1
     fi
 
     echo -n "stop: "
@@ -119,7 +120,7 @@ sigint_hook(){
 }
 
 check_pid_file(){
-    local pid=`get_pid 2> /dev/null`
+    local pid=`get_pid`
     if [ -n "$pid" ] && [ -n "`ps -p $pid -o comm=`" ]
     then
         echo "error: Already started (pid:$pid)" >&2
@@ -135,7 +136,7 @@ create_pid_file(){
 
 get_pid(){
     local pid_file=`get_pid_file_name`
-    cat "$pid_file"
+    cat "$pid_file" 2> /dev/null
 }
 
 delete_pid_file(){
