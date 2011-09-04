@@ -78,6 +78,10 @@ stop(){
     do
         kill -2 $pid
         sleep 0.03
+        if [ -z "`ps -p $pid -o comm=`" ] 
+        then
+            break
+        fi
         local retry_count=$(($retry_count-1))
     done
 
