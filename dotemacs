@@ -160,38 +160,18 @@
 (add-to-list 'default-frame-alist
 	     '(border-color . "cyan"));;
 
-;; bloggerpost の設定
-;; (add-hook 'bloggerpost-draft-mode-hook
-;;	  (let ()
-;;	    ))
-
 ;; javascript-mode
 ;; (add-to-list 'auto-mode-alist 
 ;; 	     (cons  "\\.\\(js\\|as\\|json\\|jsn\\)\\'" 'javascript-mode))
 ;; (autoload 'javascript-mode "javascript" nil t)
-(setq js-indent-level 2)
-
-;; php-mode
-;;(require 'php-mode)
-(autoload 'php-mode "php-mode")
-(add-to-list 'auto-mode-alist
-	     '("\\.php[34]?\\'\\|\\.phtml\\'" . php-mode))
+;; (setq js-indent-level 2)
 
 ;; css-mode
 (autoload 'css-mode "css-mode")
+(setq cssm-indent-function #'cssm-c-style-indenter)
 (setq auto-mode-alist       
       (cons '("\\.css\\'" . css-mode) auto-mode-alist))
-(setq cssm-indent-function #'cssm-c-style-indenter)
 
-;; ruby-mode
-;; (autoload 'ruby-mode "ruby-mode"
-;;   "Mode for editing ruby source files" t)
-;; (setq auto-mode-alist
-;;       (append '(("\\.r[bu]$" . ruby-mode)
-;; 		("/Rakefile$" . ruby-mode))
-;; 	      auto-mode-alist))
-;; (setq interpreter-mode-alist (append '(("ruby" . ruby-mode))
-;;                                      interpreter-mode-alist))
 
 ;; flymakeでrubyの構文チェック
 (when (require 'flymake-ruby nil t)
