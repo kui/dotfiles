@@ -44,8 +44,13 @@ run(){
         count=$[$count+1]
     done &
     pid=$1
-    if [ $? -eq]
-    create_pid_file $!
+    if [ $? -eq 0 ]
+    then
+        echo "OK"
+        create_pid_file $!
+    else
+        echo "FALSE"
+    fi
     
 }
 
