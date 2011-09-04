@@ -1,0 +1,206 @@
+if [ -f /etc/zsh/zshrc ]; then
+    source /etc/zsh/zshrc
+fi
+
+############################################################
+## 環境変数の設定
+export PATH=$HOME/local/bin:/usr/local/bin:$PATH
+export LANG=ja_JP.UTF-8
+export TERM="xterm-256color"
+# export TERM="xterm" # 256色が無理な時
+
+
+# PROMPT のための色一覧
+local Black=$'%{\e[0;30m%}'
+local DarkGray=$'%{\e[1;30m%}'
+local Blue=$'%{\e[0;34m%}'
+local LightBlue=$'%{\e[1;34m%}'
+local Green=$'%{\e[0;32m%}'
+local LightGreen=$'%{\e[1;32m%}'
+local Cyan=$'%{\e[0;36m%}'
+local LightCyan=$'%{\e[1;36m%}'
+local Red=$'%{\e[0;31m%}'
+local LightRed=$'%{\e[1;31m%}'
+local Purple=$'%{\e[0;35m%}'
+local LightPurple=$'%{\e[1;35m%}'
+local Brown=$'%{\e[0;33m%}'
+local Yellow=$'%{\e[1;33m%}'
+local LightGray=$'%{\e[0;37m%}'
+local White=$'%{\e[1;37m%}'
+local Default=$'%{\e[1;39m%}'
+
+ColorList=($Purple $Green $Blue $Cyan $Red )
+local PromptUserColor=$ColorList[$((($RANDOM % ${#ColorList})+1))]
+local PromptHostColor=$ColorList[$((($RANDOM % ${#ColorList})+1))]
+# ランダムに色を設定するプロンプト(user, host 別の色)
+# PROMPT=$'\n'$PromptUserColor'${USER}'$Default'@'$PromptHostColor'${HOST} '$Default'%~ '$'\n'$Default'%(!.#.$) '
+# ランダムに色を設定するプロンプト(user, host 同じ色)
+PROMPT=$'\n'$PromptUserColor'${USER}@${HOST} '$Yellow'%~ '$'\n'$Default'%(!.#.$) '
+RPROMPT=$DarkGray'%D [ %T ] '$Default
+
+HISTFILE=$HOME/.zsh-history
+HISTSIZE=100000
+SAVEHIST=100000
+USER_ID=`id -u`
+
+############################################################
+## alias, funcction の設定
+alias s="screen"
+alias ls="ls -F --color"
+alias widescreen="screen -c $HOME/.wide.screenrc"
+
+function markdown_preview(){
+    if [ $# -ne 1 ]; then
+        echo "error: invalid arguments"
+        echo "usage: $0 markdown_file"
+        return 1;
+    fi
+    if [ ! -f "$1" ]; then
+        echo "error: $1 dose not exists"
+        return 1;
+    fi
+    (echo '<html><body>'; markdown $1; echo '</body></html>')\
+	| w3m -T text/html -dump
+    if [ $STY ]; then
+        # echo "screen: redisplay"
+        sleep 0.2
+        screen -X redisplay
+    fi
+}
+
+function j(){
+    class=`echo $1 | sed -e "s/\\.java$//"`
+    shift
+    echo $@
+    if [ -f build.xml ]; then
+	ant && java -DDebug=on $class $@
+    else
+	javac $class.java && java -DDebug=on $do_java $@
+    fi
+}
+
+
+## refe の文字コードをUTF-8に修正
+function rr(){
+    refe "$@" | nkf -Ew
+}
+
+## ぐぐる
+function g(){
+    w3m "google.com/search?q=$@"
+}
+
+## view-modeでemacsを起動
+# function v(){ emacs $@ -f view-mode}
+function view(){ emacs $@ -f view-mode}
+
+## emacsclient
+function e(){
+    emacsclient -n $@
+}
+
+############################################################
+##  zsh 由来のプロパティ
+
+## 補完機能の強化
+autoload -U compinit
+compinit
+
+## コアダンプサイズを制限
+limit coredumpsize 102400
+
+## 出力の文字列末尾に改行コードが無い場合でも表示
+unsetopt promptcr
+
+## 色を使う
+setopt prompt_subst
+
+## ビープを鳴らさない
+setopt nobeep
+
+## 内部コマンド jobs の出力をデフォルトで jobs -l にする
+setopt long_list_jobs
+
+## 補完候補一覧でファイルの種別をマーク表示
+setopt list_types
+
+## サスペンド中のプロセスと同じコマンド名を実行した場合はリジューム
+setopt auto_resume
+
+## 補完候補を一覧表示
+setopt auto_list
+
+## 直前と同じコマンドをヒストリに追加しない
+setopt hist_ignore_dups
+
+## cd 時に自動で push
+setopt autopushd
+
+## 同じディレクトリを pushd しない
+setopt pushd_ignore_dups
+
+## ファイル名で #, ~, ^ の 3 文字を正規表現として扱う
+setopt extended_glob
+
+## TAB で順に補完候補を切り替える
+setopt auto_menu
+
+## zsh の開始, 終了時刻をヒストリファイルに書き込む
+setopt extended_history
+
+## =command を command のパス名に展開する
+setopt equals
+
+## --prefix=/usr などの = 以降も補完
+setopt magic_equal_subst
+
+## ヒストリを呼び出してから実行する間に一旦編集
+setopt hist_verify
+
+# ファイル名の展開で辞書順ではなく数値的にソート
+setopt numeric_glob_sort
+
+## 出力時8ビットを通す
+setopt print_eight_bit
+
+## ヒストリを共有
+setopt share_history
+
+## 補完候補のカーソル選択を有効に
+zstyle ':completion:*:default' menu select=1
+
+## 補完候補の色づけ
+zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
+
+## ディレクトリ名だけで cd
+setopt auto_cd
+
+## カッコの対応などを自動的に補完
+setopt auto_param_keys
+
+## ディレクトリ名の補完で末尾の / を自動的に付加し、次の補完に備える
+setopt auto_param_slash
+
+## スペルチェック
+setopt correct
+
+## 特定のコマンドの補完を無効化
+# compdef -d java
+
+############################################################
+# マシン別の設定
+case $HOST in 
+    "svr.daftbeats.ddo.jp" )
+	export PATH=$HOME/local/bin:/var/lib/gems/1.8/bin:$PATH
+	;;
+    * ) # その他のホスト
+	;;
+esac
+
+# Cygwin のときの設定
+if [ `uname -a | grep Cygwin | wc -l` = 1 ];then
+    export LANG=ja_JP.SJIS # cygwin
+fi
+
+
+source ~/.zshrc.local

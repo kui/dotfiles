@@ -1,0 +1,42 @@
+## エスケープキーの設定
+escape ^Tt
+
+## ビジュアルベルを無効
+vbell off
+
+## ステータス行の設定
+# hardstatus alwayslastline "%{= wk}%-Lw%{= rw}%n %t%{-}%+Lw %=%{= wk}@%H %m/%d %C%a "
+hardstatus alwayslastline "%{= wk}%?%-Lw%?%{= rw}%n*%f %t%?(%u)%?%{-}%?%+Lw%? %= %H %d/%m/%Y %0c "
+
+## スタートアップ時メッセージ無効
+startup_message off
+
+## 自動でデタッチする
+autodetach on
+
+## スクロール行を 10,240行
+defscrollback 10240
+
+## ^T U で UTF-8 / ^T E で EUC-JP を切り替え
+bind U eval "encoding utf-8" "!!!echo 'export LANG=ja_JP.UTF-8'"
+bind E eval "encoding euc" "!!!echo 'export LANG=ja_JP.EUC-JP'"
+
+# utf8 で表示する
+defencoding utf8
+encoding utf8 utf8
+
+# cygwin 用
+# defencoding SJIS
+# encoding sjis sjis
+
+# 256色表示を有効に
+term xterm-256color
+defbce "on"
+# termcapinfo xterm* 'Co#256:pa#256:AB=\E[48;5;%dm:AF=\E[38;5;%dm:'
+#attrcolor b ".I"
+
+# シェルの設定
+shell zsh
+
+## マウスの有効化
+defmousetrack

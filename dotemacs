@@ -1,0 +1,277 @@
+;;;; -*- mode: lisp-interaction; syntax: elisp; coding: utf-8-unix -*-
+
+;;ライブラリパスを追加
+(add-to-list 'load-path "~/.site-lisp")
+
+;; 日本語設定 (UTF-8)
+(set-language-environment "Japanese")
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(set-buffer-file-coding-system 'utf-8)
+(setq default-buffer-file-coding-system 'utf-8)
+
+;; meadow で使うときの日本語周り
+(if (string-equal system-type "windows-nt")
+    (let ()
+      (add-to-list 'load-path "~/site-lisp")
+      (mw32-ime-initialize)
+      (setq default-input-method "MW32-IME")
+
+      ;; fot-setup.el を使う ※要ダウンロード
+      ;; http://www.fan.gr.jp/~ring/doc/font-setup.html#enja
+      (when (require 'ttfont-setup nil t)
+	(ttfont-setup 16 t "Ricty Regular" 49)
+	(ttfont-setup 18 nil "Ricty Regular" 49)
+	(ttfont-setup 20 t "Ricty Regular" 49))
+      ))
+
+;; cygwin や meadow などで使うときの日本語設定
+(if (or (string-equal system-type "cygwin")
+	(string-equal system-type "windows-nt"))
+    (let ()
+      (set-terminal-coding-system 'sjis)
+      (set-keyboard-coding-system 'sjis)
+      ))
+
+;; emacs 用マジックコメント挿入
+(defun kui-insert-magic-comment ()
+  (interactive)
+  (insert "-*- coding:utf-8 -*-"))
+
+;; フォントロックモード (強調表示等) を有効にする
+(global-font-lock-mode t)
+
+;; マークしている範囲をハイライトする
+(setq-default transient-mark-mode t)
+
+;; C-x C-u が何もしないように変更する (undo の typo 時誤動作防止)
+(global-unset-key "\C-x\C-u")
+
+;; 括弧の対応をハイライト.
+(show-paren-mode 1)
+(setq show-paren-style 'mixed)
+
+;; 対応するカッコの背景色
+(set-face-background 'show-paren-match-face "#666666")
+
+;; 対応するカッコの文字の色
+(set-face-foreground 'show-paren-match-face "#ffffff")
+
+;; 対応するカッコが無い時の背景色
+;; (set-face-background 'show-paren-mismatch-face "some")
+;; 対応するカッコが無い時の文字の色
+;; (set-face-foreground 'show-paren-mismatch-face "some") 
+
+;; バッファ末尾に余計な改行コードを防ぐための設定
+(setq next-line-add-newlines nil) 
+
+;; 縦分割の時、一行で表示しきれない時の挙動
+;;   nil: 改行
+;;   t:   はみ出し？
+(setq truncate-partial-width-windows nil)
+
+;; C-x l で goto-line を実行
+(define-key ctl-x-map "l" 'goto-line) 
+
+;; インデントの際にタブを用いるか否か
+(setq-default indent-tabs-mode nil)
+
+;; 時間を表示
+;; (display-time) 
+
+;; メニューバーを消す
+;;(menu-bar-mode -1)
+
+;; ウィンドウシステムを使っているとき
+(if window-system
+    (let ()
+    
+      ;; ツールバーを消す
+      (tool-bar-mode 0) 
+
+      ;; スクロールバーを消す(nil:消える,right:右側)
+      (set-scroll-bar-mode nil)
+      ))
+
+;; 列数表示
+(column-number-mode 1)
+
+;; C-h でカーソルの左にある文字を消す
+(define-key global-map "\C-h" 'delete-backward-char)
+
+;; C-h に割り当てられている関数 help-command を C-x C-h に割り当てる
+(define-key global-map "\C-x\C-h" 'help-command)
+
+;; C-o に動的略語展開機能を割り当てる
+;; 2010/07/28 auto-complete.el 導入により無効化
+;; (define-key global-map "\C-o" 'dabbrev-expand)
+;; (setq dabbrev-case-fold-search nil) ; 大文字小文字を区別
+
+;; 日本語・英語混じり文での区切判定
+;; http://www.alles.or.jp/~torutk/oojava/meadow/Meadow210Install.html
+(defadvice dabbrev-expand
+  (around modify-regexp-for-japanese activate compile)
+  "Modify `dabbrev-abbrev-char-regexp' dynamically for Japanese words."
+  (if (bobp)
+      ad-do-it
+    (let ((dabbrev-abbrev-char-regexp
+           (let ((c (char-category-set (char-before))))
+             (cond 
+              ((aref c ?a) "[-_A-Za-z0-9]") ; ASCII
+              ((aref c ?j) ; Japanese
+               (cond
+                ((aref c ?K) "\\cK") ; katakana
+                ((aref c ?A) "\\cA") ; 2byte alphanumeric
+                ((aref c ?H) "\\cH") ; hiragana
+                ((aref c ?C) "\\cC") ; kanji
+                (t "\\cj")))
+              ((aref c ?k) "\\ck") ; hankaku-kana
+              ((aref c ?r) "\\cr") ; Japanese roman ?
+              (t dabbrev-abbrev-char-regexp)))))
+      ad-do-it)))
+
+;; BS で選択範囲を消す
+(delete-selection-mode 1)
+
+;; The local variables list in .emacs と言われるのを抑止
+(add-to-list 'ignored-local-variables 'syntax) 
+
+;; リセットされた場合に UTF-8 に戻す
+;; http://0xcc.net/blog/archives/000041.html
+(set-default-coding-systems 'utf-8)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; カーソルの種類
+;;  bar -> 縦棒
+;;  box -> 箱
+;;  caret -> 箱(点滅)
+(add-to-list 'default-frame-alist
+	     '(corsor-type . bar))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; 各部分の色の設定
+;;  M-x list-color-display要参照
+(add-to-list 'default-frame-alist
+	     '(corsor-color . "green"));; カーソル
+(add-to-list 'default-frame-alist
+	     '(foreground-color . "white"));; 前景
+(add-to-list 'default-frame-alist
+	     '(background-color . "black"));; 背景
+(add-to-list 'default-frame-alist
+	     '(border-color . "cyan"));;
+
+;; bloggerpost の設定
+;; (add-hook 'bloggerpost-draft-mode-hook
+;;	  (let ()
+;;	    ))
+
+;; javascript-mode
+;; (add-to-list 'auto-mode-alist 
+;; 	     (cons  "\\.\\(js\\|as\\|json\\|jsn\\)\\'" 'javascript-mode))
+;; (autoload 'javascript-mode "javascript" nil t)
+(setq js-indent-level 2)
+
+;; php-mode
+;;(require 'php-mode)
+(autoload 'php-mode "php-mode")
+(add-to-list 'auto-mode-alist
+	     '("\\.php[34]?\\'\\|\\.phtml\\'" . php-mode))
+
+;; css-mode
+(autoload 'css-mode "css-mode")
+(setq auto-mode-alist       
+      (cons '("\\.css\\'" . css-mode) auto-mode-alist))
+(setq cssm-indent-function #'cssm-c-style-indenter)
+
+;; ruby-mode
+;; (autoload 'ruby-mode "ruby-mode"
+;;   "Mode for editing ruby source files" t)
+;; (setq auto-mode-alist
+;;       (append '(("\\.r[bu]$" . ruby-mode)
+;; 		("/Rakefile$" . ruby-mode))
+;; 	      auto-mode-alist))
+;; (setq interpreter-mode-alist (append '(("ruby" . ruby-mode))
+;;                                      interpreter-mode-alist))
+
+;; flymakeでrubyの構文チェック
+(when (require 'flymake-ruby nil t)
+
+  ;; エラー行の初めのメッセージを取得する
+  (defun flymake-get-first-errline-message ()
+    "Get the first message of the first error line."
+    (interactive)
+    (let* ((first-errline-no
+  	    (flymake-get-first-err-line-no flymake-err-info))
+  	   (first-errline-info-list 
+  	    (flymake-find-err-info flymake-err-info first-errline-no))
+  	   (first-errline-first-info
+	    (nth 0 (nth 0 first-errline-info-list)))
+  	   (first-errline-first-message 
+	    (flymake-ler-text first-errline-first-info))
+	   )
+      first-errline-first-message
+      ))
+
+  ;; ruby-mode にフック
+  (add-hook 'ruby-mode-hook 'flymake-ruby-load)
+  )
+
+;; inf-ruby 
+;; (autoload 'run-ruby "inf-ruby" "Run an inferior Ruby process")
+;; (autoload 'inf-ruby-keys "inf-ruby"
+;;   "Set local key defs for inf-ruby in ruby-mode")
+;; (add-hook 'ruby-mode-hook
+;;           '(lambda ()
+;; 	     (inf-ruby-keys)))
+
+;; auto-complete-mode
+;; http://cx4a.org/software/auto-complete/index.ja.html
+;; (define-key ac-complete-mode-map "\M-/" 'ac-stop)
+(when (require 'auto-complete-config nil t)
+    (let ()
+      (add-to-list 'ac-dictionary-directories "/home/kui/.site-lisp/ac-dict")
+      (ac-config-default)
+      ;; *どんなときでも　AC-mode 発動
+      ;; (global-auto-complete-mode t)
+      ;; *候補間を移動 
+      ;; (define-key ac-complete-mode-map "\C-n" 'ac-next)
+      ;; (define-key ac-complete-mode-map "\C-p" 'ac-previous)
+      ;; *補完停止
+      (define-key ac-complete-mode-map "\C-[" 'ac-stop)
+      ;; *補完する
+      ;; (define-key ac-complete-mode-map "\C-i" 'auto-complete)
+      ;; *大文字・小文字の区別
+      ;; nil:    区別しない
+      ;; t:      区別する
+      ;; 'smart: 補完対象に大文字が含まれる場合のみ区別する
+      (setq ac-ignore-case 'smart)
+      ;; 直ちに補完メニューを表示する
+      ;; (ac-show-menu-immediately-on-auto-complete t)
+      ))
+
+;; nxhtml を読み込む
+(when (load "~/.site-lisp/nxhtml/autostart.el")
+  (setq mumamo-background-colors nil)
+  )
+
+;; markdown-mode
+(autoload 'markdown-mode "markdown-mode.el"
+   "Major mode for editing Markdown files" t)
+
+(setq auto-mode-alist
+   (append '(("\\.markdown" . markdown-mode)
+             ("\\.md" . markdown-mode))
+           auto-mode-alist))
+(add-hook 'markdown-mode-hook 
+          '(lambda ()
+             ;;(define-key markdown-mode-map "\C-i" 'indent-for-tab-command)
+             ;;(define-key markdown-mode-map "TAB" 'indent-for-tab-command)
+             (setq indent-tabs-mode t)
+             (setq tab-width 2)
+             (add-hook 'before-save-hook
+                       '(lambda () (tabify (point-min) (point-max))))
+             ))
+
+;; マウス操作を有効に
+;;(xterm-mouse-mode t)
+;;(mouse-wheel-mode t)
