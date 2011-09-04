@@ -1,20 +1,34 @@
 #!/bin/sh
 #
-#
+# syncsyncbox.sh
+#  use a git repository
 #
 
 INTERVAL="60"
 
 GC_INTERVAL=20
 
+PID_FILE="$HOME/.syncsyncbox.sh"
+
 main(){
+
+    cd `dirname $0`
+
+    case $1 in
+        start) run ;;
+        stop) stop ;;
+        sync) sync ;;
+    esac
+
+}
+
+run(){
+
     if ! is_git_dir
     then
-        echo "$target_dir is not a git ripository" >&2
+        echo "the current dir is not a git ripository" >&2
         exit 1
     fi
-
-    trap 'sigint_hook' 2
 
     echo "start sync (pid: $$)" | logger
     count=0
@@ -24,7 +38,7 @@ main(){
         if [ $count -gt $GC_INTERVAL ]
         then
             git gc 2>&1 | logger
-            echo "gc" | logger
+            # echo "git gc" | logger
             count=0
         fi
         sleep $INTERVAL
@@ -48,6 +62,7 @@ sigint_hook(){
 }
 
 sync(){
+    git pull --ff 2>&1 | grep -v "^Already up-to-date.$"
     git add . 2>&1
     local dry_run=`commit --porcelain 2>&1`
     if [ -n "$dry_run" ]
@@ -55,10 +70,8 @@ sync(){
         echo $dry_run
         commit --quiet
     fi
-    git push --quiet 2>&1 | grep -v "^Everything up-to-date$"
-    git pull --ff 2>&1 | grep -v "^Already up-to-date.$"
+    git push 2>&1 | grep -v "^Everything up-to-date$"
 }
-
 
 commit(){
     options="$*"
@@ -67,4 +80,4 @@ commit(){
       grep -v "^nothing to commit (working directory clean)$"
  }
  
-main
+main "$@"
