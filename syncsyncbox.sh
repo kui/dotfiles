@@ -12,7 +12,9 @@ main(){
 
     if [ -n $1 ]
     then
-        cmd=
+        cmd=`cd $1`
+        echo "$cmd" | logger
+        $cmd
     fi
 
     if ! is_git_dir
