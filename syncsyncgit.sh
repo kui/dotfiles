@@ -139,6 +139,15 @@ get_base_file_name(){
       sed -e 's/$/_syncsyncgit/'
 }
 
+check_dir(){
+    local file=$1
+    local dir=`dirname "$file"`
+    if [ -d "$dir" ]
+    then
+        mkdir -p "$dir"
+    fi
+}
+
 
 sync(){
     git pull --ff 2>&1 | grep -v "^Already up-to-date.$"
