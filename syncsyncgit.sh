@@ -32,12 +32,12 @@ run(){
         exit 1
     fi
 
-    echo -n "start: "
-    
     count=0
     log_file=`get_log_file_name`
     check_dir "$log_file"
 
+    echo -n "start: "
+    
     while true
     do
         sync | logger "$log_file"
