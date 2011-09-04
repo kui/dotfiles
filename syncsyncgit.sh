@@ -74,8 +74,9 @@ stop(){
     local pid=`get_pid`
     local retry_count=30
     echo -n "stop: "
-    while [ $retry_count -gt 0 ] && (! kill -2 $pid)
+    while [ $retry_count -gt 0 ]
     do
+        kill -2 $pid
         sleep 0.03
         local retry_count=$(($retry_count-1))
     done
