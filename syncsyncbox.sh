@@ -1,7 +1,7 @@
 #!/bin/sh
 #
-#
-#
+# syncsyncbox.sh
+#  use a git repository
 #
 
 INTERVAL="60"
@@ -9,6 +9,8 @@ INTERVAL="60"
 GC_INTERVAL=20
 
 main(){
+    
+
     if ! is_git_dir
     then
         echo "the current dir is not a git ripository" >&2
@@ -68,4 +70,4 @@ commit(){
       grep -v "^nothing to commit (working directory clean)$"
  }
  
-main
+main "$1"
