@@ -109,7 +109,7 @@ sigint_hook(){
 
 check_pid_file(){
     local pid=`get_pid 2> /dev/null`
-    if [ -z "$pid" ] || [ -z `ps -p $pid -o comm=` ]
+    if [ -n "$pid" ] && [ -n `ps -p $pid -o comm=` ]
     then
         echo "error: Already started (pid:`get_pid`)" >&2
         exit 1
