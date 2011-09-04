@@ -124,6 +124,9 @@ get_base_file_name(){
       sed -e 's/$/_syncsyncgit/'
 }
 
+escape_path_for_regex(){
+}
+
 sync(){
     git pull --ff 2>&1 | grep -v "^Already up-to-date.$"
     git add . 2>&1
