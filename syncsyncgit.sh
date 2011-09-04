@@ -67,10 +67,13 @@ sigint_hook(){
 }
 
 create_pid_file(){
-    pid_file=""
 }
 
 delete_pid_file(){
+}
+
+get_pid_file_name(){
+    pwd | sed -e "s/\\./_/"
 }
 
 sync(){
