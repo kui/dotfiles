@@ -56,8 +56,6 @@ run(){
         count=$[$count+1]
     done &
 
-    pid=$1
-
     if [ $? -eq 0 ]
     then
         echo "OK"
