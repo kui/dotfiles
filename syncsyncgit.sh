@@ -114,7 +114,7 @@ is_git_dir(){
 
 logger(){
     local datetime=`date +'%F %T'`
-    sed -e "s/^/$datetime /" >> "$log_file"
+    sed -e "s/^/$datetime /" >> "$LOG_FILE"
 }
 
 sigint_hook(){
@@ -134,13 +134,13 @@ check_pid_file(){
 
 create_pid_file(){
     # local pid_file=`get_pid_file_name`
-    check_dir "$pid_file"
-    echo "$1"  > "$pid_file"
+    check_dir "$PID_FILE"
+    echo "$1"  > "$PID_FILE"
 }
 
 get_pid(){
     # local pid_file=`get_pid_file_name`
-    cat "$pid_file" 2> /dev/null
+    cat "$PID_FILE" 2> /dev/null
 }
 
 delete_pid_file(){
