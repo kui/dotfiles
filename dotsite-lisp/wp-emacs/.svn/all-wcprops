@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 21
+/svn/!svn/ver/3/trunk
+END
+xml-rpc.el
+K 25
+svn:wc:ra_dav:version-url
+V 32
+/svn/!svn/ver/3/trunk/xml-rpc.el
+END
+ChangeLog
+K 25
+svn:wc:ra_dav:version-url
+V 31
+/svn/!svn/ver/2/trunk/ChangeLog
+END
+readme.txt
+K 25
+svn:wc:ra_dav:version-url
+V 32
+/svn/!svn/ver/2/trunk/readme.txt
+END
+weblogger.el
+K 25
+svn:wc:ra_dav:version-url
+V 34
+/svn/!svn/ver/3/trunk/weblogger.el
+END
