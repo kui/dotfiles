@@ -111,22 +111,12 @@ delete_pid_file(){
     rm "$pid_file"
 }
 
-get_pid_file_name(){
-    local pid_dir=$PID_DIR
-    if ! echo $pid_dir | grep "/$"
-    then
-        local pid_dir="$pid_dir/"
-    fi
-    echo "${pid_dir}`get_base_file_name`.pid"
+get_log_file_name(){
+    get_file_name $LOG_DIR
 }
 
 get_pid_file_name(){
-    local pid_dir=$PID_DIR
-    if ! echo $pid_dir | grep "/$"
-    then
-        local pid_dir="$pid_dir/"
-    fi
-    echo "${pid_dir}`get_base_file_name`.pid"
+    get_file_name $PID_DIR
 }
 
 get_file_name(){
