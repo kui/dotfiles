@@ -47,6 +47,10 @@ run(){
     done
 }
 
+stop(){
+    delete_pid_file
+}
+
 is_git_dir(){
     git status > /dev/null 2>&1
 }
