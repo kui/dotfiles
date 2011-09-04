@@ -74,6 +74,11 @@ stop(){
     local pid=`get_pid`
     local retry_count=30
 
+    if [ -z "`ps -p $pid -o comm=`" ] 
+    then
+        break
+    fi
+
     echo -n "stop: "
     while [ $retry_count -gt 0 ]
     do
