@@ -10,6 +10,8 @@ GC_INTERVAL=20
 
 main(){
 
+    cd `dirname $0`
+
     case $1 in
         start) run ;;
         stop) stop ;;
@@ -64,7 +66,7 @@ sync(){
         echo $dry_run
         commit --quiet
     fi
-    git push --quiet 2>&1 | grep -v "^Everything up-to-date$"
+    git push 2>&1 | grep -v "^Everything up-to-date$"
     git pull --ff 2>&1 | grep -v "^Already up-to-date.$"
 }
 
