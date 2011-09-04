@@ -118,14 +118,12 @@ get_pid_file_name(){
         local pid_dir="$pid_dir/"
     fi
 
+    "$pid_dir"
+
     echo "`get_base_file_name`.pid"
 }
 
 get_base_file_name(){
-    local escaped_path=`escape_path_for_regex "$pid_dir"`
-    echo $escaped_path
-    local regex="s/^/$escaped_path/"
-    echo $regex
     pwd | sed -e 's/[\\.\\/]/_/g' |\
       sed -e 's/$/_syncsyncgit/'
 }
