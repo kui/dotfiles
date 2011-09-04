@@ -73,6 +73,7 @@ run(){
 stop(){
     local pid=`get_pid`
     local retry_count=30
+
     echo -n "stop: "
     while [ $retry_count -gt 0 ]
     do
