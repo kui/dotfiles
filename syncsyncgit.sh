@@ -21,7 +21,7 @@ main(){
         start) run ;;
         stop) stop ;;
         sync) sync ;;
-        #log) cat_log ;;
+        log) cat_log ;;
         *) help;;
     esac
 
@@ -103,6 +103,9 @@ stop(){
     delete_pid_file
 }
 
+cat_log(){
+}
+
 exist_pid(){
     local pid=$1
     [ -n "$pid" ] && [ -n "`ps -p $pid -o comm=`" ]
@@ -145,7 +148,7 @@ get_pid(){
 
 delete_pid_file(){
     # local pid_file=`get_pid_file_name`
-    rm "$pid_file"
+    rm "$PID_FILE"
 }
 
 get_log_file_name(){
