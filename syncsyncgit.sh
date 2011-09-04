@@ -76,7 +76,7 @@ delete_pid_file(){
 }
 
 get_pid_file_name(){
-    pwd | sed -e 's/[\\.\\/]/_/g'
+    pwd | sed -e 's/[\\.\\/]/_/g' | sed -e 's/$/syncsyncgit.log/'
 }
 
 sync(){
