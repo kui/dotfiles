@@ -4,7 +4,7 @@
 #
 
 # sync interval
-INTERVAL=10
+INTERVAL=60
 
 LOG_DIR="$HOME/local/var/log"
 PID_DIR="$HOME/local/var/run"
