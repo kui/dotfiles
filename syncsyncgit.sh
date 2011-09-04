@@ -195,7 +195,7 @@ sync(){
 }
 
 commit(){
-    local options="$*"
+    local options="$@"
     git commit --all --message "`date +'%F %T'` $0" $options 2>&1 |\
       grep -v "^# On branch master$" |\
       grep -v "^nothing to commit (working directory clean)$"
