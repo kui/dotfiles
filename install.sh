@@ -6,7 +6,9 @@ main(){
     prev_dir=`pwd`
     cd `dirname $0`
 
-    
+
 
     cd $prev_dir
 }
+
+main "$*"
