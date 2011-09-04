@@ -79,6 +79,7 @@ stop(){
         sleep 0.03
         local retry_count=$(($retry_count-1))
     done
+
     if [ $retry_count -eq 0 ] && (! kill -9 $pid)
     then
         echo "FALSE"
