@@ -146,7 +146,7 @@ check_dir(){
     then
         local cmd="mkdir -p \"$dir\""
         echo $cmd
-        $cmd
+        `$cmd`
     fi
 }
 
