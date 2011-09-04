@@ -83,7 +83,7 @@ is_git_dir(){
 
 logger(){
     local datetime=`date +'%F %T'`
-    sed -e "s/^/$datetime /" $1
+    sed -e "s/^/$datetime /" >> $1
 }
 
 sigint_hook(){
