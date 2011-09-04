@@ -15,7 +15,7 @@ main(){
     cd "$curr_dir"
     local curr_dir=`pwd`
 
-    for file in "$file_list"
+    for file in $file_list
     do
         local dest_file=`echo "$file" | sed -e 's/^dot/./'`
         cmd="ln -s ${curr_dir}/${file} ${HOME}/${dest_file}"
