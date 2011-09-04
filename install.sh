@@ -2,6 +2,13 @@
 # -*- coding:utf-8 -*-
 # install script for setting files
 
+files=(
+    dotemacs
+    dotscreenrc
+    dotemacs.d
+    dotzshrc
+)
+
 main(){
     prev_dir=`pwd`
     cd `dirname $0`
