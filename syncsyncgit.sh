@@ -190,19 +190,20 @@ sync(){
     if [ -n "$dry_run" ]
     then
         echo $dry_run
-        commit
+        commit --quiet
     fi
     git push --quiet 2>&1 | grep -v "^Everything up-to-date$"
 }
 
 commit(){
-    options="$*"
+    local options="$*"
     git commit --all --message "`date +'%F %T'` $0" $options 2>&1 |\
       grep -v "^# On branch master$" |\
       grep -v "^nothing to commit (working directory clean)$"
 }
 
 help(){
+    echo $log_file
     echo -n "\
 $0 {start|stop|sync}
   start: start sync
