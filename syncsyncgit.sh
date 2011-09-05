@@ -112,6 +112,10 @@ exist_pid(){
     [ -n "$pid" ] && [ -n "`ps h -p $pid`" ]
 }
 
+get_parent_pid(){
+    echo `ps h -o ppid -p $$`
+}
+
 is_git_dir(){
     git status > /dev/null 2>&1
 }
