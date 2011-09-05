@@ -118,6 +118,7 @@ exist_pid(){
 }
 
 alive_parent(){
+    local pid=`get_pid`
     local parent_pid=`ps h -o ppid -p $$`
     echo "check alive parent (ppid: $parent_pid)"
     exist_pid $parent_pid
@@ -159,7 +160,7 @@ is_already_started(){
 create_pid_file(){
     # local pid_file=`get_pid_file_name`
     check_dir "$PID_FILE"
-    echo "$1"  > "$PID_FILE"
+    echo -n "$1"  > "$PID_FILE"
 }
 
 get_pid(){
