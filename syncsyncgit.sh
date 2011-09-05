@@ -127,7 +127,6 @@ alive_parent(){
 have_tty(){
     local tty=`tty`
     echo "tty: $tty"
-    
 }
 
 to_be_or_not_to_be(){
