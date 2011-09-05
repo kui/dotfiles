@@ -38,11 +38,11 @@ main(){
         local cmd="";
         if [ -e $dest_file ]
         then
-            local cmd="mv $dest_file ${dest_file}.old;"
+            local cmd="mv \"$dest_file\" \"${dest_file}.old;\""
         fi
 
-        local cmd="${cmd}ln -s $target_file $dest_file"
-        echo run \`$cmd\`
+        local cmd="${cmd}ln -s \"$target_file\" \"$dest_file\""
+        echo "run \`$cmd\`"
         if [ $run_flag -eq 0 ]
         then
             eval "$cmd"
