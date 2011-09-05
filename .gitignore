@@ -1,0 +1,9 @@
+# -*- coding:utf-8 -*-
+# emacs の一時ファイル
+\#*
+.\#*
+*~
+
+# 各種 OS が勝手に生成する
+.DS_Store
+Thumbs.db
