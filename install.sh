@@ -25,9 +25,9 @@ main(){
 
     if [ $run_flag -eq 1 ]
     then
-        echo "##################################################################"
-        echo "# dry-run. if you want to run these commands, attache -r option. #"
-        echo "##################################################################"
+        echo "#############################################################"
+        echo "# dry-run. if these commands are correct, attach -r option. #"
+        echo "#############################################################"
     fi
 
     for file in $file_list
