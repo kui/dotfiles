@@ -33,6 +33,7 @@ main(){
     for file in $file_list
     do
         local dest_file=`echo "$file" | sed -e 's/^dot/./'`
+        local dest_file="${HOME}/${dest_file}"
         local cmd="ln -s ${curr_dir}/${file} ${HOME}/${dest_file}"
         echo run \`$cmd\`
         if [ $run_flag -eq 0 ]
