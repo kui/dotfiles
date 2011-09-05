@@ -125,6 +125,7 @@ alive_parent(){
 }
 
 have_tty(){
+    local pid=`get_pid`
     local tty=`ps h -o ppid -p $pid`
 }
 
