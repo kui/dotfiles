@@ -48,13 +48,13 @@ run(){
         sync | logger
         if [ $count -gt $GC_INTERVAL ]
         then
-            git gc 2>&1 | logger
-            echo "git gc" | logger
+            gc | logger
             count=0
         fi
+        to_be_not_to_be
         sleep $INTERVAL
         count=$[$count+1]
-    done &
+    done < /dev/null > /dev/null 2>&1 &
 
     pid=$!
 
@@ -103,6 +103,11 @@ stop(){
     delete_pid_file
 }
 
+gc(){
+    git gc 2>&1 
+    echo "run gc"
+}
+
 cat_log(){
     cat "$LOG_FILE"
 }
@@ -112,8 +117,19 @@ exist_pid(){
     [ -n "$pid" ] && [ -n "`ps h -p $pid`" ]
 }
 
-get_parent_pid(){
-    echo `ps h -o ppid -p $$`
+alive_parent(){
+    local parent_pid=`ps h -o ppid -p $$`
+    echo "check alive parent (ppid: $parent_pid)"
+    exist_pid $parent_pid
+}
+
+to_be_not_to_be(){
+    if ! alive_parent
+    then
+        local cmd="exit"
+        echo $cmd
+        eval $cmd
+    fi
 }
 
 is_git_dir(){
