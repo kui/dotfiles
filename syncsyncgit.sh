@@ -128,7 +128,7 @@ have_tty(){
     local pid=`get_pid`
     local tty=`ps h -o tt -p $pid`
     echo "tty: $tty"
-    [ "$tty" = "?" ]
+    [ "$tty" != "?" ]
 }
 
 to_be_or_not_to_be(){
