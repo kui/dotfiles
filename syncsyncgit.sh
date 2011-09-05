@@ -134,10 +134,7 @@ have_tty(){
 to_be_or_not_to_be(){
     if ! have_tty
     then
-        local pid=`get_pid`
-        local cmd="exit"
-        echo $cmd
-        eval $cmd
+        stop
     fi
 }
 
