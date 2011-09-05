@@ -109,7 +109,7 @@ cat_log(){
 
 exist_pid(){
     local pid=$1
-    [ -n "$pid" ] && [ -n "`ps -p $pid -o comm=`" ]
+    [ -n "$pid" ] && [ -n "`ps h -p $pid`" ]
 }
 
 is_git_dir(){
