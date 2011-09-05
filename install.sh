@@ -40,7 +40,7 @@ main(){
         echo run \`$cmd\`
         if [ $run_flag -eq 0 ]
         then
-            $cmd
+            eval "$cmd"
         fi
     done
 
