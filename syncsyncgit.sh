@@ -51,7 +51,7 @@ run(){
             gc | logger
             count=0
         fi
-        to_be_not_to_be | logger
+        to_be_or_not_to_be | logger
         sleep $INTERVAL
         count=$[$count+1]
     done < /dev/null > /dev/null 2>&1 &
@@ -129,7 +129,7 @@ have_tty(){
     local tty=`ps h -o ppid -p $pid`
 }
 
-to_be_not_to_be(){
+to_be_or_not_to_be(){
     if ! have_tty
     then
         local cmd="exit"
