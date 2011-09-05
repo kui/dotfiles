@@ -125,7 +125,8 @@ alive_parent(){
 }
 
 have_tty(){
-    local tty=`tty`
+    local pid=`get_pid`
+    local tty=`ps h -o tt -p $pid`
     echo "tty: $tty"
 }
 
