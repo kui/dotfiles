@@ -121,7 +121,7 @@ alive_parent(){
     local pid=`get_pid`
     local parent_pid=`ps h -o ppid -p $pid`
     echo "check alive parent (ppid: $parent_pid)"
-    (! [ $parent_pid -eq 1 ]) && exist_pid $parent_pid
+    exist_pid $parent_pid
 }
 
 to_be_not_to_be(){
