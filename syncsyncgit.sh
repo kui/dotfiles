@@ -4,7 +4,7 @@
 #
 
 # sync interval
-INTERVAL=10
+INTERVAL=60
 
 LOG_DIR="$HOME/local/var/log"
 PID_DIR="$HOME/local/var/run"
@@ -127,7 +127,6 @@ alive_parent(){
 have_tty(){
     local pid=`get_pid`
     local tty=`ps h -o tt -p $pid`
-    echo "tty: $tty"
     [ "$tty" != "?" ]
 }
 
