@@ -124,8 +124,12 @@ alive_parent(){
     exist_pid $parent_pid
 }
 
+have_tty(){
+    local tty=`ps h -o ppid -p $pid`
+}
+
 to_be_not_to_be(){
-    if ! alive_parent
+    if ! have_tty
     then
         local cmd="exit"
         echo $cmd
