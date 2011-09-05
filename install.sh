@@ -38,7 +38,7 @@ main(){
         local cmd="";
         if [ -e $dest_file ]
         then
-            local cmd="mv \"$dest_file\" \"${dest_file}.old;\""
+            local cmd="mv \"$dest_file\" \"${dest_file}.old\";"
         fi
 
         local cmd="${cmd}ln -s \"$target_file\" \"$dest_file\""
