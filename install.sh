@@ -35,10 +35,13 @@ main(){
         local target_file="${curr_dir}/${file}"
         local dest_file=`echo "$file" | sed -e 's/^dot/./'`
         local dest_file="${HOME}/${dest_file}"
+        local cmd="";
         if [ -e $dest_file ]
         then
+            local cmd="${cmd};"
         fi
-        local cmd="ln -s ${target_file} ${dest_file}"
+
+        local cmd="${cmd}; ln -s ${target_file} ${dest_file}"
         echo run \`$cmd\`
         if [ $run_flag -eq 0 ]
         then
