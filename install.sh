@@ -42,7 +42,7 @@ main(){
         fi
 
         local cmd="${cmd}ln -s \"$target_file\" \"$dest_file\""
-        echo $cmd | sed -e 's/^/run /'
+        echo -e $cmd | sed -e 's/^/run /'
         if [ $run_flag -eq 0 ]
         then
             eval "$cmd"
