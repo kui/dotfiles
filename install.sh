@@ -38,14 +38,13 @@ main(){
         if [ -e $dest_file ]
         then
             local cmd="mv \"$dest_file\" \"${dest_file}.old\""
+            echo $cmd
+            [ $run_flag -eq 0 ] && eval "$cmd"
         fi
 
         local cmd="ln -s \"$target_file\" \"$dest_file\""
-        echo -e $cmd | sed -e 's/^/run /'
-        if [ $run_flag -eq 0 ]
-        then
-            eval "$cmd"
-        fi
+        echo $cmd
+        [ $run_flag -eq 0 ] && eval "$cmd"
     done
 
     cd $prev_dir
