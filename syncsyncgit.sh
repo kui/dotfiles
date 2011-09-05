@@ -125,9 +125,9 @@ alive_parent(){
 }
 
 have_tty(){
-    local pid=`get_pid`
-    local tty=`ps h -o tty -p $pid`
+    local tty=`tty`
     echo "tty: $tty"
+    
 }
 
 to_be_or_not_to_be(){
