@@ -1,3 +1,5 @@
+# -*- mode: sh; coding: utf-8-unix -*-
+
 if [ -f /etc/zsh/zshrc ]; then
     source /etc/zsh/zshrc
 fi
