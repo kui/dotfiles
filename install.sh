@@ -39,7 +39,7 @@ main(){
 
         if [ -e $dest_file ]
         then
-            [ "$terget_file" = "`readlink "$dest_file"`" ] && break
+            [ "`echo "$terget_file"`" = "`readlink "$dest_file"`" ] && break
             local cmd="mv \"$dest_file\" \"${dest_file}.old\""
             echo $cmd
             [ $run_flag -eq 0 ] && eval "$cmd"
