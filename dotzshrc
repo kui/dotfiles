@@ -240,11 +240,6 @@ bg256()
     echo -n $'\e[48;5;'$(color256 "$@")"m"
 }
 
-for $file in `find .zsh.d`
-do
-    source "$file"
-done
-
 [ -f ~/.zshrc.local ] &&\
   touch ~/.zshrc.local &&\
   source ~/.zshrc.local
