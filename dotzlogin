@@ -1,2 +1,5 @@
 # -*- mode: sh; coding: utf-8 -*-
 
+[ -f ~/.zlogin.local ] &&\
+  touch ~/.zlogin.local &&\
+  source ~/.zlogin.local
