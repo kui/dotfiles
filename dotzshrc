@@ -241,5 +241,10 @@ bg256()
 }
 
 for $file in `find .zsh.d`
-[ -f ~/.zshrc.local ] && touch ~/.zshrc.local
-source ~/.zshrc.local
+do
+    source "$file"
+done
+
+[ -f ~/.zshrc.local ] &&\
+  touch ~/.zshrc.local &&\
+  source ~/.zshrc.local
