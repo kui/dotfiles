@@ -1,14 +1,13 @@
 # -*- mode: sh; coding: utf-8-unix -*-
 
+file_list="
+~/.settings.d/.syncsyncgit.sh
+"
 
-
-execute_if_exists(){
-    local file="$1"
+for file in $file_list
     if [ -e $file ]
     then
         echo "# run $file"
         eval "$file"
     fi
 }
-
-execute_if_exists "~/.settings.d/.syncsyncgit.sh"
