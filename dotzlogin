@@ -1,6 +1,6 @@
 # -*- mode: sh; coding: utf-8 -*-
 
-pwd
+dirname `readlink -n $HOME/.zlogin`
 
 ~/.settings.git/.syncsyncgit.sh start
 
