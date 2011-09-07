@@ -55,8 +55,6 @@ main(){
         [ $run_flag -eq 0 ] && eval "$cmd"
     done
 
-    
-
     cd $prev_dir
 }
 
