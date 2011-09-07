@@ -36,7 +36,10 @@ main(){
         local target_file="${curr_dir}/${file}"
         local dest_file=`echo "$file" | sed -e 's/^dot/./'`
         local dest_file="${HOME}/${dest_file}"
-        if [ -e $dest_file ] && ( ! [ "$terget_file" = "`readlink "$dest_file"`" ])
+
+        (! [ "$terget_file" = "`readlink "$dest_file"`" ]) && break
+
+        if [ -e $dest_file ]
         then
             local cmd="mv \"$dest_file\" \"${dest_file}.old\""
             echo $cmd
