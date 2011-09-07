@@ -1,8 +1,7 @@
 # -*- mode: sh; coding: utf-8 -*-
 
 
-~/.settings.git/.syncsync.git start
-
+~/.settings.git/.syncsyncgit.sh start
 
 [ -f ~/.zlogin.local ] &&\
   touch ~/.zlogin.local &&\
