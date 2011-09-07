@@ -41,7 +41,7 @@ main(){
 
         if ! [ -e $target_file ]
         then
-            echo "error: cannot find $target_file"
+            echo "error: cannot find $target_file" >&2
             exit 1
         fi
 
