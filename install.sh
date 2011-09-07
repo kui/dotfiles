@@ -62,8 +62,10 @@ main(){
 }
 
 create_empty_zsh(){
-    ( ! [ -e $1 ] )
-    print_and_do "echo \"# -*- mode: sh; coding: utf-8 -*-\" > $1"
+    if ! [ -e $1 ]
+    then
+        print_and_do "echo \"# -*- mode: sh; coding: utf-8 -*-\" > $1"
+    fi
 }
 
 print_and_do(){
