@@ -1,8 +1,9 @@
 # -*- mode: sh; coding: utf-8 -*-
 
-dirname `readlink -n $HOME/.zlogin`
+link_to=`readlink -n $HOME/.zlogin`
+dir=`dirname $link_to`
 
-~/.settings.git/.syncsyncgit.sh start
+eval "${dir}/.syncsyncgit.sh start"
 
 [ -f ~/.zlogin.local ] &&\
   touch ~/.zlogin.local &&\
