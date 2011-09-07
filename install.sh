@@ -37,10 +37,9 @@ main(){
         local dest_file=`echo "$file" | sed -e 's/^dot/./'`
         local dest_file="${HOME}/${dest_file}"
 
-        [ -e $dest_file ] && [ "$terget_file" = "`readlink "$dest_file"`" ] && break
-
         if [ -e $dest_file ]
         then
+            [ "$terget_file" = "`readlink "$dest_file"`" ] && break
             local cmd="mv \"$dest_file\" \"${dest_file}.old\""
             echo $cmd
             [ $run_flag -eq 0 ] && eval "$cmd"
