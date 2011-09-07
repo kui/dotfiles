@@ -66,7 +66,14 @@ main(){
 }
 
 create_empty_zsh(){
-    ( ! [ -e $1 ] ) && echo "# -*- mode: sh; coding: utf-8 -*-" > $1
+    ( ! [ -e $1 ] )
+    "echo "# -*- mode: sh; coding: utf-8 -*-" > $1"
+}
+
+print_and_do(){
+    local cmd=$1
+    echo $cmd
+    [ $run_flag -eq 0 ] && eval "$cmd"
 }
 
 main "$@"
