@@ -10,17 +10,19 @@ dotzshrc
 dotzlogin
 "
 
+run_flag=1
+
 main(){
     local prev_dir=`pwd`
     local curr_dir=`dirname $0`
     cd "$curr_dir"
     local curr_dir=`pwd`
 
-    local run_flag=1
+    run_flag=1
     while getopts r opt
     do
         case $opt in
-            r) local run_flag=0 ;;
+            r) run_flag=0 ;;
         esac
     done
 
@@ -64,7 +66,7 @@ main(){
 }
 
 create_empty_zsh(){
-    echo "# -*- mode: sh; coding: utf-8 -*-" > $1
+    ( ! [ -e $1 ] ) && echo "# -*- mode: sh; coding: utf-8 -*-" > $1
 }
 
 main "$@"
