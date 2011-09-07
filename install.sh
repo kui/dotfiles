@@ -55,6 +55,8 @@ main(){
         [ $run_flag -eq 0 ] && eval "$cmd"
     done
 
+    create_empty_zsh ~/.zlogin.local
+
     cd $prev_dir
 }
 
