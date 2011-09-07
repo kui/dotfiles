@@ -1,4 +1,4 @@
-# -*- mode: sh; coding: utf-8-unix -*-
+# -*- mode: sh; coding: utf-8 -*-
 
 [ -f /etc/zsh/zshrc ] && source /etc/zsh/zshrc
 

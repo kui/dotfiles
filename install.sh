@@ -7,6 +7,7 @@ dotscreenrc
 dotemacs
 dotemacs.d
 dotzshrc
+dotzlogin
 "
 
 main(){
