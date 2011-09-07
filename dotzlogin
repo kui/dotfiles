@@ -1,5 +1,9 @@
 # -*- mode: sh; coding: utf-8 -*-
 
+
+~/.settings.git/.syncsync.git start
+
+
 [ -f ~/.zlogin.local ] &&\
   touch ~/.zlogin.local &&\
   source ~/.zlogin.local
