@@ -2,6 +2,7 @@
 
 
 ~/.settings.git/.syncsyncgit.sh start
+basename
 
 [ -f ~/.zlogin.local ] &&\
   touch ~/.zlogin.local &&\
