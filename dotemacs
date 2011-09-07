@@ -153,12 +153,12 @@
 ;;  M-x list-color-display要参照
 (add-to-list 'default-frame-alist
 	     '(corsor-color . "green"));; カーソル
-(add-to-list 'default-frame-alist
-	     '(foreground-color . "white"));; 前景
-(add-to-list 'default-frame-alist
-	     '(background-color . "black"));; 背景
-(add-to-list 'default-frame-alist
-	     '(border-color . "cyan"));;
+;;(add-to-list 'default-frame-alist
+;;	     '(foreground-color . "white"));; 前景
+;;(add-to-list 'default-frame-alist
+;;	     '(background-color . "black"));; 背景
+;;(add-to-list 'default-frame-alist
+;;	     '(border-color . "cyan"));;
 
 ;; javascript-mode
 ;; (add-to-list 'auto-mode-alist 
