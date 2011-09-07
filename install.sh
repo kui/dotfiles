@@ -33,7 +33,7 @@ main(){
         echo "##############################################################"
     fi
 
-    for file in $file_list
+    for file in $link_file_list
     do
         local target_file="${curr_dir}/${file}"
         local dest_file=`echo "$file" | sed -e 's/^dot/./'`
