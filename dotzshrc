@@ -70,7 +70,7 @@ RPROMPT=$DarkGray'%D [ %T ] '$Default
 ## alias, funcction の設定
 alias s="screen"
 alias ls="ls -F --color"
-if ls --color > /dev/null
+if ! ls --color > /dev/null
 then
 elif ls -G > /dev/null
     alias ls="ls -F"
