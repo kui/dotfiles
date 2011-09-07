@@ -37,7 +37,7 @@ main(){
         local dest_file=`echo "$file" | sed -e 's/^dot/./'`
         local dest_file="${HOME}/${dest_file}"
 
-        (! [ "$terget_file" = "`readlink "$dest_file"`" ]) && break
+        [ -e $dest_file ] && (! [ "$terget_file" = "`readlink "$dest_file"`" ]) && break
 
         if [ -e $dest_file ]
         then
