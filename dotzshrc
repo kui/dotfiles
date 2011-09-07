@@ -69,15 +69,13 @@ RPROMPT=$DarkGray'%D [ %T ] '$Default
 ############################################################
 ## alias, funcction の設定
 alias s="screen"
-if ls --color > /dev/null
+if ls --color > /dev/null 2>&1
 then
     alias ls="ls -F --color"
-elif ls --G > /dev/null
+elif ls --G > /dev/null 2>&1
 then
     alias ls="ls -F -G"
 fi
-
-alias widescreen="screen -c $HOME/.wide.screenrc"
 
 function markdown_preview(){
     if [ $# -ne 1 ]; then
