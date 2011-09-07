@@ -48,14 +48,10 @@ main(){
         if [ -e $dest_file ]
         then
             [ "`echo "$target_file"`" = "`readlink "$dest_file"`" ] && continue
-            local cmd="mv \"$dest_file\" \"${dest_file}.old\""
-            echo $cmd
-            [ $run_flag -eq 0 ] && eval "$cmd"
+            print_and_do "mv \"$dest_file\" \"${dest_file}.old\""
         fi
 
-        local cmd="ln -s \"$target_file\" \"$dest_file\""
-        echo $cmd
-        [ $run_flag -eq 0 ] && eval "$cmd"
+        print_and_do "ln -s \"$target_file\" \"$dest_file\""
     done
 
 
@@ -67,7 +63,7 @@ main(){
 
 create_empty_zsh(){
     ( ! [ -e $1 ] )
-    "echo "# -*- mode: sh; coding: utf-8 -*-" > $1"
+    print_and_do "echo \"# -*- mode: sh; coding: utf-8 -*-\" > $1"
 }
 
 print_and_do(){
