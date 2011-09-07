@@ -7,7 +7,6 @@ dotscreenrc
 dotemacs
 dotemacs.d
 dotzshrc
-dotzsh.d
 "
 
 main(){
@@ -36,6 +35,12 @@ main(){
         local target_file="${curr_dir}/${file}"
         local dest_file=`echo "$file" | sed -e 's/^dot/./'`
         local dest_file="${HOME}/${dest_file}"
+
+        if ! [ -e $target_file ]
+        then
+            echo "error: cannot find $target_file"
+            exit 1
+        fi
 
         if [ -e $dest_file ]
         then
