@@ -3,10 +3,11 @@
 # install script for setting files
 
 file_list="
-dotemacs
 dotscreenrc
+dotemacs
 dotemacs.d
 dotzshrc
+dotzsh.d
 "
 
 main(){
