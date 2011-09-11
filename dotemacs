@@ -88,7 +88,7 @@
 
       (add-to-list 'default-frame-alist
       	     '(foreground-color . "white"));; 前景
-      (add-to-list 'default-frame-alist
+      ;; (add-to-list 'default-frame-alist
       ;;	     '(border-color . "cyan"));;
     
       ;; ツールバーを消す
