@@ -11,7 +11,7 @@ typeset -U path
 ##               globがマッチしなかったり存在しないパスを無視する。
 ##            -: シンボリックリンク先のパスを評価。
 ##            /: ディレクトリのみ残す。
-path=(/bin(N/-) /usr/bin(N-/) /usr/local/bin(N-/) $HOME/local/bin(N/-))
+path=($HOME/local/bin(N/-) /bin(N/-) /usr/bin(N-/) /usr/local/bin(N-/))
 
 # sudo時のパスの設定
 ## -x: export SUDO_PATHも一緒に行う。
