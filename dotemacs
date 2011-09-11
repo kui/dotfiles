@@ -156,6 +156,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; 各部分の色の設定
 ;;  M-x list-color-display要参照
+<<<<<<< HEAD
 (add-to-list 'default-frame-alist
 	     '(corsor-color . "green"));; カーソル
 (add-to-list 'default-frame-alist
@@ -163,6 +164,15 @@
 ;;(add-to-list 'default-frame-alist
 ;;	     '(foreground-color . "white"));; 前景
 ;;(add-to-list 'default-frame-alist
+=======
+;;(add-to-list 'default-frame-alist
+;;	     '(corsor-color . "green"));; カーソル
+;;(add-to-list 'default-frame-alist
+;;	     '(foreground-color . "white"));; 前景
+;;(add-to-list 'default-frame-alist
+;;	     '(background-color . "black"));; 背景
+;;(add-to-list 'default-frame-alist
+>>>>>>> ad1a5a9faaaafc06607d7686a7b4fc141b83be36
 ;;	     '(border-color . "cyan"));;
 
 ;; javascript-mode
