@@ -243,6 +243,7 @@
 		       '(lambda () (tabify (point-min) (point-max))))
 	     ))
 
+
 ;; マウス操作を有効に
 ;;(xterm-mouse-mode t)
 ;;(mouse-wheel-mode t)
