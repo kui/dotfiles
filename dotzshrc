@@ -249,6 +249,6 @@ bg256()
     echo -n $'\e[48;5;'$(color256 "$@")"m"
 }
 
-[ -f ~/.zshrc.local ] &&\
-  touch ~/.zshrc.local &&\
-  source ~/.zshrc.local
+! [ -f ~/.zshrc.local ] &&\
+  touch ~/.zshrc.local
+source ~/.zshrc.local
