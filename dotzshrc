@@ -1,14 +1,42 @@
-if [ -f /etc/zsh/zshrc ]; then
-    source /etc/zsh/zshrc
+# -*- mode: sh; coding: utf-8 -*-
+
+[ -f /etc/zsh/zshrc ] && source /etc/zsh/zshrc
+
+# パスの設定
+## 重複したパスを登録しない。
+typeset -U path
+## (N-/): 存在しないディレクトリは登録しない。
+##    パス(...): ...という条件にマッチするパスのみ残す。
+##            N: NULL_GLOBオプションを設定。
+##               globがマッチしなかったり存在しないパスを無視する。
+##            -: シンボリックリンク先のパスを評価。
+##            /: ディレクトリのみ残す。
+path=($HOME/local/bin(N/-) /bin(N/-) /usr/bin(N-/) /usr/local/bin(N-/))
+
+# sudo時のパスの設定
+## -x: export SUDO_PATHも一緒に行う。
+## -T: SUDO_PATHとsudo_pathを連動する。
+typeset -xT SUDO_PATH sudo_path
+typeset -U sudo_path
+## (N-/): 存在しないディレクトリは登録しない。
+##    パス(...): ...という条件にマッチするパスのみ残す。
+##            N: NULL_GLOBオプションを設定。
+##               globがマッチしなかったり存在しないパスを無視する。
+##            -: シンボリックリンク先のパスを評価。
+##            /: ディレクトリのみ残す。
+sudo_path=({,/usr/pkg,/usr/local,/usr}/sbin(N-/))
+
+export TERM="xterm"
+if infocmp xterm-256color > /dev/null 2>&1
+then
+    export TERM="xterm-256color"
 fi
 
-############################################################
-## 環境変数の設定
-export PATH=$HOME/local/bin:/usr/local/bin:$PATH
 export LANG=ja_JP.UTF-8
-export TERM="xterm-256color"
-# export TERM="xterm" # 256色が無理な時
-
+if [ `uname -a | grep Cygwin | wc -l` = 1 ]
+then
+    export LANG=ja_JP.SJIS
+fi
 
 # PROMPT のための色一覧
 local Black=$'%{\e[0;30m%}'
@@ -29,7 +57,7 @@ local LightGray=$'%{\e[0;37m%}'
 local White=$'%{\e[1;37m%}'
 local Default=$'%{\e[1;39m%}'
 
-ColorList=($Purple $Green $Blue $Cyan $Red )
+ColorList=($Purple $Green $Blue $Cyan $Red)
 local PromptUserColor=$ColorList[$((($RANDOM % ${#ColorList})+1))]
 local PromptHostColor=$ColorList[$((($RANDOM % ${#ColorList})+1))]
 # ランダムに色を設定するプロンプト(user, host 別の色)
@@ -38,16 +66,20 @@ local PromptHostColor=$ColorList[$((($RANDOM % ${#ColorList})+1))]
 PROMPT=$'\n'$PromptUserColor'${USER}@${HOST} '$Yellow'%~ '$'\n'$Default'%(!.#.$) '
 RPROMPT=$DarkGray'%D [ %T ] '$Default
 
-HISTFILE=$HOME/.zsh-history
-HISTSIZE=100000
-SAVEHIST=100000
-USER_ID=`id -u`
-
 ############################################################
 ## alias, funcction の設定
-alias s="screen"
-alias ls="ls -F --color"
-alias widescreen="screen -c $HOME/.wide.screenrc"
+if which screen > /dev/null 2>&1
+then
+    alias s="screen"
+fi
+
+if ls --color > /dev/null 2>&1
+then
+    alias ls="ls -F --color"
+elif ls --G > /dev/null 2>&1
+then
+    alias ls="ls -F -G"
+fi
 
 function markdown_preview(){
     if [ $# -ne 1 ]; then
@@ -81,7 +113,7 @@ function j(){
 
 
 ## refe の文字コードをUTF-8に修正
-function rr(){
+function refe(){
     refe "$@" | nkf -Ew
 }
 
@@ -100,7 +132,11 @@ function e(){
 }
 
 ############################################################
-##  zsh 由来のプロパティ
+##  zsh プロパティ
+
+HISTFILE=$HOME/.zsh-history
+HISTSIZE=100000
+SAVEHIST=100000
 
 ## 補完機能の強化
 autoload -U compinit
@@ -184,23 +220,35 @@ setopt auto_param_slash
 ## スペルチェック
 setopt correct
 
+## sudo時にはsudo用のパスも使う。
+zstyle ':completion:sudo:*' environ PATH="$SUDO_PATH:$PATH"
+
 ## 特定のコマンドの補完を無効化
 # compdef -d java
 
-############################################################
-# マシン別の設定
-case $HOST in 
-    "svr.daftbeats.ddo.jp" )
-	export PATH=$HOME/local/bin:/var/lib/gems/1.8/bin:$PATH
-	;;
-    * ) # その他のホスト
-	;;
-esac
+## 256色生成用便利関数
+### red: 0-5
+### green: 0-5
+### blue: 0-5
+color256()
+{
+    local red=$1; shift
+    local green=$2; shift
+    local blue=$3; shift
 
-# Cygwin のときの設定
-if [ `uname -a | grep Cygwin | wc -l` = 1 ];then
-    export LANG=ja_JP.SJIS # cygwin
-fi
+    echo -n $[$red * 36 + $green * 6 + $blue + 16]
+}
 
+fg256()
+{
+    echo -n $'\e[38;5;'$(color256 "$@")"m"
+}
 
+bg256()
+{
+    echo -n $'\e[48;5;'$(color256 "$@")"m"
+}
+
+! [ -f ~/.zshrc.local ] &&\
+  touch ~/.zshrc.local
 source ~/.zshrc.local

@@ -67,7 +67,7 @@
 
 ;; 縦分割の時、一行で表示しきれない時の挙動
 ;;   nil: 改行
-;;   t:   はみ出し？
+;;   t:	  はみ出し？
 (setq truncate-partial-width-windows nil)
 
 ;; C-x l で goto-line を実行
@@ -85,6 +85,11 @@
 ;; ウィンドウシステムを使っているとき
 (if window-system
     (let ()
+
+      (add-to-list 'default-frame-alist
+      	     '(foreground-color . "white"));; 前景
+      ;; (add-to-list 'default-frame-alist
+      ;;	     '(border-color . "cyan"));;
     
       ;; ツールバーを消す
       (tool-bar-mode 0) 
@@ -115,19 +120,19 @@
   (if (bobp)
       ad-do-it
     (let ((dabbrev-abbrev-char-regexp
-           (let ((c (char-category-set (char-before))))
-             (cond 
-              ((aref c ?a) "[-_A-Za-z0-9]") ; ASCII
-              ((aref c ?j) ; Japanese
-               (cond
-                ((aref c ?K) "\\cK") ; katakana
-                ((aref c ?A) "\\cA") ; 2byte alphanumeric
-                ((aref c ?H) "\\cH") ; hiragana
-                ((aref c ?C) "\\cC") ; kanji
-                (t "\\cj")))
-              ((aref c ?k) "\\ck") ; hankaku-kana
-              ((aref c ?r) "\\cr") ; Japanese roman ?
-              (t dabbrev-abbrev-char-regexp)))))
+	   (let ((c (char-category-set (char-before))))
+	     (cond 
+	      ((aref c ?a) "[-_A-Za-z0-9]") ; ASCII
+	      ((aref c ?j) ; Japanese
+	       (cond
+		((aref c ?K) "\\cK") ; katakana
+		((aref c ?A) "\\cA") ; 2byte alphanumeric
+		((aref c ?H) "\\cH") ; hiragana
+		((aref c ?C) "\\cC") ; kanji
+		(t "\\cj")))
+	      ((aref c ?k) "\\ck") ; hankaku-kana
+	      ((aref c ?r) "\\cr") ; Japanese roman ?
+	      (t dabbrev-abbrev-char-regexp)))))
       ad-do-it)))
 
 ;; BS で選択範囲を消す
@@ -148,28 +153,25 @@
 (add-to-list 'default-frame-alist
 	     '(corsor-type . bar))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; 各部分の色の設定
-;;  M-x list-color-display要参照
 (add-to-list 'default-frame-alist
 	     '(corsor-color . "green"));; カーソル
-(add-to-list 'default-frame-alist
-	     '(foreground-color . "white"));; 前景
-(add-to-list 'default-frame-alist
-	     '(background-color . "black"));; 背景
-(add-to-list 'default-frame-alist
-	     '(border-color . "cyan"));;
+;;(add-to-list 'default-frame-alist
+;;	     '(foreground-color . "white"));; 前景
+;;(add-to-list 'default-frame-alist
+;;	     '(background-color . "black"));; 背景
+;;(add-to-list 'default-frame-alist
+;;	     '(border-color . "cyan"));;
 
 ;; javascript-mode
 ;; (add-to-list 'auto-mode-alist 
-;; 	     (cons  "\\.\\(js\\|as\\|json\\|jsn\\)\\'" 'javascript-mode))
+;;	     (cons  "\\.\\(js\\|as\\|json\\|jsn\\)\\'" 'javascript-mode))
 ;; (autoload 'javascript-mode "javascript" nil t)
 ;; (setq js-indent-level 2)
 
 ;; css-mode
 (autoload 'css-mode "css-mode")
 (setq cssm-indent-function #'cssm-c-style-indenter)
-(setq auto-mode-alist       
+(setq auto-mode-alist	    
       (cons '("\\.css\\'" . css-mode) auto-mode-alist))
 
 
@@ -182,12 +184,12 @@
     "Get the first message of the first error line."
     (interactive)
     (let* ((first-errline-no
-  	    (flymake-get-first-err-line-no flymake-err-info))
-  	   (first-errline-info-list 
-  	    (flymake-find-err-info flymake-err-info first-errline-no))
-  	   (first-errline-first-info
+	    (flymake-get-first-err-line-no flymake-err-info))
+	   (first-errline-info-list 
+	    (flymake-find-err-info flymake-err-info first-errline-no))
+	   (first-errline-first-info
 	    (nth 0 (nth 0 first-errline-info-list)))
-  	   (first-errline-first-message 
+	   (first-errline-first-message 
 	    (flymake-ler-text first-errline-first-info))
 	   )
       first-errline-first-message
@@ -211,8 +213,8 @@
       ;; *補完する
       ;; (define-key ac-complete-mode-map "\C-i" 'auto-complete)
       ;; *大文字・小文字の区別
-      ;; nil:    区別しない
-      ;; t:      区別する
+      ;; nil:	 区別しない
+      ;; t:	 区別する
       ;; 'smart: 補完対象に大文字が含まれる場合のみ区別する
       (setq ac-ignore-case 'smart)
       ;; 直ちに補完メニューを表示する
@@ -229,17 +231,18 @@
    "Major mode for editing Markdown files" t)
 (setq auto-mode-alist
    (append '(("\\.markdown" . markdown-mode)
-             ("\\.md" . markdown-mode))
-           auto-mode-alist))
+	     ("\\.md" . markdown-mode))
+	   auto-mode-alist))
 (add-hook 'markdown-mode-hook 
-          '(lambda ()
-             ;;(define-key markdown-mode-map "\C-i" 'indent-for-tab-command)
-             ;;(define-key markdown-mode-map "TAB" 'indent-for-tab-command)
-             (setq indent-tabs-mode t)
-             (setq tab-width 2)
-             (add-hook 'before-save-hook
-                       '(lambda () (tabify (point-min) (point-max))))
-             ))
+	  '(lambda ()
+	     ;;(define-key markdown-mode-map "\C-i" 'indent-for-tab-command)
+	     ;;(define-key markdown-mode-map "TAB" 'indent-for-tab-command)
+	     (setq indent-tabs-mode t)
+	     (setq tab-width 4)
+	     (add-hook 'before-save-hook
+		       '(lambda () (tabify (point-min) (point-max))))
+	     ))
+
 
 ;; マウス操作を有効に
 ;;(xterm-mouse-mode t)

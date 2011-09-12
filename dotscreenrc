@@ -1,3 +1,5 @@
+# -*- mode: sh; coding: utf-8-unix -*-
+
 ## エスケープキーの設定
 escape ^Tt
 
