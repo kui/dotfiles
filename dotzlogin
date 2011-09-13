@@ -2,9 +2,8 @@
 
 start_sync(){
     local link_to=`readlink -n $HOME/.zlogin`
-    local dir=`dirname $link_to`
     local cmds=(
-        "${dir}/.syncsyncgit.sh"
+        "`dirname $link_to`/.syncsyncgit.sh"
         "$HOME/toybox/github/syncsyncgit/syncsyncgit.sh"
         )
     for cmd in "${cmds[@]}"
