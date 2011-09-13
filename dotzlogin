@@ -7,7 +7,7 @@ start_sync(){
         "${dir}/.syncsyncgit.sh"
         "$HOME/toybox/github/syncsyncgit/syncsyncgit.sh"
         )
-    for cmd in "${cmd[@]}"
+    for cmd in "${cmds[@]}"
     do
         eval_verbose "$cmd start"
         eval_verbose "$cmd log | tail"
