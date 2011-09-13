@@ -1,1 +1,0 @@
-/Users/kui/toybox/github/syncsyncgit/syncsyncgit.sh
