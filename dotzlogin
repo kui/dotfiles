@@ -12,13 +12,26 @@ start_sync(){
         eval_verbose "$cmd log | tail"
     done
 }
+start_sync2(){
+    local link_to=`readlink -n $HOME/.zlogin`
+    local cmds=(
+        
+        "$HOME/toybox/github/syncsyncgit/syncsyncgit.sh"
+        )
+    for cmd in "${cmds[@]}"
+    do
+        cmd "`dirname $link_to`/.syncsyncgit.sh"
+        eval_verbose "$cmd start"
+        eval_verbose "$cmd log | tail"
+    done
+}
 
 eval_verbose(){
     echo "$1"
     eval "$1"
 }
 
-start_sync
+start_sync2
 
 [ -f ~/.zlogin.local ] &&\
   touch ~/.zlogin.local &&\
