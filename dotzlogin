@@ -3,9 +3,12 @@
 start_sync(){
     local link_to=`readlink -n $HOME/.zlogin`
     local dir=`dirname $link_to`
-    local cmd="${dir}/.syncsyncgit.sh start"
-    eval_verbose $cmd
-    eval_verbose "$HOME/toybox/github/syncsyncgit/syncsyncgit.sh start"
+    local cmd="${dir}/.syncsyncgit.sh"
+    eval_verbose "$cmd start"
+    eval_verbose "$cmd log | tail"
+    local cmd="$HOME/toybox/github/syncsyncgit/syncsyncgit.sh"
+    eval_verbose "$cmd start"
+    eval_verbose "$cmd log | tail"
 }
 
 eval_verbose(){
