@@ -14,13 +14,10 @@ start_sync(){
 }
 start_sync2(){
     local link_to=`readlink -n $HOME/.zlogin`
-    local cmds=(
-        
-        "$HOME/toybox/github/syncsyncgit/syncsyncgit.sh"
-        )
-    for cmd in "${cmds[@]}"
+
+    for cmd in "`dirname ${link_to}`/.syncsyncgit.sh"\
+               "$HOME/toybox/github/syncsyncgit/syncsyncgit.sh"
     do
-        cmd "`dirname $link_to`/.syncsyncgit.sh"
         eval_verbose "$cmd start"
         eval_verbose "$cmd log | tail"
     done
