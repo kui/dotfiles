@@ -1,1 +1,1 @@
-../toybox/git/syncsyncgit/syncsyncgit.sh
+/Users/kui/toybox/github/syncsyncgit/syncsyncgit.sh
