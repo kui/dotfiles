@@ -23,7 +23,7 @@ _host_name_hash(){
         local hash=$(($hash+$i))
         echo $hash
     done
-    $hash=$((${hash}%${#colors}))
+    $hash=`expr ${hash} % ${#colors}`
     echo $hash
 }
 update_prompt(){
