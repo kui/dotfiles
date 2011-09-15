@@ -2,22 +2,23 @@ PROMPT=$'\n'$PromptUserColor'${USER}@${HOST} '$Yellow'%~ '$'\n'$Default'%(!.#.$)
 RPROMPT=
 
 _host_name_hash(){
-    local colors=(
-        $'%{\e[0;31m%}' # red
-        $'%{\e[0;32m%}' # green
-        $'%{\e[0;33m%}' # brown
-        $'%{\e[0;34m%}' # blue
-        $'%{\e[0;35m%}' # purple
-        $'%{\e[0;36m%}' # cyan
+    local colors=(foo bar baz)
+        
+#         $'%{\e[0;31m%}' # red
+#         $'%{\e[0;32m%}' # green
+#         $'%{\e[0;33m%}' # brown
+#         $'%{\e[0;34m%}' # blue
+#         $'%{\e[0;35m%}' # purple
+#         $'%{\e[0;36m%}' # cyan
 
-        # light colors
-        $'%{\e[1;31m%}' # red
-        $'%{\e[1;32m%}' # green
-        $'%{\e[1;33m%}' # brown
-        $'%{\e[1;34m%}' # blue
-        $'%{\e[1;35m%}' # purple
-        $'%{\e[1;36m%}' # cyan
-        )
+#         # light colors
+#         $'%{\e[1;31m%}' # red
+#         $'%{\e[1;32m%}' # green
+#         $'%{\e[1;33m%}' # brown
+#         $'%{\e[1;34m%}' # blue
+#         $'%{\e[1;35m%}' # purple
+#         $'%{\e[1;36m%}' # cyan
+#        )
     local hash=0
     for i in `echo -n $HOST | hexdump -e '"" 10/1 " %03d" '`
     do
