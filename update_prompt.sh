@@ -3,7 +3,9 @@ RPROMPT=
 
 _host_name_hash(){
     local colors=(
-        $'%{\e[0;30m%}' # blue
+        $'%{\e[0;34m%}' # blue
+        $'%{\e[0;32m%}' # green
+        $'%{\e[1;34m%}' # ligth blue
         )
     local hash=0
     for i in `echo -n $HOST | hexdump -e '"" 10/1 " %03d" '`
