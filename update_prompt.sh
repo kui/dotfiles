@@ -10,12 +10,13 @@ update_prompt(){
     local right=$'%{\e[0;37m%}'"  ${datetime}"
     local num_bar=`print -n -P -- "$left$right" | sed -e $'s/\e\[[0-9;]*m//g' | wc -m | sed -e 's/ //g'`
     local num_bar=$((${COLUMNS}-${num_bar}))
-    local bar=""
 
+    local bar=""
     while [ $num_bar -gt 0 ]
     do
-        local bar="$bar-"
+        local bar="$bar*"
         local num_bar=$((${num_bar}-1))
     done
+
     PROMPT=$'\n'"${left}"$'%{\e[1;30m%}'"${bar}${right}"$'\n'"${Default}\$ "
 }
