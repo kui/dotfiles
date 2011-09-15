@@ -7,7 +7,7 @@ update_prompt(){
     local current_path="`pwd|sed -e \"s/^${escaped_home}/~/\"`"
 
     local left=$'%{\e[1;36m%}'"${USER}@${HOST}${Default}:"$'%{\e[1;33m%}'"${current_path}"
-    local right="`fg256 0 0 1`${datetime}"
+    local right=$'%{\e[0;37m%}'"${datetime}"
     local num_bar=$(())
     PROMPT="$left "$'\n'"$Default\$ "
 }
