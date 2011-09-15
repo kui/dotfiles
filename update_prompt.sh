@@ -9,5 +9,10 @@ update_prompt(){
     local left=$'%{\e[1;36m%}'"${USER}@${HOST}${Default}:"$'%{\e[1;33m%}'"${current_path}"
     local right=$'%{\e[0;37m%}'"${datetime}"
     local num_bar=$((${COLUMNS}-${#left}-${#right}))
+    local bar=""
+
+    while [ num_bar -gt 0 ]
+    do
+done
     PROMPT="$left "$'\n'"$Default\$ "
 }
