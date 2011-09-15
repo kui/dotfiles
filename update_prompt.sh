@@ -17,6 +17,10 @@ update_prompt(){
     do
         local bar="$bar$sep"
     done
+    while [ $num_bar -gt ${#bar} ]
+    do
+        local bar="$bar "
+    done
 
     PROMPT=$'\n'"${left}"$'%{\e[1;30m%}'"${bar}${right}"$'\n'"${Default}\$ "
 }
