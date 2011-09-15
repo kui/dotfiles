@@ -12,10 +12,9 @@ update_prompt(){
     local num_bar=$((${COLUMNS}-${num_bar}))
 
     local bar=""
-    while [ $num_bar -gt 0 ]
+    while [ $num_bar -gt ${#bar} ]
     do
-        local bar="$bar*"
-        local num_bar=$((${num_bar}-1))
+        local bar="$bar%"
     done
 
     PROMPT=$'\n'"${left}"$'%{\e[1;30m%}'"${bar}${right}"$'\n'"${Default}\$ "
