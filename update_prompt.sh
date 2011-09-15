@@ -16,5 +16,5 @@ update_prompt(){
         local bar="$bar="
         local num_bar=$((${num_bar}-1))
     done
-    PROMPT="${left} "$'\n'"${bar}${Default}\$ "
+    PROMPT="${left}"$'%{\e[0;37m%}'"${bar}"$'\n'"${Default}\$ "
 }
