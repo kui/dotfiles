@@ -8,7 +8,7 @@ _host_name_hash(){
         local hash=$(($hash+$i))
         echo $hash
     done
-    $hash=$(($hash % 10))
+    $hash=$(($hash%10))
     echo $hash
 }
 update_prompt(){
