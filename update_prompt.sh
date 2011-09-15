@@ -22,7 +22,7 @@ colors=(
     # $'%{\e[1;37m%}' # gray
 )
 
-# USER + HOST でチェックサムを行い、色を選定
+# USER + HOST でチェックサムを行い、colors から色を選定
 local sum=`echo "$USER$HOST" | sum | cut -f1 -d' '`
 export HOST_COLOR=$colors[$((${sum}%${#colors}))+1]
 
