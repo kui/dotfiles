@@ -11,9 +11,11 @@ update_prompt(){
     local num_bar=`print -n -P -- "$left$right" | sed -e $'s/\e\[[0-9;]*m//g' | wc -m | sed -e 's/ //g'`
     local num_bar=$((${COLUMNS}-${num_bar}))
 
-    if [ $num_bar -gt 0 ]
+    if [ $num_bar -lt 0 ]
     then
         local right=''
+        local num_bar=`print -n -P -- "$left$right" | sed -e $'s/\e\[[0-9;]*m//g' | wc -m | sed -e 's/ //g'`
+        local num_bar=$((${COLUMNS}-${num_bar}))
     fi
 
     local sep=" -"
