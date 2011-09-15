@@ -16,16 +16,15 @@ colors=(
     $'%{\e[1;35m%}' # purple
     $'%{\e[1;36m%}' # cyan
 )
-_host_name_hash(){
+_get_host_color(){
     local hash=0
     for i in `echo -n $HOST | hexdump -e '"" 10/1 " %03d" '`
     do
         local hash=$(($hash+$i))
         echo $hash
     done
-    echo ${hash} % ${#colors}
     local hash=$((${hash}%${#colors}))
-    echo $hash
+    echo $colors[$hash]
 }
 update_prompt(){
     local datetime="`date +'%Y/%m/%d %H:%M:%S'`"
