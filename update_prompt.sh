@@ -17,6 +17,7 @@ colors=(
     $'%{\e[1;36m%}' # cyan
 )
 
+# USER + HOST でチェックサムを行い、色を選定
 local sum=`echo "$USER$HOST" | sum | cut -f1 -d' '`
 export HOST_COLOR=$colors[$((${sum}%${#colors}))]
 
