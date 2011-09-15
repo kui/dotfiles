@@ -1,3 +1,4 @@
+# -*- coding:utf-8 -*-
 PROMPT=$'\n'$PromptUserColor'${USER}@${HOST} '$Yellow'%~ '$'\n'$Default'%(!.#.$) '
 RPROMPT=
 colors=(
