@@ -1,6 +1,9 @@
 PROMPT=$'\n'$PromptUserColor'${USER}@${HOST} '$Yellow'%~ '$'\n'$Default'%(!.#.$) '
 RPROMPT=
 
+_host_name_hash(){
+  echo -n $HOST | hexdump -e '"" 10/1 " %03d" '
+}
 update_prompt(){
     local datetime="`date +'%Y/%m/%d %H:%M:%S'`"
     local escaped_home="`echo ${HOME}|sed -e 's/\//\\\\\//g'`"
