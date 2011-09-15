@@ -5,7 +5,11 @@ _host_name_hash(){
     local colors=(
         $'%{\e[0;34m%}' # blue
         $'%{\e[0;32m%}' # green
-        $'%{\e[1;34m%}' # ligth blue
+        $'%{\e[0;36m%}'
+
+        $'%{\e[1;34m%}' # light blue
+        $'%{\e[1;32m%}' # 
+        $'%{\e[1;36m%}'
         )
     local hash=0
     for i in `echo -n $HOST | hexdump -e '"" 10/1 " %03d" '`
