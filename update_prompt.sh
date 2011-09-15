@@ -44,7 +44,7 @@ update_prompt(){
         fi
     fi
 
-    local sep=" -"
+    local sep=" - "
     local bar=""
     while [ $num_bar -gt $((${#bar}+${#sep})) ]
     do
