@@ -13,7 +13,8 @@ update_prompt(){
 
     while [ num_bar -gt 0 ]
     do
-        bar="$bar="
+        local bar="$bar="
+        local num_bar=$((${num_bar}-1))
     done
     PROMPT="$left "$'\n'"$Default\$ "
 }
