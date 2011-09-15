@@ -11,6 +11,11 @@ update_prompt(){
     local num_bar=`print -n -P -- "$left$right" | sed -e $'s/\e\[[0-9;]*m//g' | wc -m | sed -e 's/ //g'`
     local num_bar=$((${COLUMNS}-${num_bar}))
 
+    if [ $num_bar -gt 0 ]
+    then
+        local right=''
+    fi
+
     local sep=" -"
     local bar=""
     while [ $num_bar -gt $((${#bar}+${#sep})) ]
@@ -21,7 +26,6 @@ update_prompt(){
     do
         local bar="$bar "
     done
-
     PROMPT=$'\n'"${left}"$'%{\e[1;30m%}'"${bar}${right}"$'\n'"${Default}\$ "
 }
 # precmd_functions=($precmd_functions update_prompt)
