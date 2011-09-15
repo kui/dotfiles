@@ -11,7 +11,7 @@ update_prompt(){
     local num_bar=$((${COLUMNS}-${#left}-${#right}))
     local bar=""
 
-    while test num_bar -gt 0 
+    while [ $num_bar -gt 0 ]
     do
         local bar="$bar="
         local num_bar=$((${num_bar}-1))
