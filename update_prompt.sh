@@ -19,10 +19,8 @@ colors=(
 
 local hash=0
 for i in `echo -n $HOST | hexdump -e '"" 10/1 " %03d" '`
-do
-    local hash=$(($hash+$i))
-    echo $hash
-done
+   local hash=$(($hash+$i))
+
 local hash=$((${hash}%${#colors}))
 export HOST_COLOR=$colors[$hash]
 
@@ -31,7 +29,7 @@ update_prompt(){
     local escaped_home="`echo ${HOME}|sed -e 's/\//\\\\\//g'`"
     local current_path="`pwd|sed -e \"s/^${escaped_home}/~/\"`"
 
-    local left=$'%{\e[1;36m%}'"${USER}@${HOST}"$'%{\e[1;39m%}'":"$'%{\e[1;33m%}'"${current_path} "
+    local left=$HOST_COLOR"${USER}@${HOST}"$'%{\e[1;39m%}'":"$'%{\e[1;33m%}'"${current_path} "
     local right=$'%{\e[1;30m%}'" ${datetime}"
     local num_bar=`print -n -P -- "$left$right" | sed -e $'s/\e\[[0-9;]*m//g' | wc -m | sed -e 's/ //g'`
     local num_bar=$((${COLUMNS}-${num_bar}))
