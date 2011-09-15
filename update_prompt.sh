@@ -23,6 +23,7 @@ _host_name_hash(){
         local hash=$(($hash+$i))
         echo $hash
     done
+    echo ${hash} % ${#colors}
     $hash=`expr ${hash} % ${#colors}`
     echo $hash
 }
