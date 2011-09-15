@@ -8,6 +8,6 @@ update_prompt(){
 
     local left=$'%{\e[1;36m%}'"${USER}@${HOST}${Default}:"$'%{\e[1;33m%}'"${current_path}"
     local right=$'%{\e[0;37m%}'"${datetime}"
-    local num_bar=$(())
+    local num_bar=$((${COLUMNS}-${#left}-${#right}))
     PROMPT="$left "$'\n'"$Default\$ "
 }
