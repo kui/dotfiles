@@ -7,6 +7,7 @@ colors=(
     $'%{\e[0;34m%}' # blue
     $'%{\e[0;35m%}' # purple
     $'%{\e[0;36m%}' # cyan
+    $'%{\e[0;37m%}' # gray
     
     # light colors
     $'%{\e[1;31m%}' # red
