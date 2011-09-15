@@ -13,7 +13,8 @@ update_prompt(){
 
     if [ $num_bar -lt 0 ]
     then
-        local right=''
+        local datetime="`date +'%H:%M:%S'`"
+        local right=$'%{\e[1;30m%}'" ${datetime}"
         local num_bar=`print -n -P -- "$left$right" | sed -e $'s/\e\[[0-9;]*m//g' | wc -m | sed -e 's/ //g'`
         local num_bar=$((${COLUMNS}-${num_bar}))
     fi
