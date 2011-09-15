@@ -2,6 +2,9 @@ PROMPT=$'\n'$PromptUserColor'${USER}@${HOST} '$Yellow'%~ '$'\n'$Default'%(!.#.$)
 RPROMPT=
 
 _host_name_hash(){
+    local colors=(
+        $'%{\e[0;30m%}' # blue
+        )
     local hash=0
     for i in `echo -n $HOST | hexdump -e '"" 10/1 " %03d" '`
     do
