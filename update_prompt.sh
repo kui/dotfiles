@@ -20,3 +20,4 @@ update_prompt(){
 
     PROMPT=$'\n'"${left}"$'%{\e[1;30m%}'"${bar}${right}"$'\n'"${Default}\$ "
 }
+# precmd_functions=($precmd_functions update_prompt)
