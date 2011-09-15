@@ -3,9 +3,12 @@ RPROMPT=
 
 _host_name_hash(){
     local colors=(
-        $'%{\e[0;34m%}' # blue
+        $'%{\e[0;31m%}' # red
         $'%{\e[0;32m%}' # green
-        $'%{\e[0;36m%}'
+        $'%{\e[0;33m%}' # brown
+        $'%{\e[0;34m%}' # blue
+        $'%{\e[0;35m%}' # purple
+        $'%{\e[0;36m%}' # cyan
 
         $'%{\e[1;34m%}' # light blue
         $'%{\e[1;32m%}' # 
