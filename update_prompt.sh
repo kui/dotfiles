@@ -7,11 +7,11 @@ update_prompt(){
     local current_path="`pwd|sed -e \"s/^${escaped_home}/~/\"`"
 
     local left=$'%{\e[1;36m%}'"${USER}@${HOST}${Default}:"$'%{\e[1;33m%}'"${current_path} "
-    local right=$'%{\e[0;37m%}'" ${datetime}"
+    local right=$'%{\e[0;37m%}'" [ ${datetime} ]"
     local num_bar=`print -n -P -- "$left$right" | sed -e $'s/\e\[[0-9;]*m//g' | wc -m | sed -e 's/ //g'`
     local num_bar=$((${COLUMNS}-${num_bar}))
 
-    local sep=" *"
+    local sep=" -"
     local bar=""
     while [ $num_bar -gt $((${#bar}+${#sep})) ]
     do
