@@ -13,8 +13,8 @@ update_prompt(){
 
     while [ $num_bar -gt 0 ]
     do
-        local bar="$bar="
+        local bar="$bar-"
         local num_bar=$((${num_bar}-1))
     done
-    PROMPT="${left}"$'%{\e[0;37m%}'"${bar}"$'\n'"${Default}\$ "
+    PROMPT="${left}"$'%{\e[1;30m%}'"${bar}"$'\n'"${Default}\$ "
 }
