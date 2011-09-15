@@ -2,7 +2,14 @@ PROMPT=$'\n'$PromptUserColor'${USER}@${HOST} '$Yellow'%~ '$'\n'$Default'%(!.#.$)
 RPROMPT=
 
 _host_name_hash(){
-  echo -n $HOST | hexdump -e '"" 10/1 " %03d" '
+    local hash=0
+    for i in `echo -n $HOST | hexdump -e '"" 10/1 " %03d" '`
+    do
+        local hash=$(($hash+$i))
+        echo $hash
+    done
+    $hash=$(($hash % 10))
+    echo $hash
 }
 update_prompt(){
     local datetime="`date +'%Y/%m/%d %H:%M:%S'`"
