@@ -6,7 +6,7 @@ update_prompt(){
     local escaped_home="`echo ${HOME}|sed -e 's/\//\\\\\//g'`"
     local current_path="`pwd|sed -e \"s/^${escaped_home}/~/\"`"
 
-    local left="`fg256 3 3 3`${USER}@${HOST}${Default}:`fg256 5 5 0`${current_path}"
+    local left="`fg256 3 3 3`${USER}@${HOST}${Default}:`fg256 5 0 0`${current_path}"
     local num_bar=$(())
-    PROMPT="$current_path "$'\n'"$Default\$ "
+    PROMPT="$left "$'\n'"$Default\$ "
 }
