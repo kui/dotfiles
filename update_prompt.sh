@@ -24,8 +24,9 @@ _get_host_color(){
         echo $hash
     done
     local hash=$((${hash}%${#colors}))
-    echo $colors[$hash]
+    echo "$colors[$hash]"
 }
+
 update_prompt(){
     local datetime="`date +'%Y/%m/%d %H:%M:%S'`"
     local escaped_home="`echo ${HOME}|sed -e 's/\//\\\\\//g'`"
