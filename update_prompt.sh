@@ -17,10 +17,7 @@ colors=(
     $'%{\e[1;36m%}' # cyan
 )
 
-local hash=0
-for i in `echo -n "$USER$HOST" | hexdump -e '"" 10/1 " %03d" '`
-   local hash=$(($hash+$i))
-
+local hash=`echo "$USER$HOST" | sum | cut -f1 -d' '`
 local hash=$((${hash}%${#colors}))
 export HOST_COLOR=$colors[$hash]
 
