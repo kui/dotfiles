@@ -17,9 +17,8 @@ colors=(
     $'%{\e[1;36m%}' # cyan
 )
 
-local hash=`echo "$USER$HOST" | sum | cut -f1 -d' '`
-local hash=$((${hash}%${#colors}))
-export HOST_COLOR=$colors[$hash]
+local sum=`echo "$USER$HOST" | sum | cut -f1 -d' '`
+export HOST_COLOR=$colors[$((${sum}%${#colors}))]
 
 update_prompt(){
     local datetime="`date +'%Y/%m/%d %H:%M:%S'`"
