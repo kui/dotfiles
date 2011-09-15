@@ -1,21 +1,24 @@
 PROMPT=$'\n'$PromptUserColor'${USER}@${HOST} '$Yellow'%~ '$'\n'$Default'%(!.#.$) '
 RPROMPT=
 colors=(
+    # $'%{\e[0;30m%}' # black
     $'%{\e[0;31m%}' # red
     $'%{\e[0;32m%}' # green
     $'%{\e[0;33m%}' # brown
     $'%{\e[0;34m%}' # blue
     $'%{\e[0;35m%}' # purple
     $'%{\e[0;36m%}' # cyan
-    $'%{\e[0;37m%}' # gray
+    # $'%{\e[0;37m%}' # gray
     
     # light colors
+    # $'%{\e[1;30m%}' # black
     $'%{\e[1;31m%}' # red
     $'%{\e[1;32m%}' # green
     $'%{\e[1;33m%}' # brown
     $'%{\e[1;34m%}' # blue
     $'%{\e[1;35m%}' # purple
     $'%{\e[1;36m%}' # cyan
+    # $'%{\e[1;37m%}' # gray
 )
 
 # USER + HOST でチェックサムを行い、色を選定
