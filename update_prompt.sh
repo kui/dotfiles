@@ -18,7 +18,7 @@ colors=(
 )
 
 local hash=0
-for i in `echo -n $HOST | hexdump -e '"" 10/1 " %03d" '`
+for i in `echo -n "$USER$HOST" | hexdump -e '"" 10/1 " %03d" '`
    local hash=$(($hash+$i))
 
 local hash=$((${hash}%${#colors}))
