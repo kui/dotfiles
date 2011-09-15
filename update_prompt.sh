@@ -24,7 +24,7 @@ _host_name_hash(){
         echo $hash
     done
     echo ${hash} % ${#colors}
-    $hash=`expr ${hash} % ${#colors}`
+    local hash=$((${hash}%${#colors}))
     echo $hash
 }
 update_prompt(){
