@@ -73,6 +73,7 @@ then
     alias s="screen"
     if [ $STY ]
     then
+        alias s="screen -X focus; screen"
     fi
 fi
 
