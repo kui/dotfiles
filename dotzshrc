@@ -64,7 +64,7 @@ local PromptHostColor=$ColorList[$((($RANDOM % ${#ColorList})+1))]
 # PROMPT=$'\n'$PromptUserColor'${USER}'$Default'@'$PromptHostColor'${HOST} '$Default'%~ '$'\n'$Default'%(!.#.$) '
 # ランダムに色を設定するプロンプト(user, host 同じ色)
 PROMPT=$'\n'$PromptUserColor'${USER}@${HOST} '$Yellow'%~ '$'\n'$Default'%(!.#.$) '
-RPROMPT=$DarkGray'%D [ %T ] '$Default
+# RPROMPT=$DarkGray'%D [ %T ] '$Default
 
 ############################################################
 ## alias, funcction の設定
@@ -111,6 +111,67 @@ function j(){
     fi
 }
 
+################################################################################
+##    プロンプト を生成
+colors=(
+    # $'%{\e[0;30m%}' # black
+    $'%{\e[0;31m%}' # red
+    $'%{\e[0;32m%}' # green
+    $'%{\e[0;33m%}' # brown
+    $'%{\e[0;34m%}' # blue
+    $'%{\e[0;35m%}' # purple
+    $'%{\e[0;36m%}' # cyan
+    # $'%{\e[0;37m%}' # gray
+    
+    # light colors
+    # $'%{\e[1;30m%}' # black
+    $'%{\e[1;31m%}' # red
+    $'%{\e[1;32m%}' # green
+    $'%{\e[1;33m%}' # brown
+    $'%{\e[1;34m%}' # blue
+    $'%{\e[1;35m%}' # purple
+    $'%{\e[1;36m%}' # cyan
+    # $'%{\e[1;37m%}' # gray
+)
+# USER + HOST でチェックサムを行い、colors から色を選定
+local sum=`echo "$USER$HOST" | sum | cut -f1 -d' '`
+export HOST_COLOR=$colors[$((${sum}%${#colors}))+1]
+update_prompt(){
+    local datetime="`date +'%Y/%m/%d %H:%M:%S'`"
+    local escaped_home="`echo ${HOME}|sed -e 's/\//\\\\\//g'`"
+    local current_path="`pwd|sed -e \"s/^${escaped_home}/~/\"`"
+
+    local left=$HOST_COLOR"${USER}@${HOST}"$'%{\e[1;39m%}'":"$'%{\e[1;33m%}'"${current_path} "
+    local right=$'%{\e[1;30m%}'" ${datetime}"
+    local num_bar=`print -n -P -- "$left$right" | sed -e $'s/\e\[[0-9;]*m//g' | wc -m | sed -e 's/ //g'`
+    local num_bar=$((${COLUMNS}-${num_bar}))
+
+    if [ $num_bar -lt 0 ]
+    then
+        local datetime="`date +'%H:%M:%S'`"
+        local right=$'%{\e[1;30m%}'" ${datetime}"
+        local num_bar=`print -n -P -- "$left$right" | sed -e $'s/\e\[[0-9;]*m//g' | wc -m | sed -e 's/ //g'`
+        local num_bar=$((${COLUMNS}-${num_bar}))
+        if [ $num_bar -lt 0 ]
+        then
+            local right=''
+            local num_bar=`print -n -P -- "$left$right" | sed -e $'s/\e\[[0-9;]*m//g' | wc -m | sed -e 's/ //g'`
+            local num_bar=$((${COLUMNS}-${num_bar}))
+        fi
+    fi
+
+    local sep=" - "
+    local bar=""
+    while [ $num_bar -gt $((${#bar}+${#sep})) ]
+    do
+        local bar="$bar$sep"
+    done
+    while [ $num_bar -gt ${#bar} ]
+    do
+        local bar="$bar "
+    done
+    PROMPT=$'\n'"${left}"$'%{\e[1;30m%}'"${bar}${right}"$'\n'"${Default}\$ "
+}
 
 ## refe の文字コードをUTF-8に修正
 function refe(){
