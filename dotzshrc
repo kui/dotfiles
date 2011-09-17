@@ -71,6 +71,9 @@ PROMPT=$'\n'$PromptUserColor'${USER}@${HOST} '$Yellow'%~ '$'\n'$Default'%(!.#.$)
 if which screen > /dev/null 2>&1
 then
     alias s="screen"
+    if [ $STY ]
+    then
+    fi
 fi
 
 if ls --color > /dev/null 2>&1
@@ -79,10 +82,6 @@ then
 elif ls --G > /dev/null 2>&1
 then
     alias ls="ls -F -G"
-fi
-
-if [ $STY ]
-then
 fi
 
 function markdown_preview(){
