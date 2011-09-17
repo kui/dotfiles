@@ -81,6 +81,10 @@ then
     alias ls="ls -F -G"
 fi
 
+if [ $STY ]
+then
+fi
+
 function markdown_preview(){
     if [ $# -ne 1 ]; then
         echo "error: invalid arguments"
