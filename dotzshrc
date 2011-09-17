@@ -111,6 +111,25 @@ function j(){
     fi
 }
 
+## refe の文字コードをUTF-8に修正
+function refe(){
+    refe "$@" | nkf -Ew
+}
+
+## ぐぐる
+function g(){
+    w3m "google.com/search?q=$@"
+}
+
+## view-modeでemacsを起動
+# function v(){ emacs $@ -f view-mode}
+function view(){ emacs $@ -f view-mode}
+
+## emacsclient
+function e(){
+    emacsclient -n $@
+}
+
 ################################################################################
 ##    プロンプト を生成
 colors=(
@@ -171,25 +190,6 @@ update_prompt(){
         local bar="$bar "
     done
     PROMPT=$'\n'"${left}"$'%{\e[1;30m%}'"${bar}${right}"$'\n'"${Default}\$ "
-}
-
-## refe の文字コードをUTF-8に修正
-function refe(){
-    refe "$@" | nkf -Ew
-}
-
-## ぐぐる
-function g(){
-    w3m "google.com/search?q=$@"
-}
-
-## view-modeでemacsを起動
-# function v(){ emacs $@ -f view-mode}
-function view(){ emacs $@ -f view-mode}
-
-## emacsclient
-function e(){
-    emacsclient -n $@
 }
 
 ############################################################
