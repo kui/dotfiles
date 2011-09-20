@@ -1,5 +1,6 @@
 ;;;; -*- mode: lisp-interaction; syntax: elisp; coding: utf-8-unix -*-
 
+
 ;;ライブラリパスを追加
 (add-to-list 'load-path "~/.emacs.d")
 
