@@ -39,13 +39,13 @@ main(){
         local dest_file=`echo "$file" | sed -e 's/^dot/./'`
         local dest_file="${HOME}/${dest_file}"
 
-        if ! [ -e $target_file ]
+        if ! [ -e "$target_file" ]
         then
             echo "error: cannot find $target_file" >&2
             exit 1
         fi
 
-        if [ -e $dest_file ]
+        if [ -e "$dest_file" ]
         then
             [ "`echo "$target_file"`" = "`readlink "$dest_file"`" ] && continue
             print_and_do "mv \"$dest_file\" \"${dest_file}.old\""
@@ -58,7 +58,7 @@ main(){
     create_empty_zsh ~/.zshrc.local
     create_empty_zsh ~/.zlogin.local
 
-    cd $prev_dir
+    cd "$prev_dir"
 }
 
 create_empty_zsh(){
@@ -69,8 +69,8 @@ create_empty_zsh(){
 }
 
 print_and_do(){
-    local cmd=$1
-    echo $cmd
+    local cmd="$1"
+    echo "$cmd"
     [ $run_flag -eq 0 ] && eval "$cmd"
 }
 

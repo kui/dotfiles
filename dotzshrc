@@ -2,70 +2,6 @@
 
 [ -f /etc/zsh/zshrc ] && source /etc/zsh/zshrc
 
-# パスの設定
-## 重複したパスを登録しない。
-typeset -U path
-## (N-/): 存在しないディレクトリは登録しない。
-##    パス(...): ...という条件にマッチするパスのみ残す。
-##            N: NULL_GLOBオプションを設定。
-##               globがマッチしなかったり存在しないパスを無視する。
-##            -: シンボリックリンク先のパスを評価。
-##            /: ディレクトリのみ残す。
-path=($HOME/local/bin(N/-) /bin(N/-) /usr/bin(N-/) /usr/local/bin(N-/))
-
-# sudo時のパスの設定
-## -x: export SUDO_PATHも一緒に行う。
-## -T: SUDO_PATHとsudo_pathを連動する。
-typeset -xT SUDO_PATH sudo_path
-typeset -U sudo_path
-## (N-/): 存在しないディレクトリは登録しない。
-##    パス(...): ...という条件にマッチするパスのみ残す。
-##            N: NULL_GLOBオプションを設定。
-##               globがマッチしなかったり存在しないパスを無視する。
-##            -: シンボリックリンク先のパスを評価。
-##            /: ディレクトリのみ残す。
-sudo_path=({,/usr/pkg,/usr/local,/usr}/sbin(N-/))
-
-export TERM="xterm"
-if infocmp xterm-256color > /dev/null 2>&1
-then
-    export TERM="xterm-256color"
-fi
-
-export LANG=ja_JP.UTF-8
-if [ `uname -a | grep Cygwin | wc -l` = 1 ]
-then
-    export LANG=ja_JP.SJIS
-fi
-
-# PROMPT のための色一覧
-local Black=$'%{\e[0;30m%}'
-local DarkGray=$'%{\e[1;30m%}'
-local Blue=$'%{\e[0;34m%}'
-local LightBlue=$'%{\e[1;34m%}'
-local Green=$'%{\e[0;32m%}'
-local LightGreen=$'%{\e[1;32m%}'
-local Cyan=$'%{\e[0;36m%}'
-local LightCyan=$'%{\e[1;36m%}'
-local Red=$'%{\e[0;31m%}'
-local LightRed=$'%{\e[1;31m%}'
-local Purple=$'%{\e[0;35m%}'
-local LightPurple=$'%{\e[1;35m%}'
-local Brown=$'%{\e[0;33m%}'
-local Yellow=$'%{\e[1;33m%}'
-local LightGray=$'%{\e[0;37m%}'
-local White=$'%{\e[1;37m%}'
-local Default=$'%{\e[1;39m%}'
-
-ColorList=($Purple $Green $Blue $Cyan $Red)
-local PromptUserColor=$ColorList[$((($RANDOM % ${#ColorList})+1))]
-local PromptHostColor=$ColorList[$((($RANDOM % ${#ColorList})+1))]
-# ランダムに色を設定するプロンプト(user, host 別の色)
-# PROMPT=$'\n'$PromptUserColor'${USER}'$Default'@'$PromptHostColor'${HOST} '$Default'%~ '$'\n'$Default'%(!.#.$) '
-# ランダムに色を設定するプロンプト(user, host 同じ色)
-PROMPT=$'\n'$PromptUserColor'${USER}@${HOST} '$Yellow'%~ '$'\n'$Default'%(!.#.$) '
-RPROMPT=$DarkGray'%D [ %T ] '$Default
-
 ############################################################
 ## alias, funcction の設定
 if which screen > /dev/null 2>&1
@@ -130,6 +66,95 @@ function view(){ emacs $@ -f view-mode}
 function e(){
     emacsclient -n $@
 }
+## 256色生成用便利関数
+### red: 0-5
+### green: 0-5
+### blue: 0-5
+color256()
+{
+    local red=$1; shift
+    local green=$2; shift
+    local blue=$3; shift
+
+    echo -n $[$red * 36 + $green * 6 + $blue + 16]
+}
+
+fg256()
+{
+    echo -n $'\e[38;5;'$(color256 "$@")"m"
+}
+
+bg256()
+{
+    echo -n $'\e[48;5;'$(color256 "$@")"m"
+}
+
+#########################################################################
+# 変数セット
+
+# パスの設定
+## 重複したパスを登録しない。
+typeset -U path
+## (N-/): 存在しないディレクトリは登録しない。
+##    パス(...): ...という条件にマッチするパスのみ残す。
+##            N: NULL_GLOBオプションを設定。
+##               globがマッチしなかったり存在しないパスを無視する。
+##            -: シンボリックリンク先のパスを評価。
+##            /: ディレクトリのみ残す。
+path=($HOME/local/bin(N/-) /bin(N/-) /usr/bin(N-/) /usr/local/bin(N-/))
+
+# sudo時のパスの設定
+## -x: export SUDO_PATHも一緒に行う。
+## -T: SUDO_PATHとsudo_pathを連動する。
+typeset -xT SUDO_PATH sudo_path
+typeset -U sudo_path
+## (N-/): 存在しないディレクトリは登録しない。
+##    パス(...): ...という条件にマッチするパスのみ残す。
+##            N: NULL_GLOBオプションを設定。
+##               globがマッチしなかったり存在しないパスを無視する。
+##            -: シンボリックリンク先のパスを評価。
+##            /: ディレクトリのみ残す。
+sudo_path=({,/usr/pkg,/usr/local,/usr}/sbin(N-/))
+
+export TERM="xterm"
+if infocmp xterm-256color > /dev/null 2>&1
+then
+    export TERM="xterm-256color"
+fi
+
+export LANG=ja_JP.UTF-8
+if [ `uname -a | grep Cygwin | wc -l` = 1 ]
+then
+    export LANG=ja_JP.SJIS
+fi
+
+# PROMPT のための色一覧
+local Black=$'%{\e[0;30m%}'
+local DarkGray=$'%{\e[1;30m%}'
+local Blue=$'%{\e[0;34m%}'
+local LightBlue=$'%{\e[1;34m%}'
+local Green=$'%{\e[0;32m%}'
+local LightGreen=$'%{\e[1;32m%}'
+local Cyan=$'%{\e[0;36m%}'
+local LightCyan=$'%{\e[1;36m%}'
+local Red=$'%{\e[0;31m%}'
+local LightRed=$'%{\e[1;31m%}'
+local Purple=$'%{\e[0;35m%}'
+local LightPurple=$'%{\e[1;35m%}'
+local Brown=$'%{\e[0;33m%}'
+local Yellow=$'%{\e[1;33m%}'
+local LightGray=$'%{\e[0;37m%}'
+local White=$'%{\e[1;37m%}'
+local Default=$'%{\e[1;39m%}'
+
+ColorList=($Purple $Green $Blue $Cyan $Red)
+local PromptUserColor=$ColorList[$((($RANDOM % ${#ColorList})+1))]
+local PromptHostColor=$ColorList[$((($RANDOM % ${#ColorList})+1))]
+# ランダムに色を設定するプロンプト(user, host 別の色)
+# PROMPT=$'\n'$PromptUserColor'${USER}'$Default'@'$PromptHostColor'${HOST} '$Default'%~ '$'\n'$Default'%(!.#.$) '
+# ランダムに色を設定するプロンプト(user, host 同じ色)
+PROMPT=$'\n'$PromptUserColor'${USER}@${HOST} '$Yellow'%~ '$'\n'$Default'%(!.#.$) '
+
 
 ############################################################
 ##  zsh プロパティ
@@ -225,29 +250,6 @@ zstyle ':completion:sudo:*' environ PATH="$SUDO_PATH:$PATH"
 
 ## 特定のコマンドの補完を無効化
 # compdef -d java
-
-## 256色生成用便利関数
-### red: 0-5
-### green: 0-5
-### blue: 0-5
-color256()
-{
-    local red=$1; shift
-    local green=$2; shift
-    local blue=$3; shift
-
-    echo -n $[$red * 36 + $green * 6 + $blue + 16]
-}
-
-fg256()
-{
-    echo -n $'\e[38;5;'$(color256 "$@")"m"
-}
-
-bg256()
-{
-    echo -n $'\e[48;5;'$(color256 "$@")"m"
-}
 
 ! [ -f ~/.zshrc.local ] &&\
   touch ~/.zshrc.local
