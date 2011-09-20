@@ -28,7 +28,7 @@ eval_verbose(){
     eval "$1"
 }
 
-start_sync2
+# start_sync2
 
 [ -f ~/.zlogin.local ] &&\
   touch ~/.zlogin.local &&\
