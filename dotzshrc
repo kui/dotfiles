@@ -317,6 +317,12 @@ zstyle ':completion:sudo:*' environ PATH="$SUDO_PATH:$PATH"
 ## 特定のコマンドの補完を無効化
 # compdef -d java
 
+# 画面を自動で分割: スクリーンが立ち上がっていて、かつ端末幅が幅が一定以上の時
+if [ $COLUMNS -gt 170 ] && which screen > /dev/null 2>&1 && [ $STY ]
+then
+    screen -X split -v
+fi
+
 ! [ -f ~/.zshrc.local ] &&\
   touch ~/.zshrc.local
 source ~/.zshrc.local
