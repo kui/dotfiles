@@ -30,8 +30,8 @@
 (if (or (string-equal system-type "cygwin")
 	(string-equal system-type "windows-nt"))
     (let ()
-      (set-terminal-coding-system 'sjis)
-      (set-keyboard-coding-system 'sjis)
+      (set-terminal-coding-system 'UTF-8)
+      (set-keyboard-coding-system 'UTF-8)
       ))
 
 ;; emacs 用マジックコメント挿入
@@ -91,7 +91,9 @@
       	     '(foreground-color . "white"));; 前景
       ;; (add-to-list 'default-frame-alist
       ;;	     '(border-color . "cyan"));;
-    
+
+      (add-to-list 'default-frame-alist '(cursor-color . "Green"))
+
       ;; ツールバーを消す
       (tool-bar-mode 0) 
 
