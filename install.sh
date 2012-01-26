@@ -45,13 +45,13 @@ main(){
             exit 1
         fi
 
-        if [ -e "$dest_file" ]
-        then
-            [ "`echo "$target_file"`" = "`readlink "$dest_file"`" ] && continue
-            print_and_do "mv \"$dest_file\" \"${dest_file}.old\""
-        fi
+        #if [ -e "$dest_file" ]
+        #then
+        #    [ "`echo "$target_file"`" = "`readlink "$dest_file"`" ] && continue
+        #    print_and_do "mv \"$dest_file\" \"${dest_file}.old\""
+        #fi
 
-        print_and_do "ln -s \"$target_file\" \"$dest_file\""
+        print_and_do "ln -sb \"$target_file\" \"$dest_file\""
     done
 
 
