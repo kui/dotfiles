@@ -27,10 +27,6 @@ bind E eval "encoding euc" "!!!echo 'export LANG=ja_JP.EUC-JP'"
 defencoding utf8
 encoding utf8 utf8
 
-# cygwin 用
-# defencoding SJIS
-# encoding sjis sjis
-
 # 256色表示を有効に
 term xterm-256color
 defbce "on"

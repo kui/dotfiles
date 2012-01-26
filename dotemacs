@@ -27,11 +27,10 @@
       ))
 
 ;; cygwin や meadow などで使うときの日本語設定
-(if (or (string-equal system-type "cygwin")
-	(string-equal system-type "windows-nt"))
+(if (string-equal system-type "windows-nt")
     (let ()
-      (set-terminal-coding-system 'UTF-8)
-      (set-keyboard-coding-system 'UTF-8)
+      (set-terminal-coding-system 'uft-8)
+      (set-keyboard-coding-system 'utf-8)
       ))
 
 ;; emacs 用マジックコメント挿入
