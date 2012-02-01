@@ -245,7 +245,11 @@
 		       '(lambda () (tabify (point-min) (point-max))))
 	     ))
 
+;; yaml-mode
+(require 'yaml-mode)
+(add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
 
 ;; マウス操作を有効に
 ;;(xterm-mouse-mode t)
 ;;(mouse-wheel-mode t)
+
