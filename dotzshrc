@@ -20,23 +20,38 @@ elif ls --G > /dev/null 2>&1
 then
     alias ls="ls -F -G"
 fi
+function md(){
+    cat <<EOF 
+<html><head>
+<meta charset="UTF-8" />
+<style>
+  h1,h2,h3,h4,h5,h6 {font-family: "Hiragino Kaku Gothic Pro W3", "ヒラギノ角ゴ Pro W3", Meiryo, "メイリオ", "MS P Gothic", "ＭＳ Ｐゴシック", sans-serif}
+  p, li {font-family:Georgia, Times, "Times New Roman", serif}
+</style>
+</head><body>
+EOF
+    markdown "$1"
+    echo '</body></html>'
+}
 
 function markdown_preview(){
     if [ $# -ne 1 ]; then
-        echo "error: invalid arguments"
-        echo "usage: $0 markdown_file"
-        return 1;
+	echo "error: invalid arguments"
+	echo "usage: $0 markdown_file"
+	return 1;
     fi
+
     if [ ! -f "$1" ]; then
-        echo "error: $1 dose not exists"
-        return 1;
+	echo "error: $1 dose not exists"
+	return 1;
     fi
-    (echo '<html><body>'; markdown $1; echo '</body></html>')\
-	| w3m -T text/html -dump
+
+    md "$1" | w3m -T text/html -dump
+
+    # 縦割りしたときにズレる問題解決
     if [ $STY ]; then
-        # echo "screen: redisplay"
-        sleep 0.2
-        screen -X redisplay
+	sleep 0.2
+	screen -X redisplay
     fi
 }
 
