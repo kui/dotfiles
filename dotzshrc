@@ -121,7 +121,6 @@ then
 (server-start)
 EOF
     s emacs -l "/tmp/$EMACS_SERVER_NAME"
-    (sleep 60; rm "/tmp/$EMACS_SERVER_NAME") &
 fi
 
 alias e="screen -X focus; emacsclient -n -s $EMACS_SERVER_NAME"
