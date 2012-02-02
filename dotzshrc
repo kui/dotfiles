@@ -41,9 +41,10 @@ then
     alias s="screen"
     if [ $STY ]
     then
-        [ $COLUMNS -gt 170 ] && screen -X split -v
-        alias s="screen -X focus; screen"
         screen -X "flow off"
+        screen -X "layout new 0 2colmuns"
+        [ $COLUMNS -gt 170 ] && screen -X split -v 
+        alias s="screen -X focus; screen"
     fi
 fi
 
@@ -113,19 +114,20 @@ function g(){
 }
 
 ## emacs の設定
-export EMACS_SERVER_NAME="server-$STY"
-if [ $STY ] && ! emacsclient -s "$EMACS_SERVER_NAME" -e "server-name" > /dev/null 2>&1
+if [ $STY ]
 then
-    cat > "/tmp/$EMACS_SERVER_NAME" <<EOF
-(setq server-name "$EMACS_SERVER_NAME")
-(server-start)
-EOF
-    s emacs -l "/tmp/$EMACS_SERVER_NAME"
-fi
+    export EMACS_SERVER_NAME="server-$STY"
 
-alias e="screen -X focus; emacsclient -n -s $EMACS_SERVER_NAME"
-alias emacsclient="screen -X focus; emacsclient -n -s $EMACS_SERVER_NAME"
-alias eview="emacs -f view-mode"
+    alias e="emacsclient -n -s $EMACS_SERVER_NAME"
+    alias emacsclient="emacsclient -n -s $EMACS_SERVER_NAME"
+    alias eview="emacs -f view-mode"
+
+    if ! emacsclient -s "$EMACS_SERVER_NAME" -e "server-name" > /dev/null 2>&1
+    then
+        s emacs --eval "(let () (setq server-name \"$EMACS_SERVER_NAME\")(server-start))"
+        screen -X focus
+    fi
+fi
 
 ## 256色生成用便利関数
 ### red: 0-5
