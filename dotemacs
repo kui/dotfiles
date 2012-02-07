@@ -30,8 +30,8 @@
 (if (or (string-equal system-type "cygwin")
 	(string-equal system-type "windows-nt"))
     (let ()
-      (set-terminal-coding-system 'sjis)
-      (set-keyboard-coding-system 'sjis)
+;;      (set-terminal-coding-system 'sjis)
+;;      (set-keyboard-coding-system 'sjis)
       ))
 
 ;; emacs 用マジックコメント挿入
