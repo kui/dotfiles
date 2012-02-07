@@ -27,11 +27,10 @@
       ))
 
 ;; cygwin や meadow などで使うときの日本語設定
-(if (or (string-equal system-type "cygwin")
-	(string-equal system-type "windows-nt"))
+(if (string-equal system-type "windows-nt")
     (let ()
-;;      (set-terminal-coding-system 'sjis)
-;;      (set-keyboard-coding-system 'sjis)
+      (set-terminal-coding-system 'uft-8)
+      (set-keyboard-coding-system 'utf-8)
       ))
 
 ;; emacs 用マジックコメント挿入
@@ -91,7 +90,9 @@
       	     '(foreground-color . "white"));; 前景
       ;; (add-to-list 'default-frame-alist
       ;;	     '(border-color . "cyan"));;
-    
+
+      (add-to-list 'default-frame-alist '(cursor-color . "Green"))
+
       ;; ツールバーを消す
       (tool-bar-mode 0) 
 
@@ -244,7 +245,11 @@
 		       '(lambda () (tabify (point-min) (point-max))))
 	     ))
 
+;; yaml-mode
+(require 'yaml-mode)
+(add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
 
 ;; マウス操作を有効に
 ;;(xterm-mouse-mode t)
 ;;(mouse-wheel-mode t)
+

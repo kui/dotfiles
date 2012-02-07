@@ -1,34 +1,6 @@
 # -*- mode: sh; coding: utf-8 -*-
 
-start_sync(){
-    local link_to=`readlink -n $HOME/.zlogin`
-    local cmds=(
-        "`dirname $link_to`/.syncsyncgit.sh"
-        "$HOME/toybox/github/syncsyncgit/syncsyncgit.sh"
-        )
-    for cmd in "${cmds[@]}"
-    do
-        eval_verbose "$cmd start"
-        eval_verbose "$cmd log | tail"
-    done
-}
-start_sync2(){
-    local link_to=`readlink -n $HOME/.zlogin`
-
-    for cmd in "`dirname ${link_to}`/.syncsyncgit.sh"\
-               "$HOME/toybox/github/syncsyncgit/syncsyncgit.sh"
-    do
-        eval_verbose "$cmd start"
-        eval_verbose "$cmd log | tail"
-    done
-}
-
-eval_verbose(){
-    echo "$1"
-    eval "$1"
-}
-
-# start_sync2
+echo "loaded .zlogin"
 
 [ -f ~/.zlogin.local ] &&\
   touch ~/.zlogin.local &&\
