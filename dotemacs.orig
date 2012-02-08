@@ -2,7 +2,7 @@
 
 
 ;;ライブラリパスを追加
-(add-to-list 'load-path "~/.settings/dotemacs.d")
+(add-to-list 'load-path "~/.emacs.d")
 
 ;; 日本語設定 (UTF-8)
 (set-language-environment "Japanese")
@@ -29,8 +29,13 @@
 ;; cygwin や meadow などで使うときの日本語設定
 (if (string-equal system-type "windows-nt")
     (let ()
+<<<<<<< HEAD
+;;      (set-terminal-coding-system 'sjis)
+;;      (set-keyboard-coding-system 'sjis)
+=======
       (set-terminal-coding-system 'uft-8)
       (set-keyboard-coding-system 'utf-8)
+>>>>>>> 593e4a31c8666ec312e8a0237186501933b69b49
       ))
 
 ;; emacs 用マジックコメント挿入

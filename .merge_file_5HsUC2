@@ -2,6 +2,99 @@
 
 [ -f /etc/zsh/zshrc ] && source /etc/zsh/zshrc
 
+############################################################
+## alias, funcction の設定
+if which screen > /dev/null 2>&1
+then
+    alias s="screen"
+    if [ $STY ]
+    then
+        alias s="screen -X focus; screen"
+    fi
+fi
+
+if ls --color > /dev/null 2>&1
+then
+    alias ls="ls -F --color"
+elif ls --G > /dev/null 2>&1
+then
+    alias ls="ls -F -G"
+fi
+
+function markdown_preview(){
+    if [ $# -ne 1 ]; then
+        echo "error: invalid arguments"
+        echo "usage: $0 markdown_file"
+        return 1;
+    fi
+    if [ ! -f "$1" ]; then
+        echo "error: $1 dose not exists"
+        return 1;
+    fi
+    (echo '<html><body>'; markdown $1; echo '</body></html>')\
+	| w3m -T text/html -dump
+    if [ $STY ]; then
+        # echo "screen: redisplay"
+        sleep 0.2
+        screen -X redisplay
+    fi
+}
+
+function j(){
+    class=`echo $1 | sed -e "s/\\.java$//"`
+    shift
+    echo $@
+    if [ -f build.xml ]; then
+	ant && java -DDebug=on $class $@
+    else
+	javac $class.java && java -DDebug=on $do_java $@
+    fi
+}
+
+## refe の文字コードをUTF-8に修正
+function refe(){
+    refe "$@" | nkf -Ew
+}
+
+## ぐぐる
+function g(){
+    w3m "google.com/search?q=$@"
+}
+
+## view-modeでemacsを起動
+# function v(){ emacs $@ -f view-mode}
+function view(){ emacs $@ -f view-mode}
+
+## emacsclient
+function e(){
+    emacsclient -n $@
+}
+## 256色生成用便利関数
+### red: 0-5
+### green: 0-5
+### blue: 0-5
+color256()
+{
+    local red=$1; shift
+    local green=$2; shift
+    local blue=$3; shift
+
+    echo -n $[$red * 36 + $green * 6 + $blue + 16]
+}
+
+fg256()
+{
+    echo -n $'\e[38;5;'$(color256 "$@")"m"
+}
+
+bg256()
+{
+    echo -n $'\e[48;5;'$(color256 "$@")"m"
+}
+
+#########################################################################
+# 変数セット
+
 # パスの設定
 ## 重複したパスを登録しない。
 typeset -U path
@@ -33,126 +126,10 @@ then
 fi
 
 export LANG=ja_JP.UTF-8
-
-############################################################
-## alias, funcction の設定
-if which screen > /dev/null 2>&1
+if [ `uname -a | grep Cygwin | wc -l` = 1 ]
 then
-    alias s="screen"
-    if [ $STY ]
-    then
-        [ $COLUMNS -gt 170 ] && screen -X split -v
-        alias s="screen -X focus; screen"
-        screen -X "flow off"
-    fi
+    export LANG=ja_JP.SJIS
 fi
-
-if ls --color > /dev/null 2>&1
-then
-    alias ls="ls -F --color"
-elif ls --G > /dev/null 2>&1
-then
-    alias ls="ls -F -G"
-fi
-
-function md(){
-    cat <<EOF 
-<html><head>
-<meta charset="UTF-8" />
-<style>
-  h1,h2,h3,h4,h5,h6 {font-family: "Hiragino Kaku Gothic Pro W3", "ヒラギノ角ゴ Pro W3", Meiryo, "メイリオ", "MS P Gothic", "ＭＳ Ｐゴシック", sans-serif}
-  p, li {font-family:Georgia, Times, "Times New Roman", serif}
-</style>
-</head><body>
-EOF
-    markdown "$1"
-    echo '</body></html>'
-}
-
-function markdown_preview(){
-    if [ $# -ne 1 ]; then
-	echo "error: invalid arguments"
-	echo "usage: $0 markdown_file"
-	return 1;
-    fi
-
-    if [ ! -f "$1" ]; then
-	echo "error: $1 dose not exists"
-	return 1;
-    fi
-
-    md "$1" | w3m -T text/html -dump
-
-    # 縦割りしたときにズレる問題解決
-    if [ $STY ]
-    then
-	sleep 0.2
-	screen -X redisplay
-    fi
-}
-
-function j(){
-    class=`echo $1 | sed -e "s/\\.java$//"`
-    shift
-    echo $@
-    if [ -f build.xml ]; then
-	ant && java -DDebug=on $class $@
-    else
-	javac $class.java && java -DDebug=on $do_java $@
-    fi
-}
-
-## refe の文字コードをUTF-8に修正
-function refe(){
-    refe "$@" | nkf -Ew
-}
-
-## ぐぐる
-function g(){
-    w3m "google.com/search?q=$@"
-}
-
-## emacs の設定
-export EMACS_SERVER_NAME="server-$STY"
-if [ $STY ] && ! emacsclient -s "$EMACS_SERVER_NAME" -e "server-name" > /dev/null 2>&1
-then
-    cat > "/tmp/$EMACS_SERVER_NAME" <<EOF
-(setq server-name "$EMACS_SERVER_NAME")
-(server-start)
-EOF
-    s emacs -l "/tmp/$EMACS_SERVER_NAME"
-    (sleep 60; rm "/tmp/$EMACS_SERVER_NAME") &
-fi
-
-alias e="screen -X focus; emacsclient -n -s $EMACS_SERVER_NAME"
-alias emacsclient="screen -X focus; emacsclient -n -s $EMACS_SERVER_NAME"
-alias eview="emacs -f view-mode"
-
-## 256色生成用便利関数
-### red: 0-5
-### green: 0-5
-### blue: 0-5
-color256()
-{
-    local red=$1; shift
-    local green=$2; shift
-    local blue=$3; shift
-
-    echo -n $[$red * 36 + $green * 6 + $blue + 16]
-}
-
-fg256()
-{
-    echo -n $'\e[38;5;'$(color256 "$@")"m"
-}
-
-bg256()
-{
-    echo -n $'\e[48;5;'$(color256 "$@")"m"
-}
-
-#########################################################################
-# 変数セット
 
 # PROMPT のための色一覧
 local Black=$'%{\e[0;30m%}'
@@ -340,5 +317,12 @@ zstyle ':completion:sudo:*' environ PATH="$SUDO_PATH:$PATH"
 ## 特定のコマンドの補完を無効化
 # compdef -d java
 
-! [ -f ~/.zshrc.local ] && touch ~/.zshrc.local
+# 画面を自動で分割: スクリーンが立ち上がっていて、かつ端末幅が幅が一定以上の時
+if [ $COLUMNS -gt 170 ] && which screen > /dev/null 2>&1 && [ $STY ]
+then
+    screen -X split -v
+fi
+
+! [ -f ~/.zshrc.local ] &&\
+  touch ~/.zshrc.local
 source ~/.zshrc.local

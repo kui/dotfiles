@@ -43,7 +43,6 @@ then
     then
         [ $COLUMNS -gt 170 ] && screen -X split -v
         alias s="screen -X focus; screen"
-        screen -X "flow off"
     fi
 fi
 
@@ -116,14 +115,16 @@ function g(){
 export EMACS_SERVER_NAME="server-$STY"
 if [ $STY ] && ! emacsclient -s "$EMACS_SERVER_NAME" -e "server-name" > /dev/null 2>&1
 then
-    cat > "/tmp/$EMACS_SERVER_NAME" <<EOF
+    cat > ".$EMACS_SERVER_NAME" <<EOF
 (setq server-name "$EMACS_SERVER_NAME")
 (server-start)
 EOF
-    s emacs -l "/tmp/$EMACS_SERVER_NAME"
-    (sleep 60; rm "/tmp/$EMACS_SERVER_NAME") &
+    s emacs -l ".$EMACS_SERVER_NAME"
+    sleep 0.1
+    rm ".$EMACS_SERVER_NAME"
 fi
 
+## emacsclient
 alias e="screen -X focus; emacsclient -n -s $EMACS_SERVER_NAME"
 alias emacsclient="screen -X focus; emacsclient -n -s $EMACS_SERVER_NAME"
 alias eview="emacs -f view-mode"
@@ -154,6 +155,45 @@ bg256()
 #########################################################################
 # 変数セット
 
+<<<<<<< HEAD
+# パスの設定
+## 重複したパスを登録しない。
+typeset -U path
+## (N-/): 存在しないディレクトリは登録しない。
+##    パス(...): ...という条件にマッチするパスのみ残す。
+##            N: NULL_GLOBオプションを設定。
+##               globがマッチしなかったり存在しないパスを無視する。
+##            -: シンボリックリンク先のパスを評価。
+##            /: ディレクトリのみ残す。
+path=($HOME/local/bin(N/-) /bin(N/-) /usr/bin(N-/) /usr/local/bin(N-/))
+
+# sudo時のパスの設定
+## -x: export SUDO_PATHも一緒に行う。
+## -T: SUDO_PATHとsudo_pathを連動する。
+typeset -xT SUDO_PATH sudo_path
+typeset -U sudo_path
+## (N-/): 存在しないディレクトリは登録しない。
+##    パス(...): ...という条件にマッチするパスのみ残す。
+##            N: NULL_GLOBオプションを設定。
+##               globがマッチしなかったり存在しないパスを無視する。
+##            -: シンボリックリンク先のパスを評価。
+##            /: ディレクトリのみ残す。
+sudo_path=({,/usr/pkg,/usr/local,/usr}/sbin(N-/))
+
+export TERM="xterm"
+if infocmp xterm-256color > /dev/null 2>&1
+then
+    export TERM="xterm-256color"
+fi
+
+export LANG=ja_JP.UTF-8
+if [ `uname -a | grep Cygwin | wc -l` = 1 ]
+then
+    #export LANG=ja_JP.SJIS
+fi
+
+=======
+>>>>>>> 593e4a31c8666ec312e8a0237186501933b69b49
 # PROMPT のための色一覧
 local Black=$'%{\e[0;30m%}'
 local DarkGray=$'%{\e[1;30m%}'
