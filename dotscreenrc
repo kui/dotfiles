@@ -35,4 +35,7 @@ shell zsh
 ## マウスの有効化
 defmousetrack
 
+## 
 defflow off
+
+

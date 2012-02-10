@@ -39,12 +39,17 @@ export LANG=ja_JP.UTF-8
 if which screen > /dev/null 2>&1
 then
     alias s="screen"
-    if [ $STY ]
+
+    if [ "$STY" -a ! "$SCREEN_INIT" ]
     then
-        screen -X "flow off"
-        screen -X "layout new 0 2colmuns"
-        [ $COLUMNS -gt 170 ] && screen -X split -v 
+        [ $COLUMNS -gt 170 ] && screen -X split -v
         alias s="screen -X focus; screen"
+        export SCREEN_INIT=true
+    elif [ ! "$STY" ]
+    then 
+        echo "source ~/.screenrc" > ~/.screen.init
+        echo "layout new" >> ~/.screen.init
+        alias s="screen -c ~/.screen.init"
     fi
 fi
 
