@@ -247,8 +247,11 @@ or nothing if point is in BoL"
   ;; *補完停止
   (define-key ac-complete-mode-map "\C-[" 'ac-stop)
 
-  ;; *補完する
-  ;; (define-key ac-complete-mode-map "\C-i" 'auto-complete)
+  ;; *補完リスト表示開始
+  (define-key ac-complete-mode-map "\C-o" 'auto-start)
+
+  ;; *補完リスト表示自動開始文字数（nil だと自動表示されない）
+  (setq ac-auto-start 4)
 
   ;; *大文字・小文字の区別
   ;; nil:        区別しない
