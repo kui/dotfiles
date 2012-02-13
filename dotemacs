@@ -16,11 +16,6 @@
     (let ()
       ))
 
-;; cygwin や meadow などで使うときの日本語設定
-(if (string-equal system-type "windows-nt")
-    (let ()
-      ))
-
 ;; emacs 用マジックコメント挿入
 (defun kui-insert-magic-comment ()
   (interactive)
@@ -68,7 +63,7 @@
 ;; (display-time) 
 
 ;; メニューバーを消す
-;;(menu-bar-mode -1)
+(menu-bar-mode -1)
 
 ;; ウィンドウシステムを使っているとき
 (if window-system
@@ -152,12 +147,6 @@
 ;;(add-to-list 'default-frame-alist
 ;;	     '(border-color . "cyan"));;
 
-;; javascript-mode
-;; (add-to-list 'auto-mode-alist 
-;;	     (cons  "\\.\\(js\\|as\\|json\\|jsn\\)\\'" 'javascript-mode))
-;; (autoload 'javascript-mode "javascript" nil t)
-;; (setq js-indent-level 2)
-
 ;; css-mode
 (autoload 'css-mode "css-mode")
 (setq cssm-indent-function #'cssm-c-style-indenter)
@@ -235,24 +224,30 @@
 
 ;; yaml-mode
 (when (require 'yaml-mode nil t)
-  (add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
-  )
+  (add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode)))
 
 ;; tabbar-mode
 (when (require 'tabbar nil t)
+  ;; タブの間に挟む文字
+  (setq tabbar-separator-value "|")
+
   ;; tabbar のタブのグループの仕方
   ;; デフォルト: 一部を除き major-mode ごとにタブをグループ化
   ;; 下の: * で始まるバッファ以外は全部同じタブ
   ;;       (http://www.emacswiki.org/emacs/TabBarMode)
   (setq tabbar-buffer-groups-function (lambda () (list "Buffers")))
+  
   (when (require 'cl nil t)
+    ;; 表示するタブのフィルタリング
     (setq tabbar-buffer-list-function
           (lambda () 
             (remove-if 
-             (lambda (b) (string-match-p " ?\\*" (buffer-name b)))
+             (lambda (b)
+               (and (string-match-p " ?\\*" (buffer-name b))
+                    (not (string-equal (buffer-name (current-buffer))
+                                       (buffer-name b)))))
              (buffer-list)))))
-  (tabbar-mode)
-  )
+  (tabbar-mode))
 
 ;; マウス操作を有効に
 ;;(xterm-mouse-mode t)

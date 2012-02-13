@@ -219,14 +219,14 @@ update_prompt(){
     local current_path="`pwd|sed -e \"s/^${escaped_home}/~/\"`"
 
     local left=$HOST_COLOR"${USER}@${HOST}"$'%{\e[1;39m%}'":"$'%{\e[1;33m%}'"${current_path} "
-    local right=$'%{\e[1;30m%}'" ${datetime}"
+    local right=$'%{\e[1;37m%}'" ${datetime}"
     local num_bar=`print -n -P -- "$left$right" | sed -e $'s/\e\[[0-9;]*m//g' | wc -m | sed -e 's/ //g'`
     local num_bar=$((${COLUMNS}-${num_bar}))
 
     if [ $num_bar -lt 0 ]
     then
         local datetime="`date +'%H:%M:%S'`"
-        local right=$'%{\e[1;30m%}'" ${datetime}"
+        local right=$'%{\e[1;37m%}'" ${datetime}"
         local num_bar=`print -n -P -- "$left$right" | sed -e $'s/\e\[[0-9;]*m//g' | wc -m | sed -e 's/ //g'`
         local num_bar=$((${COLUMNS}-${num_bar}))
         if [ $num_bar -lt 0 ]
@@ -247,7 +247,7 @@ update_prompt(){
     do
         local bar="$bar "
     done
-    PROMPT=$'\n'"${left}"$'%{\e[1;30m%}'"${bar}${right}"$'\n'"${Default}\$ "
+    PROMPT=$'\n'"${left}"$'%{\e[1;37m%}'"${bar}${right}"$'\n'"${Default}\$ "
 }
 precmd_functions=($precmd_functions update_prompt)
 
