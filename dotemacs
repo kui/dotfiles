@@ -140,8 +140,8 @@
 
 (add-to-list 'default-frame-alist
 	     '(corsor-color . "green"));; カーソル
-;;(add-to-list 'default-frame-alist
-;;	     '(foreground-color . "white"));; 前景
+(add-to-list 'default-frame-alist
+	     '(foreground-color . "white"));; 前景
 (add-to-list 'default-frame-alist
 	     '(background-color . "black"));; 背景
 ;;(add-to-list 'default-frame-alist
@@ -228,25 +228,53 @@
 
 ;; tabbar-mode
 (when (require 'tabbar nil t)
+
   ;; タブの間に挟む文字
   (setq tabbar-separator-value "|")
 
   ;; tabbar のタブのグループの仕方
-  ;; デフォルト: 一部を除き major-mode ごとにタブをグループ化
-  ;; 下の: * で始まるバッファ以外は全部同じタブ
+  ;;   デフォルト: 一部を除き major-mode ごとにタブをグループ化
+  ;;   下: 全部同じグループに
   ;;       (http://www.emacswiki.org/emacs/TabBarMode)
   (setq tabbar-buffer-groups-function (lambda () (list "Buffers")))
   
-  (when (require 'cl nil t)
+  (when (require 'cl nil t) ;; remove-if とかに必要
+
     ;; 表示するタブのフィルタリング
+    ;;   * で始まるバッファはタブに表示しない
     (setq tabbar-buffer-list-function
           (lambda () 
             (remove-if 
              (lambda (b)
-               (and (string-match-p " ?\\*" (buffer-name b))
+               (and (string-match-p "^ ?\\*" (buffer-name b))
                     (not (string-equal (buffer-name (current-buffer))
                                        (buffer-name b)))))
              (buffer-list)))))
+
+  ;; faces
+  (set-face-attribute 'tabbar-default nil
+                      :background "gray"
+                      :foreground "black"
+                      :underline nil
+                      :box nil)
+  (set-face-attribute 'tabbar-selected nil
+                      :background "black"
+                      :foreground "white"
+                      :box nil)
+  (set-face-attribute 'tabbar-unselected nil
+                      :box nil)
+
+  ;; 左に表示されるボタンを消す
+  (dolist (button '(tabbar-buffer-home-button
+                    tabbar-scroll-left-button
+                    tabbar-scroll-right-button))
+    (set button (cons (cons "" nil) (cons "" nil))))
+
+  (global-set-key [(meta ?\[) (?1) (?\;) (?5) (?i)] 'tabbar-forward)  ;; for mintty 
+  (global-set-key [(meta ?\[) (?1) (?\;) (?6) (?i)] 'tabbar-backward) ;; for mintty 
+  ;; (global-set-key [(control tab)] 'tabbar-forward)
+  ;; (global-set-key [(control shift tab)] 'tabbar-backward)
+
   (tabbar-mode))
 
 ;; マウス操作を有効に
