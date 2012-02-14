@@ -7,7 +7,6 @@ escape ^Tt
 vbell off
 
 ## ステータス行の設定
-# hardstatus alwayslastline "%{= wk}%-Lw%{= rw}%n %t%{-}%+Lw %=%{= wk}@%H %m/%d %C%a "
 hardstatus alwayslastline "%{= wk}%?%-Lw%?%{= rw}%n*%f %t%?(%u)%?%{-}%?%+Lw%? %= %H %d/%m/%Y %0c "
 
 ## スタートアップ時メッセージ無効
@@ -35,7 +34,7 @@ shell zsh
 ## マウスの有効化
 defmousetrack
 
-## 
+## flow 切る
 defflow off
 
 
