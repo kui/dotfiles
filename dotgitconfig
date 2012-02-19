@@ -2,4 +2,7 @@
 	name = Keiichiro Ui
 	email = keiichiro.ui@gmail.com
 [color]
-        ui = auto
+	ui = auto
+[core]
+	pager = 
+	editor = vi
