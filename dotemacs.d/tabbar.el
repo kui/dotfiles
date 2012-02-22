@@ -1605,8 +1605,8 @@ Returns non-nil if the new state is enabled.
   "Toggle Tabbar-Mwheel following Tabbar and Mouse-Wheel modes."
   (tabbar-mwheel-mode (if (and mouse-wheel-mode tabbar-mode) 1 -1)))
 
-(add-hook 'tabbar-mode-hook      'tabbar-mwheel-follow)
-(add-hook 'mouse-wheel-mode-hook 'tabbar-mwheel-follow)
+;; (add-hook 'tabbar-mode-hook      'tabbar-mwheel-follow)
+;; (add-hook 'mouse-wheel-mode-hook 'tabbar-mwheel-follow)
 
 ;;; Buffer tabs
 ;;

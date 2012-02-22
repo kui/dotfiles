@@ -1,6 +1,5 @@
 ;;;; -*- mode: lisp-interaction; syntax: elisp; coding: utf-8-unix -*-
 
-
 ;;ライブラリパスを追加
 (add-to-list 'load-path "~/.emacs.d")
 
@@ -245,7 +244,7 @@
           (lambda () 
             (remove-if 
              (lambda (b)
-               (and (string-match-p "^ ?\\*" (buffer-name b))
+               (and (string-match "^ ?\\*" (buffer-name b))
                     (not (string-equal (buffer-name (current-buffer))
                                        (buffer-name b)))))
              (buffer-list)))))

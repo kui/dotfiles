@@ -42,7 +42,7 @@ then
 
     if [ "$STY" -a ! "$SCREEN_INIT" ]
     then
-        [ $COLUMNS -gt 170 ] && screen -X split -v
+        [ $COLUMNS -gt 150 ] && screen -X split -v
         alias s="screen -X focus; screen"
         export SCREEN_INIT=true
     elif [ ! "$STY" ]

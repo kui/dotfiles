@@ -34,6 +34,12 @@ main(){
         echo "##############################################################"
     fi
 
+    local ln_opt="-sb"
+    if (echo $OSTYPE | grep "^darwin") > /dev/null
+    then
+	ln_opt="-sf"
+    fi
+
     for file in $link_file_list
     do
         local target_file="${curr_dir}/${file}"
@@ -52,7 +58,7 @@ main(){
         #    print_and_do "mv \"$dest_file\" \"${dest_file}.old\""
         #fi
 
-        print_and_do "ln -sb \"$target_file\" \"$dest_file\""
+        print_and_do "ln $ln_opt \"$target_file\" \"$dest_file\""
     done
 
 
