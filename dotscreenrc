@@ -32,7 +32,7 @@ defbce "on"
 shell zsh
 
 ## マウスの有効化
-defmousetrack
+# defmousetrack
 
 ## flow 切る
 defflow off
