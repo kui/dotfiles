@@ -45,11 +45,11 @@ then
         [ $COLUMNS -gt 150 ] && screen -X split -v
         alias s="screen -X focus; screen"
         export SCREEN_INIT=true
-    elif [ ! "$STY" ]
-    then 
-        echo "source ~/.screenrc" > ~/.screen.init
-        echo "layout new" >> ~/.screen.init
-        alias s="screen -c ~/.screen.init"
+    # elif [ ! "$STY" ]
+    # then 
+    #     echo "source ~/.screenrc" > ~/.screen.init
+    #     echo "layout new" >> ~/.screen.init
+    #     alias s="screen -c ~/.screen.init"
     fi
 fi
 

@@ -64,7 +64,7 @@
 ;; (display-time) 
 
 ;; メニューバーを消す
-(menu-bar-mode nil)
+(menu-bar-mode 0)
 
 ;; ウィンドウシステムを使っているとき
 (if window-system
