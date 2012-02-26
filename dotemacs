@@ -156,118 +156,17 @@
        default-frame-alist))
 
 ;; -------------------------------------------------------------------------
-
-;; css-mode
-;;(when (autoload-if-exist 'css-mode "css-mode" "Mode for editing CSS files" t)
-;;  (add-to-list 'auto-mode-alist '("\\.css$" . css-mode))
-;;  (eval-after-load "css-mode"
-;;    (let ()
-;;	;; css-mode 読み込まれた時に評価される
-;;	)))
-
-;; markdown-mode
-(when (autoload-if-exist 'markdown-mode "markdown-mode"
-			 "Major mode for editing Markdown files" t)
-
-  (add-to-list 'auto-mode-alist '("\\.markdown" . markdown-mode))
-  (add-to-list 'auto-mode-alist '("\\.md" . markdown-mode))
-
-  (eval-after-load "markdown-mode"
-    (let ()
-      ;; markdown-mode 読み込まれた時に評価される
-      ;;(define-key markdown-mode-map "\C-i" 'indent-for-tab-command)
-      ;;(define-key markdown-mode-map "TAB" 'indent-for-tab-command)
-      (setq indent-tabs-mode t)
-      (setq tab-width 4)
-      (add-hook 'before-save-hook
-		'(lambda () (tabify (point-min) (point-max))))
-      )))
-
-;; yaml-mode
-(when (autoload-if-exist 'yaml-mode "yaml-mode"
-			 "Major mode for editing yaml files" t)
-
-  (add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
-
-  (eval-after-load "yaml-mode"
-    (let ()
-      ;; yaml-mode 読み込まれた時に評価される
-      )))
-
-;; flymakeでrubyの構文チェック
-(when (require 'flymake-ruby nil t)
-  (add-hook 'ruby-mode-hook 'flymake-ruby-load)
-
-  ;; エラー行の初めのメッセージを取得する
-  (defun flymake-get-first-errline-message ()
-    "Get the first message of the first error line."
-    (interactive)
-    (let* ((first-errline-no
-	    (flymake-get-first-err-line-no flymake-err-info))
-	   (first-errline-info-list 
-	    (flymake-find-err-info flymake-err-info first-errline-no))
-	   (first-errline-first-info
-	    (nth 0 (nth 0 first-errline-info-list)))
-	   (first-errline-first-message 
-	    (flymake-ler-text first-errline-first-info))
-	   )
-      first-errline-first-message
-      )))
-
-;; nxhtml
-(defvar kui-nxhtml-file-name "src/nxhtml/autostart.el")
-(when (locate-library kui-nxhtml-file-name)
-  (load kui-nxhtml-file-name)
-  (menu-bar-mode 0))
-
-;; js2-mode
-(when (autoload-if-exist 'js2-mode "js2"
-			 "Major mode for editing javascript files" t)
-
-  (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
-
-  (eval-after-load "js2"
-    (let ()
-      ;; js2-mode が読み込まれた時に評価される
-      (message ";; loaded js2.el")
-
-      ;; js2-mode 向け flymake 
-      (when (and (load "flymake" t) (executable-find "jslint"))
-
-	(message "Load flymake for js2-mode")
-	
-	(defun flymake-js-init ()
-	  (let* ((temp-file (flymake-init-create-temp-buffer-copy
-			     'flymake-create-temp-inplace))
-		 (local-file (file-relative-name
-			      temp-file
-			      (file-name-directory buffer-file-name))))
-	    (list "jslint" (list local-file))))
-	
-	(add-to-list 'flymake-allowed-file-name-masks '("\\.js\\'" flymake-js-init))
-	
-	(defun flymake-js-load ()
-	  (interactive)
-	  (setq flymake-err-line-patterns
-		(cons '("^  Line:\\([0-9]+\\), Pos:\\([0-9]+\\), Reason:\\(.+\\)$"
-			nil 1 2 3)
-		      flymake-err-line-patterns))
-	  (flymake-mode t))
-	
-	(add-hook 'js2-mode-hook 'flymake-js-load)
-  ))))
-
-;; -------------------------------------------------------------------------
+;; 便利な感じのマイナーモード
 
 ;; auto-complete-mode
 ;; http://cx4a.org/software/auto-complete/index.ja.html
 ;; (define-key ac-complete-mode-map "\M-/" 'ac-stop)
 (when (require 'auto-complete-config nil t)
-  (add-to-list 'ac-dictionary-directories "~/.emacs.d.local/ac-dict")
+  (add-to-list 'ac-dictionary-directories "~/.emacs.d/ac-dict")
   (ac-config-default)
 
-  ;; *どんなときでも　AC-mode 発動
-  ;; (global-auto-complete-mode t)
+  ;; ac-modes に登録されてるメジャーモード時に ac 発動
+  (global-auto-complete-mode t)
   
   ;; *候補間を移動 
   ;; (define-key ac-complete-mode-map "\C-n" 'ac-next)
@@ -344,3 +243,211 @@
   ;; (global-set-key [(control shift tab)] 'tabbar-backward)
 
   (tabbar-mode))
+
+;; flymake 使うとき
+(defvar flymake-display-err-delay 1
+  "delay to display flymake error message ")
+(defvar flymake-display-err-timer nil
+  "timer for flymake-display-err-menu-for-current-line")
+(defvar flymake-display-err-before-line nil)
+(defvar flymake-display-err-before-colmun nil)
+
+(eval-after-load "flymake"
+  '(let* ()
+
+    ;; flymake 現在行のエラーをpopup.elのツールチップで表示する
+    ;; https://gist.github.com/292827
+    (defun flymake-display-err-menu-for-current-line ()
+      (interactive)
+      (let* ((line-no (flymake-current-line-no))
+	     (line-err-info-list (nth 0 (flymake-find-err-info flymake-err-info line-no))))
+	(when (and (flymake-display-err-check-moved line-no (current-column))
+		   line-err-info-list)
+	  (setq flymake-display-err-before-line-no line-no)
+	  (let* ((count (length line-err-info-list))
+		 (menu-item-text nil))
+	    (while (> count 0)
+	      (setq menu-item-text (flymake-ler-text (nth (1- count) line-err-info-list)))
+	      (let* ((file (flymake-ler-file (nth (1- count) line-err-info-list)))
+		     (line (flymake-ler-line (nth (1- count) line-err-info-list))))
+		(if file
+		    (setq menu-item-text
+			  (concat menu-item-text " - " file "(" (format "%d" line) ")"))))
+	      (setq count (1- count))
+	      (if (> count 0) (setq menu-item-text (concat menu-item-text "\n")))
+	      )
+	    (popup-tip menu-item-text)))))
+
+    (defun flymake-display-err-check-moved (cur-line cur-col)
+      (let* ((is-not-moved (and flymake-display-err-before-line
+				flymake-display-err-before-colmun
+				(= cur-line flymake-display-err-before-line)
+				(= cur-col flymake-display-err-before-colmun))))
+	;; (message (concat "line:" cur-line ", col:" cur-col))
+	(setq flymake-display-err-before-line cur-line
+	      flymake-display-err-before-colmun cur-col)
+	(not is-not-moved)))
+
+    (global-set-key "\M-e" 
+		    '(lambda ()
+		       (interactive)
+		       (let ()
+			 (message "next error")
+			 (flymake-goto-next-error)
+			 (flymake-display-err-menu-for-current-line))))
+    (global-set-key "\M-E" 
+		    '(lambda ()
+		       (interactive)
+		       (let ()
+			 (message "prev error")
+			 (flymake-goto-prev-error)
+			 (flymake-display-err-menu-for-current-line))))
+
+    (unless flymake-display-err-timer
+      (setq flymake-display-err-timer
+	    (run-with-idle-timer flymake-display-err-delay
+				 t
+				 'flymake-display-err-menu-for-current-line)))
+    
+    ;; (defvar flymake-display-err-delay 0.5
+    ;;	 "delay to display flymake error message ")
+    ;; (defvar flymake-display-err-timer nil
+    ;;	 "timer for flymake-display-err-menu-for-current-line")
+
+    ;; (defun flymake-display-err-set-timer ()
+    ;;	 (unless flymake-display-err-timer
+    ;;	 (setq flymake-display-err-timer 
+    ;;	       (run-with-idle-timer flymake-display-err-delay
+    ;;				 nil
+    ;;				 'flymake-display-err-menu-for-current-line))))
+
+    ;; (defun flymake-display-err-cancel-timer ()
+    ;;	 (when (timerp flymake-display-err-timer)
+    ;;	 (cancel-timer flymake-display-err-timer)
+    ;;	 (setq flymake-display-err-timer nil)))
+    
+    ))
+
+;; -------------------------------------------------------------------------
+;; メジャーモードの設定や読み込み
+
+;; css-mode
+;;(when (autoload-if-exist 'css-mode "css-mode" "Mode for editing CSS files" t)
+;;  (add-to-list 'auto-mode-alist '("\\.css$" . css-mode))
+;;  (eval-after-load "css-mode"
+;;    (let ()
+;;	;; css-mode 読み込まれた時に評価される
+;;	)))
+
+;; markdown-mode
+(when (autoload-if-exist 'markdown-mode "markdown-mode"
+			 "Major mode for editing Markdown files" t)
+
+  (add-to-list 'auto-mode-alist '("\\.markdown" . markdown-mode))
+  (add-to-list 'auto-mode-alist '("\\.md" . markdown-mode))
+
+  (eval-after-load "markdown-mode"
+    (let ()
+      ;; markdown-mode 読み込まれた時に評価される
+      ;;(define-key markdown-mode-map "\C-i" 'indent-for-tab-command)
+      ;;(define-key markdown-mode-map "TAB" 'indent-for-tab-command)
+      (setq indent-tabs-mode t)
+      (setq tab-width 4)
+      (add-hook 'before-save-hook
+		'(lambda () (tabify (point-min) (point-max))))
+      )))
+
+;; yaml-mode
+(when (autoload-if-exist 'yaml-mode "yaml-mode"
+			 "Major mode for editing yaml files" t)
+
+  (add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
+
+  (eval-after-load "yaml-mode"
+    (let ()
+      ;; yaml-mode 読み込まれた時に評価される
+      )))
+
+;; flymakeでrubyの構文チェック
+(when (and 'ruby-mode (require 'flymake-ruby nil t))
+  (add-hook 'ruby-mode-hook 'flymake-ruby-load))
+
+;; nxhtml
+(defvar kui-nxhtml-file-name "src/nxhtml/autostart.el")
+(when (locate-library kui-nxhtml-file-name)
+  (load kui-nxhtml-file-name)
+  (menu-bar-mode 0))
+
+;; js2-mode
+(when (autoload-if-exist 'js2-mode "js2"
+			 "Major mode for editing javascript files" t)
+
+  (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+
+  (eval-after-load "js2"
+    (let ()
+      ;; js2-mode が読み込まれた時に評価される
+      (message ";; loaded js2.el")
+
+      ;; js2-mode 向け flymake 
+      (when (and (require 'flymake nil t) (executable-find "jslint"))
+
+	(message "Load flymake for js2-mode")
+	
+	(defun flymake-js-init ()
+	  (let* ((temp-file (flymake-init-create-temp-buffer-copy
+			     'flymake-create-temp-inplace))
+		 (local-file (file-relative-name
+			      temp-file
+			      (file-name-directory buffer-file-name))))
+	    (list "jslint" (list local-file))))
+	
+	(add-to-list 'flymake-allowed-file-name-masks '("\\.js\\'" flymake-js-init))
+	
+	(defun flymake-js-load ()
+	  (interactive)
+	  (setq flymake-err-line-patterns
+		(cons '("^  Line:\\([0-9]+\\), Pos:\\([0-9]+\\), Reason:\\(.+\\)$"
+			nil 1 2 3)
+		      flymake-err-line-patterns))
+	  (flymake-mode t))
+	
+	(add-hook 'js2-mode-hook 'flymake-js-load)
+  ))))
+
+;; coffee-mode
+(when (autoload-if-exist 'coffee-mode "coffee-mode"
+			 "Major mode for editing coffescript files" t)
+
+  (add-to-list 'auto-mode-alist '("\\.coffee$" . coffee-mode))
+  (add-to-list 'auto-mode-alist '("Cakefile" . coffee-mode))
+
+  (eval-after-load "coffee-mode"
+    (let* ((coffee-command "coffee"))
+      ;; coffee-mode が読み込まれた時に評価される
+      (message "Load coffee-settings")
+      (add-to-list 'ac-modes 'coffee-mode)
+
+      ;; タブ幅
+      (setq coffee-tab-width 2)
+
+      ;; coffee-mode 向け flymake 
+      (when (and (require 'flymake nil t) (executable-find coffee-command))
+	(message "Load flymake for coffee-mode")
+	(defun flymake-js-init ()
+	  (let* ((temp-file (flymake-init-create-temp-buffer-copy
+			     'flymake-create-temp-inplace))
+		 (local-file (file-relative-name
+			      temp-file
+			      (file-name-directory buffer-file-name))))
+	    (list coffee-command (list local-file))))
+	(defun flymake-coffee-load ()
+	  (interactive)
+	  (add-to-list 'flymake-allowed-file-name-masks '("\\.coffee\\'" flymake-js-init))
+	  (add-to-list 'flymake-err-line-patterns
+		       '("Error: In \\([^,]+\\), \\(.+ on line \\([0-9]+\\).*\\)"
+			   1 3 nil 2))
+	  (flymake-mode t))
+	
+	(add-hook 'coffee-mode-hook 'flymake-coffee-load)
+	))))
