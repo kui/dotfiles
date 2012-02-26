@@ -37,4 +37,6 @@ shell zsh
 ## flow 切る
 defflow off
 
-
+# layout を定義
+layout new 1 one_colmun
+layout new 0 two_colmun
