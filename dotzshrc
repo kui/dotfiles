@@ -18,6 +18,7 @@ path=({$HOME/local,,/usr,/usr/local}/bin(N-/))
 ## -T: SUDO_PATHとsudo_pathを連動する。
 typeset -xT SUDO_PATH sudo_path
 typeset -U sudo_path
+
 ## (N-/): 存在しないディレクトリは登録しない。
 ##    パス(...): ...という条件にマッチするパスのみ残す。
 ##	      N: NULL_GLOBオプションを設定。

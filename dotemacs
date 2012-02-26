@@ -220,6 +220,43 @@
   (load kui-nxhtml-file-name)
   (menu-bar-mode 0))
 
+;; js2-mode
+(when (autoload-if-exist 'js2-mode "js2"
+			 "Major mode for editing javascript files" t)
+
+  (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+
+  (eval-after-load "js2"
+    (let ()
+      ;; js2-mode が読み込まれた時に評価される
+      (message ";; loaded js2.el")
+
+      ;; js2-mode 向け flymake 
+      (when (and (load "flymake" t) (executable-find "jslint"))
+
+	(message "Load flymake for js2-mode")
+	
+	(defun flymake-js-init ()
+	  (let* ((temp-file (flymake-init-create-temp-buffer-copy
+			     'flymake-create-temp-inplace))
+		 (local-file (file-relative-name
+			      temp-file
+			      (file-name-directory buffer-file-name))))
+	    (list "jslint" (list local-file))))
+	
+	(add-to-list 'flymake-allowed-file-name-masks '("\\.js\\'" flymake-js-init))
+	
+	(defun flymake-js-load ()
+	  (interactive)
+	  (setq flymake-err-line-patterns
+		(cons '("^  Line:\\([0-9]+\\), Pos:\\([0-9]+\\), Reason:\\(.+\\)$"
+			nil 1 2 3)
+		      flymake-err-line-patterns))
+	  (flymake-mode t))
+	
+	(add-hook 'js2-mode-hook 'flymake-js-load)
+  ))))
+
 ;; -------------------------------------------------------------------------
 
 ;; auto-complete-mode
