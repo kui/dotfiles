@@ -1,0 +1,14 @@
+BoldAsFont=no
+Font=Inconsolata
+FontHeight=14
+Locale=
+Charset=
+CursorType=block
+Scrollbar=none
+Term=xterm-256color
+CursorColour=53,255,11
+SwitchShortcuts=no
+CopyAsRTF=no
+ClicksPlaceCursor=yes
+RightClickAction=paste
+Rows=47
