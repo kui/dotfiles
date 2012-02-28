@@ -1,17 +1,26 @@
-#!/bin/sh
+#!/bin/bash
 # -*- coding:utf-8 -*-
 # install script for setting files
 
-link_file_list="
-dotscreenrc
-dotemacs
-dotemacs.d
-dotgitconfig
-dotzshrc
-dotzlogin
-"
+link_file_list=(
+    dotscreenrc
+    dotemacs
+    dotemacs.d
+    dotgitconfig
+    dotzshrc
+    dotzlogin
+)
+
+if [ $OSTYPE = "cygwin" ]
+then
+    link_file_list=(
+	dotminttyrc
+	${link_file_list[@]}
+    )
+fi
 
 run_flag=1
+counter=0
 
 main(){
     local prev_dir=`pwd`
@@ -22,16 +31,16 @@ main(){
     run_flag=1
     while getopts r opt
     do
-        case $opt in
-            r) run_flag=0 ;;
-        esac
+	case $opt in
+	    r) run_flag=0 ;;
+	esac
     done
 
     if [ $run_flag -eq 1 ]
     then
-        echo "##############################################################"
-        echo "# dry-run (if these commands are correct, attach -r option.) #"
-        echo "##############################################################"
+	echo "##############################################################"
+	echo "# dry-run (if these commands are correct, attach -r option.) #"
+	echo "##############################################################"
     fi
 
     local ln_opt="-sb"
@@ -40,30 +49,38 @@ main(){
 	ln_opt="-sf"
     fi
 
-    for file in $link_file_list
+    for file in ${link_file_list[@]}
     do
-        local target_file="${curr_dir}/${file}"
-        local dest_file=`echo "$file" | sed -e 's/^dot/./'`
-        local dest_file="${HOME}/${dest_file}"
+	local target_file="${curr_dir}/${file}"
+	local dest_file=`echo "$file" | sed -e 's/^dot/./'`
+	local dest_file="${HOME}/${dest_file}"
 
-        if ! [ -e "$target_file" ]
-        then
-            echo "error: cannot find $target_file" >&2
-            exit 1
-        fi
+	if ! [ -e "$target_file" ]
+	then
+	    echo "error: cannot find $target_file" >&2
+	    exit 1
+	fi
 
-        #if [ -e "$dest_file" ]
-        #then
-        #    [ "`echo "$target_file"`" = "`readlink "$dest_file"`" ] && continue
-        #    print_and_do "mv \"$dest_file\" \"${dest_file}.old\""
-        #fi
+	#if 
+	#then
+	#    
+	#    print_and_do "mv \"$dest_file\" \"${dest_file}.old\""
+	#fi
 
-        print_and_do "ln $ln_opt \"$target_file\" \"$dest_file\""
+	# skip if $dest_file exist and the link is no change
+	[ -h "$dest_file" -a\
+	  "$target_file" = "`readlink "$dest_file"`" ] && continue
+
+	print_and_do "ln $ln_opt \"$target_file\" \"$dest_file\""
     done
-
 
     create_empty_zsh ~/.zshrc.local
     create_empty_zsh ~/.zlogin.local
+
+    if [ $counter -eq 0 ]
+    then
+	echo "# do nothing"
+    fi
 
     cd "$prev_dir"
 }
@@ -71,7 +88,7 @@ main(){
 create_empty_zsh(){
     if ! [ -e $1 ]
     then
-        print_and_do "echo \"# -*- mode: sh; coding: utf-8 -*-\" > $1"
+	print_and_do "echo \"# -*- mode: sh; coding: utf-8 -*-\" > $1"
     fi
 }
 
@@ -79,6 +96,11 @@ print_and_do(){
     local cmd="$1"
     echo "$cmd"
     [ $run_flag -eq 0 ] && eval "$cmd"
+    count
+}
+
+count(){
+    counter=$((counter+1))
 }
 
 main "$@"
