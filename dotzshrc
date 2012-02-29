@@ -27,8 +27,7 @@ typeset -U sudo_path
 ##	      /: ディレクトリのみ残す。
 sudo_path=({,/usr/pkg,/usr/local,/usr}/sbin(N-/))
 
-export TERM="xterm"
-if infocmp xterm-256color > /dev/null 2>&1
+if [ $TERM = "xterm" ] && infocmp xterm-256color > /dev/null 2>&1
 then
     export TERM="xterm-256color"
 fi
@@ -351,5 +350,11 @@ zstyle ':completion:sudo:*' environ PATH="$SUDO_PATH:$PATH"
 ## 特定のコマンドの補完を無効化
 # compdef -d java
 
+## mintty の ANSI Colors の設定
+COLOR_SCHEME="$HOME/.zshrc.d/color_schemes/my_colors"
+[ -f "$COLOR_SCHEME" ] && source "$COLOR_SCHEME"
+
+## マシンごとの設定
 ! [ -f ~/.zshrc.local ] && touch ~/.zshrc.local
 source ~/.zshrc.local
+

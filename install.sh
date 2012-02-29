@@ -8,6 +8,7 @@ link_file_list=(
     dotemacs.d
     dotgitconfig
     dotzshrc
+    dotzshrc.d
     dotzlogin
 )
 

@@ -1,4 +1,4 @@
-BoldAsFont=no
+BoldAsFont=yes
 Font=Inconsolata
 FontHeight=14
 Locale=
@@ -12,3 +12,4 @@ CopyAsRTF=no
 ClicksPlaceCursor=yes
 RightClickAction=paste
 Rows=47
+Transparency=glass
