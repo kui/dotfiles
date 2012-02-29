@@ -1,1 +1,1 @@
-/home/kui/toybox/flymake-coffeescript/flymake-coffeescript.el
+flymake-coffeescript/flymake-coffeescript.el
