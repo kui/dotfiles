@@ -27,9 +27,10 @@ then
     export TERM="xterm-256color"
 fi
 
+# 表示言語設定
 export LANG=ja_JP.UTF-8
 
-# 補完
+# 補完スクリプトのパス
 fpath=($HOME/.rvm/scripts/zsh/Completion(N-/) $fpath)
 
 ############################################################
