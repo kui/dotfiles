@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # -*- coding:utf-8 -*-
 # install script for setting files
 
@@ -20,6 +20,7 @@ then
 fi
 
 run_flag=1
+counter=0
 
 main(){
     local prev_dir=`pwd`
@@ -73,9 +74,13 @@ main(){
 	print_and_do "ln $ln_opt \"$target_file\" \"$dest_file\""
     done
 
-
     create_empty_zsh ~/.zshrc.local
     create_empty_zsh ~/.zlogin.local
+
+    if [ $counter -eq 0 ]
+    then
+	echo "# do nothing"
+    fi
 
     cd "$prev_dir"
 }
@@ -91,6 +96,11 @@ print_and_do(){
     local cmd="$1"
     echo "$cmd"
     [ $run_flag -eq 0 ] && eval "$cmd"
+    count
+}
+
+count(){
+    counter=$((counter+1))
 }
 
 main "$@"
