@@ -11,7 +11,8 @@ typeset -U path
 ##		 globがマッチしなかったり存在しないパスを無視する。
 ##	      -: シンボリックリンク先のパスを評価。
 ##	      /: ディレクトリのみ残す。
-path=({$HOME/local,,/usr,/usr/local}/bin(N-/))
+path=({$HOME/local,,/usr,/usr/local}/bin(N-/)
+	/app/{script,mingw/tdm/bin,gs/bin,gs/lib}(N-/) $path)
 
 # sudo時のパスの設定
 ## -x: export SUDO_PATHも一緒に行う。
