@@ -144,8 +144,8 @@
        '(
 	 ;; (corsor-type . bar)
 	 (corsor-color . "green")
-	 (foreground-color . "white")
-	 (background-color . "black")
+	 ;; (foreground-color . "white")
+	 ;; (background-color . "black")
 	 )
        default-frame-alist))
 
