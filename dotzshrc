@@ -197,8 +197,8 @@ update_rprompt(){
     export VCS_IS_ADDED=true
     if [ $VCS_NAME ]
     then
-	[ $vcs_info_msg_3_ ] && export VCS_IS_COMMITED=
-	[ $vcs_info_msg_4_ ] && export VCS_IS_ADDED=
+	[ $vcs_info_msg_3_ ]&&[ ! $vcs_info_msg_3_ = %c ]&&export VCS_IS_COMMITED=
+	[ $vcs_info_msg_4_ ]&&[ ! $vcs_info_msg_4_ = %u ]&&export VCS_IS_ADDED=
     fi
     # echo $vcs_info_msg_3_$vcs_info_msg_4_$VCS_IS_COMMITED$VCS_IS_ADDED
 }
