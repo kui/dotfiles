@@ -12,7 +12,7 @@ typeset -U path
 ##	      -: シンボリックリンク先のパスを評価。
 ##	      /: ディレクトリのみ残す。
 path=($HOME/{.rvm,local}/bin(N-/)
-	{,/usr,/usr/local}/bin(N-/)
+	{/usr/local,/usr,}/bin(N-/)
 	/app/{script,mingw/tdm/bin,gs/bin,gs/lib}(N-/)
 	$path)
 
