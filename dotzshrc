@@ -193,12 +193,12 @@ update_rprompt(){
     export VCS_BRANCH_NAME=$vcs_info_msg_1_
     export VCS_REVISION=$vcs_info_msg_2_
     export VCS_ACTION=$vcs_info_msg_5_
-    export VCS_IS_COMMITED=
-    export VCS_IS_ADDED=
+    export VCS_IS_COMMITED=true
+    export VCS_IS_ADDED=true
     if [ $VCS_NAME ]
     then
-	[ $vcs_info_msg_3_ ] || export VCS_IS_COMMITED=true
-	[ $vcs_info_msg_4_ ] || export VCS_IS_ADDED=true
+	[ $vcs_info_msg_3_ ] && export VCS_IS_COMMITED=
+	[ $vcs_info_msg_4_ ] && export VCS_IS_ADDED=
     fi
     # echo $vcs_info_msg_3_$vcs_info_msg_4_$VCS_IS_COMMITED$VCS_IS_ADDED
 }
