@@ -193,12 +193,12 @@ update_rprompt(){
     export VCS_BRANCH_NAME=$vcs_info_msg_1_
     export VCS_REVISION=$vcs_info_msg_2_
     export VCS_ACTION=$vcs_info_msg_5_
-    export VCS_IS_COMMITED=true
-    export VCS_IS_ADDED=true
+    export VCS_IS_COMMITED=t
+    export VCS_IS_ADDED=t
     if [ $VCS_NAME ]
     then
-	[ $vcs_info_msg_3_ ]&&[ ! $vcs_info_msg_3_ = %c ]&&export VCS_IS_COMMITED=
-	[ $vcs_info_msg_4_ ]&&[ ! $vcs_info_msg_4_ = %u ]&&export VCS_IS_ADDED=
+	[ -n "$vcs_info_msg_3_" -a ! $vcs_info_msg_3_ = %c ]&&export VCS_IS_COMMITED=
+	[ -n "$vcs_info_msg_4_" -a ! $vcs_info_msg_4_ = %u ]&&export VCS_IS_ADDED=
     fi
     # echo $vcs_info_msg_3_$vcs_info_msg_4_$VCS_IS_COMMITED$VCS_IS_ADDED
 }
@@ -268,7 +268,9 @@ construct_left(){
     then
 	local u=$USER_COLOR h=$HOST_COLOR p='%F{yellow}' d='%f'
 	local v=$(
-	    if [ $VCS_IS_ADDED ] && [ $VCS_IS_COMMITED ]
+	    if [ "$vcs_info_msg_3_" = %c ]
+	    then echo -n '%f'
+	    elif [ $VCS_IS_ADDED ] && [ $VCS_IS_COMMITED ]
 	    then echo -n '%F{green}'
 	    else echo -n '%F{red}'
 	    fi
