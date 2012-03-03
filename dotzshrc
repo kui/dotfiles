@@ -200,7 +200,7 @@ update_rprompt(){
 	[ $vcs_info_msg_3_ ] || export VCS_IS_COMMITED=true
 	[ $vcs_info_msg_4_ ] || export VCS_IS_ADDED=true
     fi
-    echo $vcs_info_msg_3_$vcs_info_msg_4_$VCS_IS_COMMITED$VCS_IS_ADDED
+    # echo $vcs_info_msg_3_$vcs_info_msg_4_$VCS_IS_COMMITED$VCS_IS_ADDED
 }
 precmd_functions=($precmd_functions update_rprompt)
 
