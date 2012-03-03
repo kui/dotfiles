@@ -14,7 +14,7 @@ typeset -U path
 path=($HOME/{.rvm,local}/bin(N-/)
 	{,/usr,/usr/local}/bin(N-/)
 	/app/{script,mingw/tdm/bin,gs/bin,gs/lib}(N-/)
-        $path)
+	$path)
 
 # sudo時のパスの設定
 ## -x: export SUDO_PATHも一緒に行う。
@@ -135,111 +135,178 @@ then
     fi
 fi
 
+
+# 色一覧
+function color_list(){
+    for c in {016..255}
+    do
+	echo -n "\e[38;5;${c}m $c"
+	[ $(($((c-16))%6)) -eq 5 ] && echo
+    done
+}
+
 ## 256色生成用便利関数
 ### red: 0-5
 ### green: 0-5
 ### blue: 0-5
 color256()
 {
-    local red=$1; shift
-    local green=$2; shift
-    local blue=$3; shift
-
-    echo -n $[$red * 36 + $green * 6 + $blue + 16]
+    echo -n $(($1 * 36 + $2 * 6 + $3 + 16))
 }
 
-fg256()
-{
-    echo -n $'\e[38;5;'$(color256 "$@")"m"
+color256_echo(){
+    if [ $# -lt 3 ]
+    then
+	echo "usage: $0 RED GREEN BLUE [string...]"
+	echo "	RED, GREEN, BLUE: 0-5"
+	echo "sample: $0 0 5 5 foo"
+	return 1
+    fi
+
+    local r=$1; shift
+    local g=$1; shift
+    local b=$1; shift
+
+    echo "\e[38;5;`color256 $r $g $b`m$@"
 }
 
-bg256()
-{
-    echo -n $'\e[48;5;'$(color256 "$@")"m"
+#####################################################################
+# バージョンシステム管理下のディレクトリにいる時の諸々の設定
+autoload -Uz vcs_info
+zstyle ':vcs_info:*' get-revision true
+zstyle ':vcs_info:*' check-for-changes true
+zstyle ':vcs_info:*' max-exports 6
+zstyle ':vcs_info:*' formats '%s' '%b' '%i' '%c' '%u'
+zstyle ':vcs_info:*' actionformats '%s' '%b' '%i' '%c' '%u' '%a'
+
+# インデックスに追加された場合に表示される文字列
+# zstyle ':vcs_info:git:*' stagedstr "S"
+# 作業コピーに変更があった場合に表示される文字列
+# zstyle ':vcs_info:git:*' unstagedstr "U"
+
+# bzr のとき、vcs_info でネットワーク使わせない
+zstyle ':vcs_info:bzr:*' use-simple true
+
+update_rprompt(){
+    LANG=en_US.UTF-8 vcs_info
+    export VCS_NAME=$vcs_info_msg_0_
+    export VCS_BRANCH_NAME=$vcs_info_msg_1_
+    export VCS_REVISION=$vcs_info_msg_2_
+    export VCS_ACTION=$vcs_info_msg_5_
+    export VCS_IS_COMMITED=
+    export VCS_IS_ADDED=
+    if [ $VCS_NAME ]
+    then
+	[ $vcs_info_msg_3_ ] || export VCS_IS_COMMITED=true
+	[ $vcs_info_msg_4_ ] || export VCS_IS_ADDED=true
+    fi
+    echo $vcs_info_msg_3_$vcs_info_msg_4_$VCS_IS_COMMITED$VCS_IS_ADDED
 }
+precmd_functions=($precmd_functions update_rprompt)
 
 #########################################################################
-# 変数セット
-
-# PROMPT のための色一覧
-local Black=$'%{\e[0;30m%}'
-local DarkGray=$'%{\e[1;30m%}'
-local Blue=$'%{\e[0;34m%}'
-local LightBlue=$'%{\e[1;34m%}'
-local Green=$'%{\e[0;32m%}'
-local LightGreen=$'%{\e[1;32m%}'
-local Cyan=$'%{\e[0;36m%}'
-local LightCyan=$'%{\e[1;36m%}'
-local Red=$'%{\e[0;31m%}'
-local LightRed=$'%{\e[1;31m%}'
-local Purple=$'%{\e[0;35m%}'
-local LightPurple=$'%{\e[1;35m%}'
-local Brown=$'%{\e[0;33m%}'
-local Yellow=$'%{\e[1;33m%}'
-local LightGray=$'%{\e[0;37m%}'
-local White=$'%{\e[1;37m%}'
-local Default=$'%{\e[1;39m%}'
-
-ColorList=($Purple $Green $Blue $Cyan $Red)
-local PromptUserColor=$ColorList[$((($RANDOM % ${#ColorList})+1))]
-local PromptHostColor=$ColorList[$((($RANDOM % ${#ColorList})+1))]
-# ランダムに色を設定するプロンプト(user, host 別の色)
-# PROMPT=$'\n'$PromptUserColor'${USER}'$Default'@'$PromptHostColor'${HOST} '$Default'%~ '$'\n'$Default'%(!.#.$) '
-# ランダムに色を設定するプロンプト(user, host 同じ色)
-PROMPT=$'\n'$PromptUserColor'${USER}@${HOST} '$Yellow'%~ '$'\n'$Default'%(!.#.$) '
-
-
-################################################################################
 ##    プロンプト を生成
 colors=(
-    # $'%{\e[0;30m%}' # black
-    $'%{\e[0;31m%}' # red
-    $'%{\e[0;32m%}' # green
-    $'%{\e[0;33m%}' # brown
-    $'%{\e[0;34m%}' # blue
-    $'%{\e[0;35m%}' # purple
-    $'%{\e[0;36m%}' # cyan
-    # $'%{\e[0;37m%}' # gray
+    # $'\e[0;30m' # black
+    $'\e[0;31m' # red
+    $'\e[0;32m' # green
+    $'\e[0;33m' # brown
+    $'\e[0;34m' # blue
+    $'\e[0;35m' # purple
+    $'\e[0;36m' # cyan
+    # $'\e[0;37m' # gray
     
     # light colors
-    # $'%{\e[1;30m%}' # black
-    $'%{\e[1;31m%}' # red
-    $'%{\e[1;32m%}' # green
-    $'%{\e[1;33m%}' # brown
-    $'%{\e[1;34m%}' # blue
-    $'%{\e[1;35m%}' # purple
-    $'%{\e[1;36m%}' # cyan
-    # $'%{\e[1;37m%}' # gray
+    # $'\e[1;30m' # black
+    $'\e[1;31m' # red
+    $'\e[1;32m' # green
+    $'\e[1;33m' # brown
+    $'\e[1;34m' # blue
+    $'\e[1;35m' # purple
+    $'\e[1;36m' # cyan
+    # $'\e[1;37m' # gray
 )
+
+if [ `echotc Co` = "256" ] 
+then
+    colors=()
+    local c=0
+    for c in {000..255}
+    do
+	# 無視する色
+	if [ $c -eq 000 ] || [ $c -ge 016 -a $c -le 021 ] || [ $c -ge 232 -a $c -le 238 ]
+	then
+	    continue
+	fi
+	colors=($colors $'\e[38;5;'$c'm')
+    done
+fi
 
 export USER_COLOR=$colors[$((`echo "$USER" | sum | cut -f1 -d' '`%${#colors}))+1]
 export HOST_COLOR=$colors[$((`echo "$HOST" | sum | cut -f1 -d' '`%${#colors}))+1]
+export BAR_COLOR=$'\e[0;37m'
+export TIME_COLOR=$'\e[0;37m'
+if [ `echotc Co` = "256" ] 
+then
+    export BAR_COLOR=$'\e[38;5;240m'
+    export TIME_COLOR=$'\e[38;5;245m'
+fi
+
+construct_left(){
+    local non_color=
+    while getopts n opt
+    do
+	case $opt in
+	    n) local no_color=true;;
+	esac
+    done
+    shift `expr $OPTIND - 1`
+    local current_path=$1
+
+    local u= h= p= v= d=
+    if [ ! $no_color ]
+    then
+	local u=$USER_COLOR h=$HOST_COLOR p='%F{yellow}' d='%f'
+	local v=$(
+	    if [ $VCS_IS_ADDED ] && [ $VCS_IS_COMMITED ]
+	    then echo -n '%F{green}'
+	    else echo -n '%F{red}'
+	    fi
+	)
+    fi
+
+    # プロンプトのフォーマット
+    echo -n "$u${USER}$d@$h${HOST}$d:$p${current_path}"
+    [ $VCS_NAME ] && echo -n " $v($VCS_NAME/$VCS_BRANCH_NAME)"
+    [ $VCS_ACTION ] && echo -n "[$VCS_ACTION]"
+    echo -n "$d"
+}
+
 update_prompt(){
     local datetime="`date +'%Y/%m/%d %H:%M:%S'`"
     local escaped_home="`echo ${HOME}|sed -e 's/\//\\\\\//g'`"
     local current_path="`pwd|sed -e \"s/^${escaped_home}/~/\"`"
 
-    local left="$USER_COLOR$USER"$'%{\e[1;39m%}'"@$HOST_COLOR$HOST"$'%{\e[1;39m%}'":"$'%{\e[1;33m%}'"${current_path} "
+    # local left="$USER@$HOST:$current_path"
+    local left="$(construct_left -n $current_path)"
     local right=" ${datetime} "
-    local num_bar=`print -n -P -- "$left$right" | sed -e $'s/\e\[[0-9;]*m//g' | wc -m`
-    local num_bar=$((${COLUMNS}-${num_bar}))
+    local num_bar=$((${COLUMNS}-${#left}-${#right}))
 
     if [ $num_bar -lt 0 ]
     then
 	local datetime="`date +'%H:%M:%S'`"
 	local right=" ${datetime} "
-	local num_bar=`print -n -P -- "$left$right" | sed -e $'s/\e\[[0-9;]*m//g' | wc -m | sed -e 's/ //g'`
-	local num_bar=$((${COLUMNS}-${num_bar}))
-	if [ $num_bar -lt 0 ]
-	then
-	    local right=''
-	    local num_bar=`print -n -P -- "$left$right" | sed -e $'s/\e\[[0-9;]*m//g' | wc -m`
-	    local num_bar=$((${COLUMNS}-${num_bar}))
-	fi
+	local num_bar=$((${COLUMNS}-${#left}-${#right}))
     fi
 
-    local sep="-"
-    local bar=""
+    if [ $num_bar -lt 0 ]
+    then
+	local right=''
+	local num_bar=$((${COLUMNS}-${#left}-${#right}))
+    fi
+
+    local sep='-'
+    local bar=''
     local i=0
     while [ $num_bar -gt $((${#bar}+${#sep})) ]
     do
@@ -251,9 +318,15 @@ update_prompt(){
     do
 	local bar=" $bar"
     done
-    PROMPT=$'\n'"${left}"$'%{\e[0;37m%}'"${bar}${right}"$'\n'"${Default}\$ "
+
+    local bar="$BAR_COLOR$bar"
+    local right="$TIME_COLOR$right"
+    # local left="${USER_COLOR}${USER}%f@${HOST_COLOR}${HOST}%f:%F{yellow}${current_path}%f"
+    local left="$(construct_left $current_path)"
+    PROMPT=$'\n'"${left}${bar}${right}"$'\n'"%f%(!.#.$) "
 }
 precmd_functions=($precmd_functions update_prompt)
+PROMPT=$'\n'"%F{green}${USER}@${HOST} %F{yellow}%~%f "$'\n'"%(!.#.$) "
 
 ############################################################
 ##  zsh プロパティ
@@ -350,11 +423,19 @@ zstyle ':completion:sudo:*' environ PATH="$SUDO_PATH:$PATH"
 ## 特定のコマンドの補完を無効化
 # compdef -d java
 
+############################################################
+##  外部設定ファイル
+
+source_if_exist(){
+    [ -f "$1" ] && source "$1"
+}
+
 ## mintty の ANSI Colors の設定
-COLOR_SCHEME="$HOME/.zshrc.d/color_schemes/my_colors"
-[ -f "$COLOR_SCHEME" ] && source "$COLOR_SCHEME"
+source_if_exist "$HOME/.zshrc.d/color_schemes/my_colors"
+
+## rvm
+source_if_exist "~/.rvm/scripts/rvm"
 
 ## マシンごとの設定
-! [ -f ~/.zshrc.local ] && touch ~/.zshrc.local
-source ~/.zshrc.local
+! [ -f ~/.zshrc.local ] && touch ~/.zshrc.local && source ~/.zshrc.local
 
