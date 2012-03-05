@@ -429,14 +429,16 @@ zstyle ':completion:sudo:*' environ PATH="$SUDO_PATH:$PATH"
 ##  外部設定ファイル
 
 source_if_exist(){
-    [ -f "$1" ] && source "$1"
+    [ -f "$1" ] || return
+    echo load $1
+    source "$1"
 }
 
 ## mintty の ANSI Colors の設定
 source_if_exist "$HOME/.zshrc.d/color_schemes/my_colors"
 
 ## rvm
-source_if_exist "~/.rvm/scripts/rvm"
+source_if_exist "$HOME/.rvm/scripts/rvm"
 
 ## マシンごとの設定
 ! [ -f ~/.zshrc.local ] && touch ~/.zshrc.local && source ~/.zshrc.local

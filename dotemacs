@@ -64,13 +64,13 @@
 (setq truncate-partial-width-windows nil)
 
 ;; C-x l で goto-line を実行
-(define-key ctl-x-map "l" 'goto-line) 
+(define-key ctl-x-map "l" 'goto-line)
 
 ;; インデントの際にタブを用いるか否か
 (setq-default indent-tabs-mode nil)
 
 ;; 時間を表示
-;; (display-time) 
+;; (display-time)
 
 ;; メニューバーを消す
 (menu-bar-mode 0)
@@ -90,7 +90,7 @@
       (add-to-list 'default-frame-alist '(cursor-color . "Green"))
 
       ;; ツールバーを消す
-      (tool-bar-mode nil) 
+      (tool-bar-mode nil)
 
       ;; スクロールバーを消す(nil:消える,right:右側)
       (set-scroll-bar-mode nil)
@@ -118,7 +118,7 @@
       ad-do-it
     (let ((dabbrev-abbrev-char-regexp
 	   (let ((c (char-category-set (char-before))))
-	     (cond 
+	     (cond
 	      ((aref c ?a) "[-_A-Za-z0-9]") ; ASCII
 	      ((aref c ?j) ; Japanese
 	       (cond
@@ -136,16 +136,16 @@
 (delete-selection-mode 1)
 
 ;; "The local variables list in .emacs" と言われるのを抑止
-(add-to-list 'ignored-local-variables 'syntax) 
+(add-to-list 'ignored-local-variables 'syntax)
 
 ;; 基本的な色
 (setq default-frame-alist
-      (append 
+      (append
        '(
 	 ;; (corsor-type . bar)
 	 (corsor-color . "green")
-	 ;; (foreground-color . "white")
-	 ;; (background-color . "black")
+	 (foreground-color . "white")
+	 (background-color . "#000000")
 	 )
        default-frame-alist))
 
@@ -164,7 +164,7 @@
   "insert magic comment with current coding & major-mode into current line."
   (interactive)
   (if (or buffer-file-coding-system major-mode)
-      (insert 
+      (insert
        (concat "-*- "
 	       (if buffer-file-coding-system
 		   (concat "coding:" (symbol-name buffer-file-coding-system) "; "))
@@ -185,23 +185,23 @@
 
   ;; ac-modes に登録されてるメジャーモード時に ac 発動
   (global-auto-complete-mode t)
-  
-  ;; *候補間を移動 
+
+  ;; *候補間を移動
   ;; (define-key ac-complete-mode-map "\C-n" 'ac-next)
   ;; (define-key ac-complete-mode-map "\C-p" 'ac-previous)
-  
+
   ;; *補完停止
   (define-key ac-complete-mode-map "\C-[" 'ac-stop)
-  
+
   ;; *補完する
   ;; (define-key ac-complete-mode-map "\C-i" 'auto-complete)
-  
+
   ;; *大文字・小文字の区別
   ;; nil:	 区別しない
   ;; t:	 区別する
   ;; 'smart: 補完対象に大文字が含まれる場合のみ区別する
   (setq ac-ignore-case 'smart)
-  
+
   ;; 直ちに補完メニューを表示する
   ;; (ac-show-menu-immediately-on-auto-complete t)
   )
@@ -210,21 +210,21 @@
 (when (require 'tabbar nil t)
 
   ;; タブの間に挟む文字
-  (setq tabbar-separator-value ".")
+  (setq tabbar-separator-value " ")
 
   ;; tabbar のタブのグループの仕方
   ;;   デフォルト: 一部を除き major-mode ごとにタブをグループ化
   ;;   下: 全部同じグループに
   ;;	   (http://www.emacswiki.org/emacs/TabBarMode)
   (setq tabbar-buffer-groups-function (lambda () (list "Buffers")))
-  
+
   (when (require 'cl nil t) ;; remove-if とかに必要
 
     ;; 表示するタブのフィルタリング
     ;;	 * で始まるバッファはタブに表示しない
     (setq tabbar-buffer-list-function
-	  (lambda () 
-	    (remove-if 
+	  (lambda ()
+	    (remove-if
 	     (lambda (b)
 	       (and (string-match "^ ?\\*" (buffer-name b))
 		    (not (string-equal (buffer-name (current-buffer))
@@ -255,8 +255,8 @@
     (set button (cons (cons "" nil) (cons "" nil))))
 
   ;; Ctrl+Tab でタブ切り替え
-  (global-set-key "\M-[1;5i" 'tabbar-forward)  ;; for mintty 
-  (global-set-key "\M-[1;6i" 'tabbar-backward) ;; for mintty 
+  (global-set-key "\M-[1;5i" 'tabbar-forward)  ;; for mintty
+  (global-set-key "\M-[1;6i" 'tabbar-backward) ;; for mintty
   ;; (global-set-key [(control tab)] 'tabbar-forward)
   ;; (global-set-key [(control shift tab)] 'tabbar-backward)
 
@@ -306,14 +306,14 @@
 	       flymake-display-err-before-colmun cur-col)
 	 (not is-not-moved)))
 
-     (global-set-key "\M-e" 
+     (global-set-key "\M-e"
 		     '(lambda ()
 			(interactive)
 			(let ()
 			  (message "next error")
 			  (flymake-goto-next-error)
 			  (flymake-display-err-menu-for-current-line))))
-     (global-set-key "\M-E" 
+     (global-set-key "\M-E"
 		     '(lambda ()
 			(interactive)
 			(let ()
@@ -326,7 +326,7 @@
 	     (run-with-idle-timer flymake-display-err-delay
 				  t
 				  'flymake-display-err-menu-for-current-line)))
-     
+
      ;; (defvar flymake-display-err-delay 0.5
      ;;	 "delay to display flymake error message ")
      ;; (defvar flymake-display-err-timer nil
@@ -334,7 +334,7 @@
 
      ;; (defun flymake-display-err-set-timer ()
      ;;	 (unless flymake-display-err-timer
-     ;;	 (setq flymake-display-err-timer 
+     ;;	 (setq flymake-display-err-timer
      ;;	       (run-with-idle-timer flymake-display-err-delay
      ;;				 nil
      ;;				 'flymake-display-err-menu-for-current-line))))
@@ -343,11 +343,14 @@
      ;;	 (when (timerp flymake-display-err-timer)
      ;;	 (cancel-timer flymake-display-err-timer)
      ;;	 (setq flymake-display-err-timer nil)))
-     
+
      ))
 
 ;; anything.el
-(require 'anything-config)
+(when (require 'anything-config nil t)
+  (global-set-key "\M-a" 'anything-c-apropos)
+  (global-set-key "\C-xf" 'anything-for-files)
+  )
 
 ;; -------------------------------------------------------------------------
 ;; メジャーモードの設定や読み込み
@@ -364,34 +367,40 @@
 (when (autoload-if-exist 'markdown-mode "markdown-mode"
 			 "Major mode for editing Markdown files" t)
 
-  (add-to-list 'auto-mode-alist '("\\.markdown" . markdown-mode))
-  (add-to-list 'auto-mode-alist '("\\.md" . markdown-mode))
+  (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
+  (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
 
   (eval-after-load "markdown-mode"
     (let ()
       ;; markdown-mode 読み込まれた時に評価される
       ;;(define-key markdown-mode-map "\C-i" 'indent-for-tab-command)
       ;;(define-key markdown-mode-map "TAB" 'indent-for-tab-command)
-      (setq indent-tabs-mode t)
-      (setq tab-width 4)
-      (add-hook 'before-save-hook
-		'(lambda () (tabify (point-min) (point-max))))
+      (add-hook 'markdown-mode-hook
+                '(progn
+                   (setq (make-variable-buffer-local 'indent-tabs-mode) t
+                   (make-variable-buffer-local 'tab-width) 4)
+                   (add-hook (make-variable-buffer-local 'before-save-hook)
+                             '(lambda () (tabify (point-min) (point-max))))
+                  ))
       )))
 
 ;; yaml-mode
 (when (autoload-if-exist 'yaml-mode "yaml-mode"
 			 "Major mode for editing yaml files" t)
 
-  (add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
-
+  (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
   (eval-after-load "yaml-mode"
     (let ()
       ;; yaml-mode 読み込まれた時に評価される
       )))
 
-;; flymakeでrubyの構文チェック
-(when (and 'ruby-mode (require 'flymake-ruby nil t))
-  (add-hook 'ruby-mode-hook 'flymake-ruby-load))
+(when '(require 'ruby-mode)
+  (add-to-list 'auto-mode-alist '("/Rakefile" . ruby-mode))
+
+  ;; flymakeでrubyの構文チェック
+  (when (require 'flymake-ruby nil t)
+    (add-hook 'ruby-mode-hook 'flymake-ruby-load))
+  )
 
 ;; nxhtml
 (defvar kui-nxhtml-file-name "src/nxhtml/autostart.el")
@@ -410,11 +419,11 @@
       ;; js2-mode が読み込まれた時に評価される
       (message ";; loaded js2.el")
 
-      ;; js2-mode 向け flymake 
+      ;; js2-mode 向け flymake
       (when (and (require 'flymake nil t) (executable-find "jslint"))
 
 	(message "Load flymake for js2-mode")
-	
+
 	(defun flymake-js-init ()
 	  (let* ((temp-file (flymake-init-create-temp-buffer-copy
 			     'flymake-create-temp-inplace))
@@ -422,9 +431,9 @@
 			      temp-file
 			      (file-name-directory buffer-file-name))))
 	    (list "jslint" (list local-file))))
-	
+
 	(add-to-list 'flymake-allowed-file-name-masks '("\\.js\\'" flymake-js-init))
-	
+
 	(defun flymake-js-load ()
 	  (interactive)
 	  (setq flymake-err-line-patterns
@@ -432,7 +441,7 @@
 			nil 1 2 3)
 		      flymake-err-line-patterns))
 	  (flymake-mode t))
-	
+
 	(add-hook 'js2-mode-hook 'flymake-js-load)
   ))))
 
@@ -440,8 +449,8 @@
 (when (autoload-if-exist 'coffee-mode "coffee-mode"
 			 "Major mode for editing coffescript files" t)
 
-  (add-to-list 'auto-mode-alist '("\\.coffee$" . coffee-mode))
-  (add-to-list 'auto-mode-alist '("Cakefile" . coffee-mode))
+  (add-to-list 'auto-mode-alist '("\\.coffee\\'" . coffee-mode))
+  (add-to-list 'auto-mode-alist '("/Cakefile\\'" . coffee-mode))
 
   (eval-after-load "coffee-mode"
     (let* ((coffee-command "coffee"))
