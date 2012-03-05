@@ -12,4 +12,6 @@ CopyAsRTF=no
 ClicksPlaceCursor=yes
 RightClickAction=paste
 Rows=47
-Transparency=glass
+Transparency=low
+OpaqueWhenFocused=yes
+BackgroundColour=0,30,0

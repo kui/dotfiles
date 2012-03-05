@@ -234,7 +234,9 @@ then
     for c in {000..255}
     do
 	# 無視する色
-	if [ $c -eq 000 ] || [ $c -ge 016 -a $c -le 021 ] || [ $c -ge 232 -a $c -le 238 ]
+	if [ $c -eq 000 ] || [ $c -ge 016 -a $c -le 025 ] ||\
+	   [ $c -ge 052 -a $c -le 060 ] || [ $c -ge 088 -a $c -le 093 ] ||\
+	   [ $c -ge 232 -a $c -le 238 ]
 	then
 	    continue
 	fi

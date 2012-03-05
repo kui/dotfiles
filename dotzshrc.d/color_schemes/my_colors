@@ -16,7 +16,7 @@ echo -ne '\e]4;13;#FF66FF\a'  # bold magenta -> violet
 echo -ne '\e]4;14;#00FFFF\a'  # bold cyan -> base1
 echo -ne '\e]4;15;#FFFFFF\a'  # bold white -> base3
 
-echo -ne '\e]10;#CCCCCC\a'  # Foreground -> base00
-echo -ne '\e]11;#000000\a'  # Background -> base03
-echo -ne '\e]12;#00FF00\a'  # Cursor -> base1
+# echo -ne '\e]10;#CCCCCC\a'  # Foreground -> base00
+# echo -ne '\e]11;#000000\a'  # Background -> base03
+# echo -ne '\e]12;#00FF00\a'  # Cursor -> base1
 
