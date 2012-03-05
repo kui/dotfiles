@@ -376,9 +376,9 @@
       ;;(define-key markdown-mode-map "\C-i" 'indent-for-tab-command)
       ;;(define-key markdown-mode-map "TAB" 'indent-for-tab-command)
       (add-hook 'markdown-mode-hook
-                '(progn
-                   (setq (make-variable-buffer-local 'indent-tabs-mode) t
-                   (make-variable-buffer-local 'tab-width) 4)
+                '(lambda ()
+                   (set (make-variable-buffer-local 'indent-tabs-mode) t)
+                   (set (make-variable-buffer-local 'tab-width) 4)
                    (add-hook (make-variable-buffer-local 'before-save-hook)
                              '(lambda () (tabify (point-min) (point-max))))
                   ))
