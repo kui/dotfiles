@@ -8,4 +8,4 @@
 Thumbs.db
 
 dotemacs.d/ac-comphist.dat
-xhtml-loader.rnc
+dotemacs.d/src/nxhtml/etc/schema/xhtml-loader.rnc
