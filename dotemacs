@@ -99,12 +99,6 @@
 ;; 列数表示
 (column-number-mode 1)
 
-;; C-h でカーソルの左にある文字を消す
-(global-set-key "\C-h" 'delete-backward-char)
-
-;; C-h に割り当てられている関数 help-command を C-x C-h に割り当てる
-(global-set-key "\C-x\C-h" 'help-command)
-
 ;; C-o に動的略語展開機能を割り当てる
 ;; (define-key global-map "\C-o" 'dabbrev-expand)
 ;; (setq dabbrev-case-fold-search nil) ; 大文字小文字を区別
@@ -148,6 +142,32 @@
 	 (background-color . "#000000")
 	 )
        default-frame-alist))
+
+;; -------------------------------------------------------------------------
+;; キーバインド変更
+;; C-h でカーソルの左にある文字を消す
+(global-set-key "\C-h" 'delete-backward-char)
+
+;; C-h に割り当てられている関数 help-command を C-x C-h に割り当てる
+(global-set-key "\C-x\C-h" 'help-command)
+
+;; C-; でコメントトグル
+;; TODO mark-active の状態で、リージョン/現在の行をコメントアウトするのか切り替え
+;; (global-set-key (kbd "C-u") 'kui/comment-out)
+
+;; C-a をインデント先頭に
+;; インデント先頭時は行頭に, 行頭時は何もしない (要するに eclipse 風)
+(global-set-key "\C-a" 'kui/move-beginning-of-line)
+(defun kui/move-beginning-of-line ()
+  "back-to-indentation but move-beginning-of-line if point is in indentation
+or nothing if point is in BoL"
+  (interactive)
+  (unless (= (point) (point-at-bol))
+    (set 'old-point (point))
+    (back-to-indentation)
+    (if (= old-point (point))
+        (move-beginning-of-line nil)))
+  )
 
 ;; -------------------------------------------------------------------------
 ;; 自作関数
@@ -452,17 +472,42 @@
   (add-to-list 'auto-mode-alist '("\\.coffee\\'" . coffee-mode))
   (add-to-list 'auto-mode-alist '("/Cakefile\\'" . coffee-mode))
 
-  (eval-after-load "coffee-mode"
+  (eval-after-load "coffee"
     (let* ((coffee-command "coffee"))
       ;; coffee-mode が読み込まれた時に評価される
       (message "Load coffee-settings")
       (add-to-list 'ac-modes 'coffee-mode)
-
+      
       ;; タブ幅
       (setq coffee-tab-width 2)
-
+      
+      ;; flymake
       (when (and (require 'flymake nil t)
 		 (require 'flymake-coffeescript nil t)
 		 (executable-find flymake-coffeescript-command))
 	(add-hook 'coffee-mode-hook 'flymake-coffeescript-load))
+
+      (setq coffee-debug-mode t)
+
+      ;; 独自インデント
+      ;; インデントの先頭に移動してからじゃないと、
+      ;; insert-tab しない
+      (defun kui/coffee-indent-line ()
+        "Indent current line as CoffeeScript."
+        (interactive)
+        (let ((old-point nil)
+              (new-point nil))
+          (save-excursion
+            (set 'old-point (point))
+            (back-to-indentation)
+            (set 'new-point (point)))
+
+          (if (< old-point new-point)
+              (back-to-indentation)
+            (coffee-indent-line))
+          ))
+      (add-hook 'coffee-mode-hook 
+                '(lambda ()
+                   (set (make-local-variable 'indent-line-function)
+                        'kui/coffee-indent-line)))
       )))
