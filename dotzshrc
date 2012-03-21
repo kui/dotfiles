@@ -443,5 +443,6 @@ source_if_exist "$HOME/.zshrc.d/color_schemes/my_colors"
 source_if_exist "$HOME/.rvm/scripts/rvm"
 
 ## マシンごとの設定
-! [ -f ~/.zshrc.local ] && touch ~/.zshrc.local && source ~/.zshrc.local
+! [ -f ~/.zshrc.local ] && touch ~/.zshrc.local 
+source ~/.zshrc.local
 
