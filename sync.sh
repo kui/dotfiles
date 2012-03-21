@@ -4,7 +4,8 @@
 
 task_sequence=(
     "git pull"
-    "git submodule update --init --recursive"
+    # "git submodule update --recursive"
+    "git submodule foreach 'git pull origin master'"
     "git push"
 )
 
@@ -15,7 +16,7 @@ while [ $i -lt ${#task_sequence[*]} ]
 do
     cmd=${task_sequence[$i]}
     echo $ "$cmd"
-    $cmd
+    eval $cmd
 
     if [ "$?" -eq 1 ]
     then

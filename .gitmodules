@@ -1,3 +1,4 @@
 [submodule "dotemacs.d/flymake-coffeescript"]
 	path = dotemacs.d/flymake-coffeescript
 	url = git://github.com/kui/flymake-coffeescript.git
+        branch = master
