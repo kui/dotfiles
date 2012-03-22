@@ -143,6 +143,13 @@
 	 )
        default-frame-alist))
 
+;; 現在の行をハイライト
+(set-face-attribute 'hl-line nil
+                    :background "#000011"
+                    :foreground nil
+                    :underline nil)
+(global-hl-line-mode)
+
 ;; -------------------------------------------------------------------------
 ;; キーバインド変更
 ;; C-h でカーソルの左にある文字を消す
