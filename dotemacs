@@ -189,7 +189,10 @@ or nothing if point is in BoL"
 	       (if buffer-file-coding-system
 		   (concat "coding:" (symbol-name buffer-file-coding-system) "; "))
 	       (if major-mode
-		   (concat "mode:" (symbol-name major-mode) "; "))
+		   (concat "mode:"
+                           (replace-regexp-in-string "-mode\\'" ""
+                                                     (symbol-name major-mode))
+                           "; "))
 	       "-*-\n"))
     (message "Both current coding and major-mode are nil.")))
 
