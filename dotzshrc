@@ -7,14 +7,14 @@
 typeset -U path
 ## (N-/): 存在しないディレクトリは登録しない。
 ##    パス(...): ...という条件にマッチするパスのみ残す。
-##	      N: NULL_GLOBオプションを設定。
-##		 globがマッチしなかったり存在しないパスを無視する。
-##	      -: シンボリックリンク先のパスを評価。
-##	      /: ディレクトリのみ残す。
+##            N: NULL_GLOBオプションを設定。
+##               globがマッチしなかったり存在しないパスを無視する。
+##            -: シンボリックリンク先のパスを評価。
+##            /: ディレクトリのみ残す。
 path=($HOME/{.rvm,local}/bin(N-/)
-	{/usr/local,/usr,}/bin(N-/)
-	/app/{script,mingw/tdm/bin,gs/bin,gs/lib}(N-/)
-	$path)
+        {/usr/local,/usr,}/bin(N-/)
+        /app/{script,mingw/tdm/bin,gs/bin,gs/lib}(N-/)
+        $path)
 
 # sudo時のパスの設定
 ## -x: export SUDO_PATHも一緒に行う。
@@ -42,14 +42,14 @@ then
 
     if [ "$STY" -a ! "$SCREEN_INIT" ]
     then
-	[ $COLUMNS -gt 150 ] && screen -X split -v
-	alias s="screen -X focus; screen"
-	export SCREEN_INIT=true
+        [ $COLUMNS -gt 150 ] && screen -X split -v
+        alias s="screen -X focus; screen"
+        export SCREEN_INIT=true
     # elif [ ! "$STY" ]
-    # then 
-    #	  echo "source ~/.screenrc" > ~/.screen.init
-    #	  echo "layout new" >> ~/.screen.init
-    #	  alias s="screen -c ~/.screen.init"
+    # then
+    #     echo "source ~/.screenrc" > ~/.screen.init
+    #     echo "layout new" >> ~/.screen.init
+    #     alias s="screen -c ~/.screen.init"
     fi
 fi
 
@@ -62,11 +62,12 @@ then
 fi
 
 function md(){
-    cat <<EOF 
+    cat <<EOF
 <html><head>
 <meta charset="UTF-8" />
 <style>
-  h1,h2,h3,h4,h5,h6 {font-family: "Hiragino Kaku Gothic Pro W3", "ヒラギノ角ゴ Pro W3", Meiryo, "メイリオ", "MS P Gothic", "ＭＳ Ｐゴシック", sans-serif}
+  h1,h2,h3,h4,h5,h6 {font-family: "Hiragino Kaku Gothic Pro W3", "ヒラギノ角ゴ Pro W3", Meiryo,
+"メイリオ", "MS P Gothic", "ＭＳ Ｐゴシック", sans-serif}
   p, li {font-family:Georgia, Times, "Times New Roman", serif}
 </style>
 </head><body>
@@ -77,14 +78,14 @@ EOF
 
 function markdown_preview(){
     if [ $# -ne 1 ]; then
-	echo "error: invalid arguments"
-	echo "usage: $0 markdown_file"
-	return 1;
+        echo "error: invalid arguments"
+        echo "usage: $0 markdown_file"
+        return 1;
     fi
 
     if [ ! -f "$1" ]; then
-	echo "error: $1 dose not exists"
-	return 1;
+        echo "error: $1 dose not exists"
+        return 1;
     fi
 
     md "$1" | w3m -T text/html -dump
@@ -92,8 +93,8 @@ function markdown_preview(){
     # 縦割りしたときにズレる問題解決
     if [ $STY ]
     then
-	sleep 0.2
-	screen -X redisplay
+        sleep 0.2
+        screen -X redisplay
     fi
 }
 
@@ -102,9 +103,9 @@ function j(){
     shift
     echo $@
     if [ -f build.xml ]; then
-	ant && java -DDebug=on $class $@
+        ant && java -DDebug=on $class $@
     else
-	javac $class.java && java -DDebug=on $do_java $@
+        javac $class.java && java -DDebug=on $do_java $@
     fi
 }
 
@@ -129,9 +130,9 @@ then
 
     if ! emacsclient -s "$EMACS_SERVER_NAME" -e "server-name" > /dev/null 2>&1
     then
-	s emacs --eval "(let () (setq server-name \"$EMACS_SERVER_NAME\") (server-start) (setq confirm-kill-emacs 'yes-or-no-p))"
-	# screen -X "resize -h 85"
-	screen -X focus
+        s emacs --eval "(let () (setq server-name \"$EMACS_SERVER_NAME\") (server-start) (setq confirm-kill-emacs 'yes-or-no-p))"
+        # screen -X "resize -h 85"
+        screen -X focus
     fi
 fi
 
@@ -140,8 +141,8 @@ fi
 function color_list(){
     for c in {016..255}
     do
-	echo -n "\e[38;5;${c}m $c"
-	[ $(($((c-16))%6)) -eq 5 ] && echo
+        echo -n "\e[38;5;${c}m $c"
+        [ $(($((c-16))%6)) -eq 5 ] && echo
     done
 }
 
@@ -157,10 +158,10 @@ color256()
 color256_echo(){
     if [ $# -lt 3 ]
     then
-	echo "usage: $0 RED GREEN BLUE [string...]"
-	echo "	RED, GREEN, BLUE: 0-5"
-	echo "sample: $0 0 5 5 foo"
-	return 1
+        echo "usage: $0 RED GREEN BLUE [string...]"
+        echo "  RED, GREEN, BLUE: 0-5"
+        echo "sample: $0 0 5 5 foo"
+        return 1
     fi
 
     local r=$1; shift
@@ -197,8 +198,8 @@ update_rprompt(){
     export VCS_IS_ADDED=t
     if [ $VCS_NAME ]
     then
-	[ -n "$vcs_info_msg_3_" -a ! $vcs_info_msg_3_ = %c ]&&export VCS_IS_COMMITED=
-	[ -n "$vcs_info_msg_4_" -a ! $vcs_info_msg_4_ = %u ]&&export VCS_IS_ADDED=
+        [ -n "$vcs_info_msg_3_" -a ! $vcs_info_msg_3_ = %c ]&&export VCS_IS_COMMITED=
+        [ -n "$vcs_info_msg_4_" -a ! $vcs_info_msg_4_ = %u ]&&export VCS_IS_ADDED=
     fi
     # echo $vcs_info_msg_3_$vcs_info_msg_4_$VCS_IS_COMMITED$VCS_IS_ADDED
 }
@@ -215,7 +216,7 @@ colors=(
     $'\e[0;35m' # purple
     $'\e[0;36m' # cyan
     # $'\e[0;37m' # gray
-    
+
     # light colors
     # $'\e[1;30m' # black
     $'\e[1;31m' # red
@@ -227,20 +228,20 @@ colors=(
     # $'\e[1;37m' # gray
 )
 
-if [ `echotc Co` = "256" ] 
+if [ `echotc Co` = "256" ]
 then
     colors=()
     local c=0
     for c in {000..255}
     do
-	# 無視する色
-	if [ $c -eq 000 ] || [ $c -ge 016 -a $c -le 025 ] ||\
-	   [ $c -ge 052 -a $c -le 060 ] || [ $c -ge 088 -a $c -le 093 ] ||\
-	   [ $c -ge 232 -a $c -le 238 ]
-	then
-	    continue
-	fi
-	colors=($colors $'\e[38;5;'$c'm')
+        # 無視する色
+        if [ $c -eq 000 ] || [ $c -ge 016 -a $c -le 025 ] ||\
+           [ $c -ge 052 -a $c -le 060 ] || [ $c -ge 088 -a $c -le 093 ] ||\
+           [ $c -ge 232 -a $c -le 238 ]
+        then
+            continue
+        fi
+        colors=($colors $'\e[38;5;'$c'm')
     done
 fi
 
@@ -248,7 +249,7 @@ export USER_COLOR=$colors[$((`echo "$USER" | sum | cut -f1 -d' '`%${#colors}))+1
 export HOST_COLOR=$colors[$((`echo "$HOST" | sum | cut -f1 -d' '`%${#colors}))+1]
 export BAR_COLOR=$'\e[0;37m'
 export TIME_COLOR=$'\e[0;37m'
-if [ `echotc Co` = "256" ] 
+if [ `echotc Co` = "256" ]
 then
     export BAR_COLOR=$'\e[38;5;240m'
     export TIME_COLOR=$'\e[38;5;245m'
@@ -258,9 +259,9 @@ construct_left(){
     local non_color=
     while getopts n opt
     do
-	case $opt in
-	    n) local no_color=true;;
-	esac
+        case $opt in
+            n) local no_color=true;;
+        esac
     done
     shift `expr $OPTIND - 1`
     local current_path=$1
@@ -268,15 +269,15 @@ construct_left(){
     local u= h= p= v= d=
     if [ ! $no_color ]
     then
-	local u=$USER_COLOR h=$HOST_COLOR p='%F{yellow}' d='%f'
-	local v=$(
-	    if [ "$vcs_info_msg_3_" = %c ]
-	    then echo -n '%f'
-	    elif [ $VCS_IS_ADDED ] && [ $VCS_IS_COMMITED ]
-	    then echo -n '%F{green}'
-	    else echo -n '%F{red}'
-	    fi
-	)
+        local u=$USER_COLOR h=$HOST_COLOR p='%F{yellow}' d='%f'
+        local v=$(
+            if [ "$vcs_info_msg_3_" = %c ]
+            then echo -n '%f'
+            elif [ $VCS_IS_ADDED ] && [ $VCS_IS_COMMITED ]
+            then echo -n '%F{green}'
+            else echo -n '%F{red}'
+            fi
+        )
     fi
 
     # プロンプトのフォーマット
@@ -298,15 +299,15 @@ update_prompt(){
 
     if [ $num_bar -lt 0 ]
     then
-	local datetime="`date +'%H:%M:%S'`"
-	local right=" ${datetime} "
-	local num_bar=$((${COLUMNS}-${#left}-${#right}))
+        local datetime="`date +'%H:%M:%S'`"
+        local right=" ${datetime} "
+        local num_bar=$((${COLUMNS}-${#left}-${#right}))
     fi
 
     if [ $num_bar -lt 0 ]
     then
-	local right=''
-	local num_bar=$((${COLUMNS}-${#left}-${#right}))
+        local right=''
+        local num_bar=$((${COLUMNS}-${#left}-${#right}))
     fi
 
     local sep='-'
@@ -314,13 +315,13 @@ update_prompt(){
     local i=0
     while [ $num_bar -gt $((${#bar}+${#sep})) ]
     do
-	local bar="$sep$bar"
-	local i=$((i+1))
-	# [ 0 -eq $((i%10)) ] && local bar="-$bar"
+        local bar="$sep$bar"
+        local i=$((i+1))
+        # [ 0 -eq $((i%10)) ] && local bar="-$bar"
     done
     while [ $num_bar -gt ${#bar} ]
     do
-	local bar=" $bar"
+        local bar=" $bar"
     done
 
     local bar="$BAR_COLOR$bar"
