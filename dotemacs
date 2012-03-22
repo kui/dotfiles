@@ -172,6 +172,13 @@
 ;; C-a をインデント先頭に
 ;; インデント先頭時は行頭に, 行頭時は何もしない (要するに eclipse 風)
 (global-set-key "\C-a" 'kui/move-beginning-of-line)
+
+;; -------------------------------------------------------------------------
+;; 自作関数
+
+;; インデント先頭に移動
+;; インデント先頭時は行頭移動
+;; 行頭時は何もしない （要するに eclipse 風）
 (defun kui/move-beginning-of-line ()
   "back-to-indentation but move-beginning-of-line if point is in indentation
 or nothing if point is in BoL"
@@ -182,9 +189,6 @@ or nothing if point is in BoL"
     (if (= old-point (point))
         (move-beginning-of-line nil)))
   )
-
-;; -------------------------------------------------------------------------
-;; 自作関数
 
 ;; require の代わりに使う
 (defun autoload-if-exist (function file &optional docstring interactive type)
@@ -226,8 +230,8 @@ or nothing if point is in BoL"
   (global-auto-complete-mode t)
 
   ;; *候補間を移動
-  ;; (define-key ac-complete-mode-map "\C-n" 'ac-next)
-  ;; (define-key ac-complete-mode-map "\C-p" 'ac-previous)
+  (define-key ac-complete-mode-map "\C-n" 'ac-next)
+  (define-key ac-complete-mode-map "\C-p" 'ac-previous)
 
   ;; *補完停止
   (define-key ac-complete-mode-map "\C-[" 'ac-stop)
@@ -400,19 +404,14 @@ or nothing if point is in BoL"
 
   (setq whitespace-style
         '(face ;; faceを使って視覚化する。
-
           ;; 行末の空白
           trailing
-
           ;; 長すぎる行のうち whitespace-line-column 以降部分
           lines-tail
-
           ;; タブ
           tabs
-
           ;; タブの前にあるスペース
           space-before-tab
-
           ;; タブの後にあるスペース
           space-after-tab
           ))

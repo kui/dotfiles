@@ -4,5 +4,5 @@
 [color]
 	ui = auto
 [core]
-	pager = 
+	pager =
 	editor = vi
