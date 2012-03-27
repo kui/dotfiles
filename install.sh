@@ -10,6 +10,7 @@ link_file_list=(
     dotzshrc
     dotzshrc.d
     dotzlogin
+    dotbashrc
 )
 
 if [ $OSTYPE = "cygwin" ]
