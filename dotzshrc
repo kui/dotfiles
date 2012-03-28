@@ -39,18 +39,6 @@ fpath=($HOME/.rvm/scripts/zsh/Completion(N-/) $fpath)
 if which screen > /dev/null 2>&1
 then
     alias s="screen"
-
-    if [ "$STY" -a ! "$SCREEN_INIT" ]
-    then
-        [ $COLUMNS -gt 150 ] && screen -X split -v
-        alias s="screen -X focus; screen"
-        export SCREEN_INIT=true
-    # elif [ ! "$STY" ]
-    # then
-    #     echo "source ~/.screenrc" > ~/.screen.init
-    #     echo "layout new" >> ~/.screen.init
-    #     alias s="screen -c ~/.screen.init"
-    fi
 fi
 
 if ls --color > /dev/null 2>&1
@@ -119,22 +107,34 @@ function g(){
     w3m "google.com/search?q=$@"
 }
 
-## emacs の設定
-if [ $STY ]
-then
-    export EMACS_SERVER_NAME="server-$STY"
+# 横長画面向きレイアウト
+function widescreen(){
+    local columns=160
+    if ! [ $STY ]
+    then
+        echo 'run `screen`'
+        return
+    elif [ $COLUMNS -lt $columns ]
+    then
+        echo 'less than '$columns
+        return
+    fi
 
+    screen -X split -v
+
+    export EMACS_SERVER_NAME="server-$STY"
     alias e="emacsclient -n -s $EMACS_SERVER_NAME"
     alias emacsclient="emacsclient -n -s $EMACS_SERVER_NAME"
     alias eview="emacs -f view-mode"
 
     if ! emacsclient -s "$EMACS_SERVER_NAME" -e "server-name" > /dev/null 2>&1
     then
+        screen -X focus
         s emacs --eval "(let () (setq server-name \"$EMACS_SERVER_NAME\") (server-start) (setq confirm-kill-emacs 'yes-or-no-p))"
-        # screen -X "resize -h 85"
+        # screen -X "resize -h "
         screen -X focus
     fi
-fi
+}
 
 
 # 色一覧
@@ -444,6 +444,6 @@ source_if_exist "$HOME/.zshrc.d/color_schemes/my_colors"
 source_if_exist "$HOME/.rvm/scripts/rvm"
 
 ## マシンごとの設定
-! [ -f ~/.zshrc.local ] && touch ~/.zshrc.local 
+! [ -f ~/.zshrc.local ] && touch ~/.zshrc.local
 source ~/.zshrc.local
 

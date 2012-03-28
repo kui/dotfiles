@@ -29,18 +29,10 @@ defbce "on"
 #attrcolor b ".I"
 
 ## シェルの設定
-shell zsh
+# shell zsh
 
 ## マウスの有効化
 # defmousetrack
 
 ## flow 切る
 defflow off
-
-# layout を定義
-layout new 1 one_colmun
-split
-focus
-resize 15
-
-layout new 0 two_colmun
