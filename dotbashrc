@@ -1,5 +1,17 @@
 # -------------------------------------------------------------
 # environment
+function push_path_if_exists {
+    [ -f "$1" ] || export PATH=$PATH:$1
+}
+function unshift_path_if_exists {
+    [ -f "$1" ] || export PATH=$1:$PATH
+}
+# unshift_path_if_exists "/app/emacs/emacs/bin"
+unshift_path_if_exists "/app/vim"
+unshift_path_if_exists "/app/script"
+unshift_path_if_exists "/app/mingw/tdm/bin"
+push_path_if_exists "/app/gs/bin"
+push_path_if_exists "/app/gs/lib"
 
 # history
 export HISTCONTROL="ignoreboth"
@@ -40,14 +52,13 @@ fi
 # }
 
 # PROMPT_COMMAND="custom_prompt_command"
-
 case ${TERM} in
-    "xterm")
+    xterm* )
         stty -ixon -ixoff
         eval $(dircolors ~/.dir_colors)
-        alias ls='ls --classify --color=auto --show-control-char'
+        alias ls='ls --classify --color --show-control-char -F'
         ;;
-    "emacs")
+    emacs )
         export LS_COLORS='no=00:fi=00:di=35:ln=36:ex=32'
         export TERM_LENGTH='90'
         alias ls='ls --classify --color --show-control-char -C'
@@ -63,9 +74,9 @@ complete -d cd
 # alias
 
 # for interactive operation
-  alias rm='rm -i'
-  alias cp='cp -i'
-  alias mv='mv -i'
+  # alias rm='rm -i'
+  # alias cp='cp -i'
+  # alias mv='mv -i'
 
 # alias for misc
   alias grep='grep --color'
