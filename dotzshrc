@@ -333,6 +333,8 @@ update_prompt(){
 precmd_functions=($precmd_functions update_prompt)
 PROMPT=$'\n'"%F{green}${USER}@${HOST} %F{yellow}%~%f "$'\n'"%(!.#.$) "
 
+[ "$OS" = "Windows_NT" ] && precmd_functions= 
+
 ############################################################
 ##  zsh プロパティ
 

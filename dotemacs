@@ -195,7 +195,7 @@ or nothing if point is in BoL"
   "autoload if FILE exist"
   (if (locate-library file)
       (let () (autoload function file docstring interactive type) t)
-    (nil)))
+    ))
 
 ;; emacs 用マジックコメント挿入
 (defun insert-magic-comment ()
