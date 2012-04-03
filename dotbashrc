@@ -1,3 +1,5 @@
+# -*- coding:utf-8-unix; mode:sh; -*-
+
 # -------------------------------------------------------------
 # environment
 function push_path_if_exists {
@@ -42,7 +44,7 @@ fi
 #     typeset _PromptColor=""
 #     if [[ ${_Retv} -eq 0 ]] ; then
 #         _PromptColor=$BASH_PROMPT_OK
-#     else 
+#     else
 #         _PromptColor=$BASH_PROMPT_NG
 #     fi
 #   export PS1="${_PromptColor}
@@ -55,7 +57,7 @@ fi
 case ${TERM} in
     xterm* )
         stty -ixon -ixoff
-        eval $(dircolors ~/.dir_colors)
+        [ -f ~/.dir_colors ] && eval $(dircolors ~/.dir_colors)
         alias ls='ls --classify --color --show-control-char -F'
         ;;
     emacs )
