@@ -36,3 +36,16 @@ defbce "on"
 
 ## flow 切る
 defflow off
+
+## keybind
+bind L layout next
+bind h focus left
+bind j focus down
+bind k focus up
+bind l focus right
+bind f
+bind ^f
+bind ^g
+
+layout new
+next

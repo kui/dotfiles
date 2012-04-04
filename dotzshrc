@@ -39,6 +39,7 @@ fpath=($HOME/.rvm/scripts/zsh/Completion(N-/) $fpath)
 if which screen > /dev/null 2>&1
 then
     alias s="screen"
+    [ $STY ] && alias s="screen -X focus; screen"
 fi
 
 if ls --color > /dev/null 2>&1
@@ -107,6 +108,14 @@ function g(){
     w3m "google.com/search?q=$@"
 }
 
+## emacs server の設定
+EMACS_SERVER_NAME="$USER"
+[ $STY ] && EMACS_SERVER_NAME="$EMACS_SERVER_NAME-$STY"
+export EMACS_SERVER_NAME
+
+alias e="emacsclient -n -s $EMACS_SERVER_NAME"
+alias emacsclient="emacsclient -n -s $EMACS_SERVER_NAME"n
+
 # 横長画面向きレイアウト
 function widescreen(){
     local columns=160
@@ -116,24 +125,22 @@ function widescreen(){
         return
     elif [ $COLUMNS -lt $columns ]
     then
-        echo 'less than '$columns
+        echo "less than $columns columns"
         return
     fi
 
+    screen -X layout new
     screen -X split -v
-
-    export EMACS_SERVER_NAME="server-$STY"
-    alias e="emacsclient -n -s $EMACS_SERVER_NAME"
-    alias emacsclient="emacsclient -n -s $EMACS_SERVER_NAME"
-    alias eview="emacs -f view-mode"
 
     if ! emacsclient -s "$EMACS_SERVER_NAME" -e "server-name" > /dev/null 2>&1
     then
-        screen -X focus
-        s emacs --eval "(let () (setq server-name \"$EMACS_SERVER_NAME\") (server-start) (setq confirm-kill-emacs 'yes-or-no-p))"
-        # screen -X "resize -h "
-        screen -X focus
+        screen emacs --eval "(let () (setq server-name \"$EMACS_SERVER_NAME\") (server-start) (setq confirm-kill-emacs 'yes-or-no-p))"
     fi
+
+    screen -X next
+    screen -X focus
+    screen -X select 1
+    screen -X focus
 }
 
 
@@ -333,7 +340,7 @@ update_prompt(){
 precmd_functions=($precmd_functions update_prompt)
 PROMPT=$'\n'"%F{green}${USER}@${HOST} %F{yellow}%~%f "$'\n'"%(!.#.$) "
 
-[ "$OS" = "Windows_NT" ] && precmd_functions= 
+[ "$OS" = "Windows_NT" ] && precmd_functions=
 
 ############################################################
 ##  zsh プロパティ
