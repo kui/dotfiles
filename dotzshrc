@@ -32,7 +32,7 @@ fi
 export LANG=ja_JP.UTF-8
 
 # 補完スクリプトのパス
-fpath=($HOME/.rvm/scripts/zsh/Completion(N-/) $fpath)
+fpath=({$HOME/.rvm,/usr/local/rvm}/scripts/zsh/Completion(N-/) $fpath)
 
 ############################################################
 ## alias, funcction の設定
@@ -242,9 +242,9 @@ then
     for c in {000..255}
     do
         # 無視する色
-        if [ $c -eq 000 ] || [ $c -ge 016 -a $c -le 025 ] ||\
-           [ $c -ge 052 -a $c -le 060 ] || [ $c -ge 088 -a $c -le 093 ] ||\
-           [ $c -ge 232 -a $c -le 238 ]
+        if [ $c -eq 000 ] || [ $c -ge 016 -a $c -le 027 ] ||\
+           [ $c -ge 052 -a $c -le 066 ] || [ $c -ge 088 -a $c -le 098 ] ||\
+           [ $c -ge 232 -a $c -le 244 ]
         then
             continue
         fi
@@ -351,7 +351,7 @@ SAVEHIST=100000
 
 ## 補完機能の強化
 autoload -U compinit
-compinit
+compinit -u
 
 ## コアダンプサイズを制限
 limit coredumpsize 102400
