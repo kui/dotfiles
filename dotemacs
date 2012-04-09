@@ -73,7 +73,7 @@
 ;; (display-time)
 
 ;; メニューバーを消す
-(menu-bar-mode 0)
+(menu-bar-mode (if window-system 1 0))
 
 ;; "Symbolic link to Git-controlled source file;" みたいに聞かれるの回避
 (setq vc-follow-symlinks t)
@@ -82,18 +82,23 @@
 (if window-system
     (let ()
 
-      (add-to-list 'default-frame-alist
-             '(foreground-color . "white"));; 前景
+      ;; (add-to-list 'default-frame-alist '(foreground-color . "white"))
       ;; (add-to-list 'default-frame-alist
       ;;             '(border-color . "cyan"));;
 
-      (add-to-list 'default-frame-alist '(cursor-color . "Green"))
+      (add-to-list 'default-frame-alist '(cursor-color . "green"))
 
       ;; ツールバーを消す
       (tool-bar-mode nil)
 
       ;; スクロールバーを消す(nil:消える,right:右側)
-      (set-scroll-bar-mode nil)
+      (set-scroll-bar-mode "right")
+
+      ;; welcome to emacs ... を消す
+      (setq inhibit-splash-screen t)
+
+      ;; (add-to-list 'default-frame-alist '(font . "-unknown-Takaoゴシック-normal-normal-normal-*-19-*-*-*-d-0-iso10646-1"))
+
       ))
 
 ;; 列数表示
@@ -146,7 +151,7 @@
 ;; 現在の行をハイライト
 (global-hl-line-mode)
 (set-face-attribute 'hl-line nil
-                    :background "#000011"
+                    :background "#000022"
                     :foreground nil)
 
 ;; セーブ時の挙動
@@ -169,10 +174,6 @@
 ;; TODO mark-active の状態で、リージョン/現在の行をコメントアウトするのか切り替え
 ;; (global-set-key (kbd "C-u") 'kui/comment-out)
 
-;; C-a をインデント先頭に
-;; インデント先頭時は行頭に, 行頭時は何もしない (要するに eclipse 風)
-(global-set-key "\C-a" 'kui/move-beginning-of-line)
-
 ;; -------------------------------------------------------------------------
 ;; 自作関数
 
@@ -189,6 +190,7 @@ or nothing if point is in BoL"
     (if (= old-point (point))
         (move-beginning-of-line nil)))
   )
+(global-set-key "\C-a" 'kui/move-beginning-of-line)
 
 ;; require の代わりに使う
 (defun autoload-if-exist (function file &optional docstring interactive type)
@@ -276,21 +278,23 @@ or nothing if point is in BoL"
 
   ;; faces
   (set-face-attribute 'tabbar-default nil
-                      :background "#333333"
-                      :foreground "#000000"
+                      :background "white" ;;"#333333"
+                      :foreground "black" ;; "#000000"
                       :underline t
                       :box nil)
   (set-face-attribute 'tabbar-selected nil
-                      :background "#000000"
-                      :foreground "#ffffff"
+                      :background "black"
+                      :foreground "white"
                       :underline nil
                       :box nil)
   (set-face-attribute 'tabbar-unselected nil
-                      :background "#333333"
-                      :foreground "#cccccc"
+                      :background nil ;;"#333333"
+                      :foreground nil ;; "#cccccc"
                       :underline t
                       :box nil)
-
+  (set-face-attribute 'tabbar-separator nil
+                      :background nil
+                      )
   ;; 左に表示されるボタンを消す
   (dolist (button '(tabbar-buffer-home-button
                     tabbar-scroll-left-button
@@ -300,8 +304,11 @@ or nothing if point is in BoL"
   ;; Ctrl+Tab でタブ切り替え
   (global-set-key "\M-[1;5i" 'tabbar-forward)  ;; for mintty
   (global-set-key "\M-[1;6i" 'tabbar-backward) ;; for mintty
-  ;; (global-set-key [(control tab)] 'tabbar-forward)
-  ;; (global-set-key [(control shift tab)] 'tabbar-backward)
+  (global-set-key [(control tab)] 'tabbar-forward)
+  (global-set-key [(control shift tab)] 'tabbar-backward)
+  (global-set-key "\C-xn" 'tabbar-forward)
+  (global-set-key "\C-xp" 'tabbar-backward)
+
 
   (tabbar-mode))
 
@@ -395,6 +402,7 @@ or nothing if point is in BoL"
 (when (require 'anything-config nil t)
   (global-set-key "\M-a" 'anything-c-apropos)
   (global-set-key "\C-xf" 'anything-for-files)
+  (global-set-key "\C-xb" 'anything-buffers-list)
   )
 
 ;; whitespace-mode
@@ -467,6 +475,7 @@ or nothing if point is in BoL"
 
 (when '(require 'ruby-mode)
   (add-to-list 'auto-mode-alist '("/Rakefile" . ruby-mode))
+  (add-to-list 'auto-mode-alist '("\\.gemspec\\'" . ruby-mode))
 
   ;; flymakeでrubyの構文チェック
   (when (require 'flymake-ruby nil t)
@@ -476,8 +485,7 @@ or nothing if point is in BoL"
 ;; nxhtml
 (defvar kui-nxhtml-file-name "src/nxhtml/autostart.el")
 (when (locate-library kui-nxhtml-file-name)
-  (load kui-nxhtml-file-name)
-  (menu-bar-mode 0))
+  (load kui-nxhtml-file-name))
 
 ;; js2-mode
 (when (autoload-if-exist 'js2-mode "js2"
