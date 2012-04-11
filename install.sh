@@ -63,12 +63,6 @@ main(){
 	    exit 1
 	fi
 
-	#if 
-	#then
-	#    
-	#    print_and_do "mv \"$dest_file\" \"${dest_file}.old\""
-	#fi
-
 	# skip if $dest_file exist and the link is no change
 	[ -h "$dest_file" -a\
 	  "$target_file" = "`readlink "$dest_file"`" ] && continue
@@ -82,6 +76,13 @@ main(){
     if [ $counter -eq 0 ]
     then
 	echo "# do nothing"
+    fi
+
+    if which ruby && which java
+    then
+        print_and_do "ruby dotemacs.d/src/rsense-*/etc/config.rb > $HOME/.rsense"
+    else
+        echo "WARN: cannot install rsense" 2>&1
     fi
 
     cd "$prev_dir"

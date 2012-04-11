@@ -258,6 +258,11 @@ or nothing if point is in BoL"
   ;; (ac-show-menu-immediately-on-auto-complete t)
   )
 
+;; rsense
+(setq rsense-home "~/.emacs.d/src/rsense-0.3")
+(add-to-list 'load-path (concat rsense-home "/etc"))
+(require 'rsense nil t)
+
 ;; tabbar-mode
 (when (require 'tabbar nil t)
 
