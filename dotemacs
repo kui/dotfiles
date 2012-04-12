@@ -15,7 +15,7 @@
 (set-default-coding-systems 'utf-8)
 
 ;; meadow で使うときの日本語周り
-; (if (string-equal system-type "windows-nt")	 (let ()  ))
+; (if (string-equal system-type "windows-nt")    (let ()  ))
 
 ;; 自動保存機能
 (setq auto-save-default t
@@ -45,22 +45,22 @@
 
 ;; 対応するカッコの face
 (set-face-attribute 'show-paren-match-face nil
-		    :foreground "white"
-		    :background "#666666"
-		    :bold t)
+                    :foreground nil
+                    :background "#333333"
+                    :bold t)
 
 ;; 対応するカッコが無い時の face
 (set-face-attribute 'show-paren-mismatch-face nil
-		    ;:foreground "white"
-		    ;:background "#666666"
-		    :bold t)
+                    ;:foreground "white"
+                    ;:background "#666666"
+                    :bold t)
 
 ;; バッファ末尾に余計な改行コードを防ぐための設定
 (setq next-line-add-newlines nil)
 
 ;; 縦分割の時、一行で表示しきれない時の挙動
 ;;   nil: 改行
-;;   t:	  はみ出し？
+;;   t:   はみ出し？
 (setq truncate-partial-width-windows nil)
 
 ;; C-x l で goto-line を実行
@@ -73,7 +73,7 @@
 ;; (display-time)
 
 ;; メニューバーを消す
-(menu-bar-mode 0)
+(menu-bar-mode (if window-system 1 0))
 
 ;; "Symbolic link to Git-controlled source file;" みたいに聞かれるの回避
 (setq vc-follow-symlinks t)
@@ -82,18 +82,23 @@
 (if window-system
     (let ()
 
-      (add-to-list 'default-frame-alist
-	     '(foreground-color . "white"));; 前景
+      ;; (add-to-list 'default-frame-alist '(foreground-color . "white"))
       ;; (add-to-list 'default-frame-alist
-      ;;	     '(border-color . "cyan"));;
+      ;;             '(border-color . "cyan"));;
 
-      (add-to-list 'default-frame-alist '(cursor-color . "Green"))
+      (add-to-list 'default-frame-alist '(cursor-color . "green"))
 
       ;; ツールバーを消す
       (tool-bar-mode nil)
 
       ;; スクロールバーを消す(nil:消える,right:右側)
-      (set-scroll-bar-mode nil)
+      (set-scroll-bar-mode "right")
+
+      ;; welcome to emacs ... を消す
+      (setq inhibit-splash-screen t)
+
+      ;; (add-to-list 'default-frame-alist '(font . "-unknown-Takaoゴシック-normal-normal-normal-*-19-*-*-*-d-0-iso10646-1"))
+
       ))
 
 ;; 列数表示
@@ -111,19 +116,19 @@
   (if (bobp)
       ad-do-it
     (let ((dabbrev-abbrev-char-regexp
-	   (let ((c (char-category-set (char-before))))
-	     (cond
-	      ((aref c ?a) "[-_A-Za-z0-9]") ; ASCII
-	      ((aref c ?j) ; Japanese
-	       (cond
-		((aref c ?K) "\\cK") ; katakana
-		((aref c ?A) "\\cA") ; 2byte alphanumeric
-		((aref c ?H) "\\cH") ; hiragana
-		((aref c ?C) "\\cC") ; kanji
-		(t "\\cj")))
-	      ((aref c ?k) "\\ck") ; hankaku-kana
-	      ((aref c ?r) "\\cr") ; Japanese roman ?
-	      (t dabbrev-abbrev-char-regexp)))))
+           (let ((c (char-category-set (char-before))))
+             (cond
+              ((aref c ?a) "[-_A-Za-z0-9]") ; ASCII
+              ((aref c ?j) ; Japanese
+               (cond
+                ((aref c ?K) "\\cK") ; katakana
+                ((aref c ?A) "\\cA") ; 2byte alphanumeric
+                ((aref c ?H) "\\cH") ; hiragana
+                ((aref c ?C) "\\cC") ; kanji
+                (t "\\cj")))
+              ((aref c ?k) "\\ck") ; hankaku-kana
+              ((aref c ?r) "\\cr") ; Japanese roman ?
+              (t dabbrev-abbrev-char-regexp)))))
       ad-do-it)))
 
 ;; BS で選択範囲を消す
@@ -136,12 +141,26 @@
 (setq default-frame-alist
       (append
        '(
-	 ;; (corsor-type . bar)
-	 (corsor-color . "green")
-	 (foreground-color . "white")
-	 (background-color . "#000000")
-	 )
+         ;; (corsor-type . bar)
+         (corsor-color . "green")
+         (foreground-color . "white")
+         (background-color . "#000000")
+         )
        default-frame-alist))
+
+;; 現在の行をハイライト
+(global-hl-line-mode)
+(set-face-attribute 'hl-line nil
+                    :background "#000022"
+                    :foreground nil)
+
+;; セーブ時の挙動
+(add-hook 'before-save-hook
+          '(lambda ()
+             ;; 末尾空白の削除
+             (delete-trailing-whitespace)
+             ;; (replace-regexp "[	 ]+$" "" nil (point-min) (point-max))
+             ))
 
 ;; -------------------------------------------------------------------------
 ;; キーバインド変更
@@ -155,9 +174,19 @@
 ;; TODO mark-active の状態で、リージョン/現在の行をコメントアウトするのか切り替え
 ;; (global-set-key (kbd "C-u") 'kui/comment-out)
 
-;; C-a をインデント先頭に
-;; インデント先頭時は行頭に, 行頭時は何もしない (要するに eclipse 風)
-(global-set-key "\C-a" 'kui/move-beginning-of-line)
+;; tag のキーバインド変更
+(global-set-key "\M-t" nil)
+(global-set-key "\M-tt" 'find-tag)
+(global-set-key "\M-t\M-t" 'find-tag)
+(global-set-key "\M-tn" 'next-tag)
+(global-set-key "\M-tp" 'pop-tag-mark)
+
+;; -------------------------------------------------------------------------
+;; 自作関数
+
+;; インデント先頭に移動
+;; インデント先頭時は行頭移動
+;; 行頭時は何もしない （要するに eclipse 風）
 (defun kui/move-beginning-of-line ()
   "back-to-indentation but move-beginning-of-line if point is in indentation
 or nothing if point is in BoL"
@@ -168,16 +197,14 @@ or nothing if point is in BoL"
     (if (= old-point (point))
         (move-beginning-of-line nil)))
   )
-
-;; -------------------------------------------------------------------------
-;; 自作関数
+(global-set-key "\C-a" 'kui/move-beginning-of-line)
 
 ;; require の代わりに使う
 (defun autoload-if-exist (function file &optional docstring interactive type)
   "autoload if FILE exist"
   (if (locate-library file)
       (let () (autoload function file docstring interactive type) t)
-    (nil)))
+    ))
 
 ;; emacs 用マジックコメント挿入
 (defun insert-magic-comment ()
@@ -186,11 +213,16 @@ or nothing if point is in BoL"
   (if (or buffer-file-coding-system major-mode)
       (insert
        (concat "-*- "
-	       (if buffer-file-coding-system
-		   (concat "coding:" (symbol-name buffer-file-coding-system) "; "))
-	       (if major-mode
-		   (concat "mode:" (symbol-name major-mode) "; "))
-	       "-*-\n"))
+               (if buffer-file-coding-system
+                   (concat "coding:"
+                           (symbol-name buffer-file-coding-system)
+                           "; "))
+               (if major-mode
+                   (concat "mode:"
+                           (replace-regexp-in-string "-mode\\'" ""
+                                                     (symbol-name major-mode))
+                           "; "))
+               "-*-\n"))
     (message "Both current coding and major-mode are nil.")))
 
 ;; -------------------------------------------------------------------------
@@ -207,8 +239,8 @@ or nothing if point is in BoL"
   (global-auto-complete-mode t)
 
   ;; *候補間を移動
-  ;; (define-key ac-complete-mode-map "\C-n" 'ac-next)
-  ;; (define-key ac-complete-mode-map "\C-p" 'ac-previous)
+  (define-key ac-complete-mode-map "\C-n" 'ac-next)
+  (define-key ac-complete-mode-map "\C-p" 'ac-previous)
 
   ;; *補完停止
   (define-key ac-complete-mode-map "\C-[" 'ac-stop)
@@ -217,14 +249,19 @@ or nothing if point is in BoL"
   ;; (define-key ac-complete-mode-map "\C-i" 'auto-complete)
 
   ;; *大文字・小文字の区別
-  ;; nil:	 区別しない
-  ;; t:	 区別する
+  ;; nil:        区別しない
+  ;; t:  区別する
   ;; 'smart: 補完対象に大文字が含まれる場合のみ区別する
   (setq ac-ignore-case 'smart)
 
   ;; 直ちに補完メニューを表示する
   ;; (ac-show-menu-immediately-on-auto-complete t)
   )
+
+;; rsense
+(setq rsense-home "~/.emacs.d/src/rsense-0.3")
+(add-to-list 'load-path (concat rsense-home "/etc"))
+(and (require 'cl nil t) (require 'rsense nil t))
 
 ;; tabbar-mode
 (when (require 'tabbar nil t)
@@ -235,50 +272,55 @@ or nothing if point is in BoL"
   ;; tabbar のタブのグループの仕方
   ;;   デフォルト: 一部を除き major-mode ごとにタブをグループ化
   ;;   下: 全部同じグループに
-  ;;	   (http://www.emacswiki.org/emacs/TabBarMode)
+  ;;       (http://www.emacswiki.org/emacs/TabBarMode)
   (setq tabbar-buffer-groups-function (lambda () (list "Buffers")))
 
   (when (require 'cl nil t) ;; remove-if とかに必要
 
     ;; 表示するタブのフィルタリング
-    ;;	 * で始まるバッファはタブに表示しない
+    ;;   * で始まるバッファはタブに表示しない
     (setq tabbar-buffer-list-function
-	  (lambda ()
-	    (remove-if
-	     (lambda (b)
-	       (and (string-match "^ ?\\*" (buffer-name b))
-		    (not (string-equal (buffer-name (current-buffer))
-				       (buffer-name b)))))
-	     (buffer-list)))))
+          (lambda ()
+            (remove-if
+             (lambda (b)
+               (and (string-match "^ ?\\*" (buffer-name b))
+                    (not (string-equal (buffer-name (current-buffer))
+                                       (buffer-name b)))))
+             (buffer-list)))))
 
   ;; faces
   (set-face-attribute 'tabbar-default nil
-		      :background "#333333"
-		      :foreground "#000000"
-		      :underline t
-		      :box nil)
+                      :background "white" ;;"#333333"
+                      :foreground "black" ;; "#000000"
+                      :underline t
+                      :box nil)
   (set-face-attribute 'tabbar-selected nil
-		      :background "#000000"
-		      :foreground "#ffffff"
-		      :underline nil
-		      :box nil)
+                      :background "black"
+                      :foreground "white"
+                      :underline nil
+                      :box nil)
   (set-face-attribute 'tabbar-unselected nil
-		      :background "#333333"
-		      :foreground "#cccccc"
-		      :underline t
-		      :box nil)
-
+                      :background nil ;;"#333333"
+                      :foreground nil ;; "#cccccc"
+                      :underline t
+                      :box nil)
+  (set-face-attribute 'tabbar-separator nil
+                      :background nil
+                      )
   ;; 左に表示されるボタンを消す
   (dolist (button '(tabbar-buffer-home-button
-		    tabbar-scroll-left-button
-		    tabbar-scroll-right-button))
+                    tabbar-scroll-left-button
+                    tabbar-scroll-right-button))
     (set button (cons (cons "" nil) (cons "" nil))))
 
   ;; Ctrl+Tab でタブ切り替え
   (global-set-key "\M-[1;5i" 'tabbar-forward)  ;; for mintty
   (global-set-key "\M-[1;6i" 'tabbar-backward) ;; for mintty
-  ;; (global-set-key [(control tab)] 'tabbar-forward)
-  ;; (global-set-key [(control shift tab)] 'tabbar-backward)
+  (global-set-key [(control tab)] 'tabbar-forward)
+  (global-set-key [(control shift tab)] 'tabbar-backward)
+  (global-set-key "\C-xn" 'tabbar-forward)
+  (global-set-key "\C-xp" 'tabbar-backward)
+
 
   (tabbar-mode))
 
@@ -298,71 +340,73 @@ or nothing if point is in BoL"
      (defun flymake-display-err-menu-for-current-line ()
        (interactive)
        (let* ((line-no (flymake-current-line-no))
-	      (line-err-info-list (nth 0 (flymake-find-err-info flymake-err-info line-no))))
-	 (when (and (flymake-display-err-check-moved line-no (current-column))
-		    line-err-info-list)
-	   (setq flymake-display-err-before-line-no line-no)
-	   (let* ((count (length line-err-info-list))
-		  (menu-item-text nil))
-	     (while (> count 0)
-	       (setq menu-item-text (flymake-ler-text (nth (1- count) line-err-info-list)))
-	       (let* ((file (flymake-ler-file (nth (1- count) line-err-info-list)))
-		      (line (flymake-ler-line (nth (1- count) line-err-info-list))))
-		 (if file
-		     (setq menu-item-text
-			   (concat menu-item-text " - " file "(" (format "%d" line) ")"))))
-	       (setq count (1- count))
-	       (if (> count 0) (setq menu-item-text (concat menu-item-text "\n")))
-	       )
-	     (popup-tip menu-item-text)))))
+              (line-err-info-list (nth 0 (flymake-find-err-info flymake-err-info
+                                                                line-no))))
+         (when (and (flymake-display-err-check-moved line-no (current-column))
+                    line-err-info-list)
+           (setq flymake-display-err-before-line-no line-no)
+           (let* ((count (length line-err-info-list))
+                  (menu-item-text nil))
+             (while (> count 0)
+               (setq menu-item-text
+                     (flymake-ler-text (nth (1- count) line-err-info-list)))
+               (let* ((file (flymake-ler-file (nth (1- count) line-err-info-list)))
+                      (line (flymake-ler-line (nth (1- count) line-err-info-list))))
+                 (if file
+                     (setq menu-item-text
+                           (concat menu-item-text " - " file "(" (format "%d" line) ")"))))
+               (setq count (1- count))
+               (if (> count 0) (setq menu-item-text (concat menu-item-text "\n")))
+               )
+             (popup-tip menu-item-text)))))
 
      (defun flymake-display-err-check-moved (cur-line cur-col)
        (let* ((is-not-moved (and flymake-display-err-before-line
-				 flymake-display-err-before-colmun
-				 (= cur-line flymake-display-err-before-line)
-				 (= cur-col flymake-display-err-before-colmun))))
-	 ;; (message (concat "line:" cur-line ", col:" cur-col))
-	 (setq flymake-display-err-before-line cur-line
-	       flymake-display-err-before-colmun cur-col)
-	 (not is-not-moved)))
+                                 flymake-display-err-before-colmun
+                                 (= cur-line flymake-display-err-before-line)
+                                 (= cur-col flymake-display-err-before-colmun))))
+         ;; (message (concat "line:" cur-line ", col:" cur-col))
+         (setq flymake-display-err-before-line cur-line
+               flymake-display-err-before-colmun cur-col)
+         (not is-not-moved)))
 
      (global-set-key "\M-e"
-		     '(lambda ()
-			(interactive)
-			(let ()
-			  (message "next error")
-			  (flymake-goto-next-error)
-			  (flymake-display-err-menu-for-current-line))))
+                     '(lambda ()
+                        (interactive)
+                        (let ()
+                          (message "next error")
+                          (flymake-goto-next-error)
+                          (flymake-display-err-menu-for-current-line))))
      (global-set-key "\M-E"
-		     '(lambda ()
-			(interactive)
-			(let ()
-			  (message "prev error")
-			  (flymake-goto-prev-error)
-			  (flymake-display-err-menu-for-current-line))))
+                     '(lambda ()
+                        (interactive)
+                        (let ()
+                          (message "prev error")
+                          (flymake-goto-prev-error)
+                          (flymake-display-err-menu-for-current-line))))
 
      (unless flymake-display-err-timer
        (setq flymake-display-err-timer
-	     (run-with-idle-timer flymake-display-err-delay
-				  t
-				  'flymake-display-err-menu-for-current-line)))
+             (run-with-idle-timer flymake-display-err-delay
+                                  t
+                                  'flymake-display-err-menu-for-current-line)))
 
      ;; (defvar flymake-display-err-delay 0.5
-     ;;	 "delay to display flymake error message ")
+     ;;  "delay to display flymake error message ")
      ;; (defvar flymake-display-err-timer nil
-     ;;	 "timer for flymake-display-err-menu-for-current-line")
+     ;;  "timer for flymake-display-err-menu-for-current-line")
 
      ;; (defun flymake-display-err-set-timer ()
-     ;;	 (unless flymake-display-err-timer
-     ;;	 (setq flymake-display-err-timer
-     ;;	       (run-with-idle-timer flymake-display-err-delay
-     ;;				 nil
-     ;;				 'flymake-display-err-menu-for-current-line))))
+     ;;  (unless flymake-display-err-timer
+     ;;  (setq flymake-display-err-timer
+     ;;        (run-with-idle-timer flymake-display-err-delay
+     ;;                          nil
+     ;;                          'flymake-display-err-menu-for-current-line))))
 
      ;; (defun flymake-display-err-cancel-timer ()
-     ;;	 (when (timerp flymake-display-err-timer)
-     ;;	 (cancel-timer flymake-display-err-timer)
-     ;;	 (setq flymake-display-err-timer nil)))
+     ;;  (when (timerp flymake-display-err-timer)
+     ;;  (cancel-timer flymake-display-err-timer)
+     ;;  (setq flymake-display-err-timer nil)))
 
      ))
 
@@ -370,7 +414,34 @@ or nothing if point is in BoL"
 (when (require 'anything-config nil t)
   (global-set-key "\M-a" 'anything-c-apropos)
   (global-set-key "\C-xf" 'anything-for-files)
+  (global-set-key "\C-xb" 'anything-buffers-list)
   )
+
+;; whitespace-mode
+(when (require 'whitespace nil t)
+  ;; n 列以上はハイライトで警告
+  (setq whitespace-line-column 90)
+
+  (setq whitespace-style
+        '(face ;; faceを使って視覚化する。
+          ;; 行末の空白
+          trailing
+          ;; 長すぎる行のうち whitespace-line-column 以降部分
+          lines-tail
+          ;; タブ
+          tabs
+          ;; タブの前にあるスペース
+          space-before-tab
+          ;; タブの後にあるスペース
+          space-after-tab
+          ))
+
+  (set-face-attribute 'whitespace-tab nil
+                      :foreground nil
+                      :background "#222222")
+
+  ;; デフォルトで視覚化を有効にする。
+  (global-whitespace-mode 1))
 
 ;; -------------------------------------------------------------------------
 ;; メジャーモードの設定や読み込み
@@ -380,12 +451,12 @@ or nothing if point is in BoL"
 ;;  (add-to-list 'auto-mode-alist '("\\.css$" . css-mode))
 ;;  (eval-after-load "css-mode"
 ;;    (let ()
-;;	;; css-mode 読み込まれた時に評価される
-;;	)))
+;;      ;; css-mode 読み込まれた時に評価される
+;;      )))
 
 ;; markdown-mode
 (when (autoload-if-exist 'markdown-mode "markdown-mode"
-			 "Major mode for editing Markdown files" t)
+                         "Major mode for editing Markdown files" t)
 
   (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
   (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
@@ -406,7 +477,7 @@ or nothing if point is in BoL"
 
 ;; yaml-mode
 (when (autoload-if-exist 'yaml-mode "yaml-mode"
-			 "Major mode for editing yaml files" t)
+                         "Major mode for editing yaml files" t)
 
   (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
   (eval-after-load "yaml-mode"
@@ -416,6 +487,7 @@ or nothing if point is in BoL"
 
 (when '(require 'ruby-mode)
   (add-to-list 'auto-mode-alist '("/Rakefile" . ruby-mode))
+  (add-to-list 'auto-mode-alist '("\\.gemspec\\'" . ruby-mode))
 
   ;; flymakeでrubyの構文チェック
   (when (require 'flymake-ruby nil t)
@@ -425,12 +497,11 @@ or nothing if point is in BoL"
 ;; nxhtml
 (defvar kui-nxhtml-file-name "src/nxhtml/autostart.el")
 (when (locate-library kui-nxhtml-file-name)
-  (load kui-nxhtml-file-name)
-  (menu-bar-mode 0))
+  (load kui-nxhtml-file-name))
 
 ;; js2-mode
 (when (autoload-if-exist 'js2-mode "js2"
-			 "Major mode for editing javascript files" t)
+                         "Major mode for editing javascript files" t)
 
   (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
 
@@ -442,32 +513,32 @@ or nothing if point is in BoL"
       ;; js2-mode 向け flymake
       (when (and (require 'flymake nil t) (executable-find "jslint"))
 
-	(message "Load flymake for js2-mode")
+        (message "Load flymake for js2-mode")
 
-	(defun flymake-js-init ()
-	  (let* ((temp-file (flymake-init-create-temp-buffer-copy
-			     'flymake-create-temp-inplace))
-		 (local-file (file-relative-name
-			      temp-file
-			      (file-name-directory buffer-file-name))))
-	    (list "jslint" (list local-file))))
+        (defun flymake-js-init ()
+          (let* ((temp-file (flymake-init-create-temp-buffer-copy
+                             'flymake-create-temp-inplace))
+                 (local-file (file-relative-name
+                              temp-file
+                              (file-name-directory buffer-file-name))))
+            (list "jslint" (list local-file))))
 
-	(add-to-list 'flymake-allowed-file-name-masks '("\\.js\\'" flymake-js-init))
+        (add-to-list 'flymake-allowed-file-name-masks '("\\.js\\'" flymake-js-init))
 
-	(defun flymake-js-load ()
-	  (interactive)
-	  (setq flymake-err-line-patterns
-		(cons '("^  Line:\\([0-9]+\\), Pos:\\([0-9]+\\), Reason:\\(.+\\)$"
-			nil 1 2 3)
-		      flymake-err-line-patterns))
-	  (flymake-mode t))
+        (defun flymake-js-load ()
+          (interactive)
+          (setq flymake-err-line-patterns
+                (cons '("^  Line:\\([0-9]+\\), Pos:\\([0-9]+\\), Reason:\\(.+\\)$"
+                        nil 1 2 3)
+                      flymake-err-line-patterns))
+          (flymake-mode t))
 
-	(add-hook 'js2-mode-hook 'flymake-js-load)
+        (add-hook 'js2-mode-hook 'flymake-js-load)
   ))))
 
 ;; coffee-mode
 (when (autoload-if-exist 'coffee-mode "coffee-mode"
-			 "Major mode for editing coffescript files" t)
+                         "Major mode for editing coffescript files" t)
 
   (add-to-list 'auto-mode-alist '("\\.coffee\\'" . coffee-mode))
   (add-to-list 'auto-mode-alist '("/Cakefile\\'" . coffee-mode))
@@ -477,15 +548,15 @@ or nothing if point is in BoL"
       ;; coffee-mode が読み込まれた時に評価される
       (message "Load coffee-settings")
       (add-to-list 'ac-modes 'coffee-mode)
-      
+
       ;; タブ幅
       (setq coffee-tab-width 2)
-      
+
       ;; flymake
       (when (and (require 'flymake nil t)
-		 (require 'flymake-coffeescript nil t)
-		 (executable-find flymake-coffeescript-command))
-	(add-hook 'coffee-mode-hook 'flymake-coffeescript-load))
+                 (require 'flymake-coffeescript nil t)
+                 (executable-find flymake-coffeescript-command))
+        (add-hook 'coffee-mode-hook 'flymake-coffeescript-load))
 
       (setq coffee-debug-mode t)
 
@@ -506,7 +577,7 @@ or nothing if point is in BoL"
               (back-to-indentation)
             (coffee-indent-line))
           ))
-      (add-hook 'coffee-mode-hook 
+      (add-hook 'coffee-mode-hook
                 '(lambda ()
                    (set (make-local-variable 'indent-line-function)
                         'kui/coffee-indent-line)))

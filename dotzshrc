@@ -2,26 +2,57 @@
 
 [ -f /etc/zsh/zshrc ] && source /etc/zsh/zshrc
 
+############################################################
+##  外部設定ファイル
+
+source_if_exist(){
+    [ -f "$1" ] || return
+    echo load $1
+    source "$1"
+}
+
+## mintty の ANSI Colors の設定
+source_if_exist "$HOME/.zshrc.d/color_schemes/my_colors"
+
+## rubygems
+GEM_HOME="$HOME/.gem/ruby/1.8"
+if [ -d "$GEM_HOME" ]
+then
+    export GEM_HOME
+fi
+
+## rvm
+source_if_exist "/usr/local/rvm/scripts/rvm"
+source_if_exist "$HOME/.rvm/scripts/rvm"
+
+############################################################
+# env
+EDITOR='vi'
+
+############################################################
 # パスの設定
 ## 重複したパスを登録しない。
 typeset -U path
 ## (N-/): 存在しないディレクトリは登録しない。
 ##    パス(...): ...という条件にマッチするパスのみ残す。
-##	      N: NULL_GLOBオプションを設定。
-##		 globがマッチしなかったり存在しないパスを無視する。
-##	      -: シンボリックリンク先のパスを評価。
-##	      /: ディレクトリのみ残す。
+##            N: NULL_GLOBオプションを設定。
+##               globがマッチしなかったり存在しないパスを無視する。
+##            -: シンボリックリンク先のパスを評価。
+##            /: ディレクトリのみ残す。
 path=($HOME/{.rvm,local}/bin(N-/)
-	{/usr/local,/usr,}/bin(N-/)
-	/app/{script,mingw/tdm/bin,gs/bin,gs/lib}(N-/)
-	$path)
+        /usr{/local,/local/rvm,/usr,}/bin(N-/)
+        /app/{script,mingw/tdm/bin,gs/bin,gs/lib}(N-/)
+        /usr/local/rvm/bin(N-/)
+        $GEM_HOME/bin(N-/)
+        $path)
 
 # sudo時のパスの設定
 ## -x: export SUDO_PATHも一緒に行う。
 ## -T: SUDO_PATHとsudo_pathを連動する。
 typeset -xT SUDO_PATH sudo_path
 typeset -U sudo_path
-sudo_path=({,/usr/pkg,/usr/local,/usr}/sbin(N-/))
+sudo_path=({,/usr/pkg,/usr/local,/usr}/sbin(N-/)
+        $sudo_path $path)
 
 if [ $TERM = "xterm" ] && infocmp xterm-256color > /dev/null 2>&1
 then
@@ -32,25 +63,14 @@ fi
 export LANG=ja_JP.UTF-8
 
 # 補完スクリプトのパス
-fpath=($HOME/.rvm/scripts/zsh/Completion(N-/) $fpath)
+fpath=({$HOME/.rvm,/usr/local/rvm}/scripts/zsh/Completion(N-/) $fpath)
 
 ############################################################
 ## alias, funcction の設定
 if which screen > /dev/null 2>&1
 then
     alias s="screen"
-
-    if [ "$STY" -a ! "$SCREEN_INIT" ]
-    then
-	[ $COLUMNS -gt 150 ] && screen -X split -v
-	alias s="screen -X focus; screen"
-	export SCREEN_INIT=true
-    # elif [ ! "$STY" ]
-    # then 
-    #	  echo "source ~/.screenrc" > ~/.screen.init
-    #	  echo "layout new" >> ~/.screen.init
-    #	  alias s="screen -c ~/.screen.init"
-    fi
+    [ $STY ] && alias s="screen -X focus; screen"
 fi
 
 if ls --color > /dev/null 2>&1
@@ -62,11 +82,12 @@ then
 fi
 
 function md(){
-    cat <<EOF 
+    cat <<EOF
 <html><head>
 <meta charset="UTF-8" />
 <style>
-  h1,h2,h3,h4,h5,h6 {font-family: "Hiragino Kaku Gothic Pro W3", "ヒラギノ角ゴ Pro W3", Meiryo, "メイリオ", "MS P Gothic", "ＭＳ Ｐゴシック", sans-serif}
+  h1,h2,h3,h4,h5,h6 {font-family: "Hiragino Kaku Gothic Pro W3", "ヒラギノ角ゴ Pro W3", Meiryo,
+"メイリオ", "MS P Gothic", "ＭＳ Ｐゴシック", sans-serif}
   p, li {font-family:Georgia, Times, "Times New Roman", serif}
 </style>
 </head><body>
@@ -77,14 +98,14 @@ EOF
 
 function markdown_preview(){
     if [ $# -ne 1 ]; then
-	echo "error: invalid arguments"
-	echo "usage: $0 markdown_file"
-	return 1;
+        echo "error: invalid arguments"
+        echo "usage: $0 markdown_file"
+        return 1;
     fi
 
     if [ ! -f "$1" ]; then
-	echo "error: $1 dose not exists"
-	return 1;
+        echo "error: $1 dose not exists"
+        return 1;
     fi
 
     md "$1" | w3m -T text/html -dump
@@ -92,8 +113,8 @@ function markdown_preview(){
     # 縦割りしたときにズレる問題解決
     if [ $STY ]
     then
-	sleep 0.2
-	screen -X redisplay
+        sleep 0.2
+        screen -X redisplay
     fi
 }
 
@@ -102,9 +123,9 @@ function j(){
     shift
     echo $@
     if [ -f build.xml ]; then
-	ant && java -DDebug=on $class $@
+        ant && java -DDebug=on $class $@
     else
-	javac $class.java && java -DDebug=on $do_java $@
+        javac $class.java && java -DDebug=on $do_java $@
     fi
 }
 
@@ -118,30 +139,48 @@ function g(){
     w3m "google.com/search?q=$@"
 }
 
-## emacs の設定
-if [ $STY ]
-then
-    export EMACS_SERVER_NAME="server-$STY"
+## emacs server の設定
+EMACS_SERVER_NAME="$USER"
+[ $STY ] && EMACS_SERVER_NAME="$EMACS_SERVER_NAME-$STY"
+export EMACS_SERVER_NAME
 
-    alias e="emacsclient -n -s $EMACS_SERVER_NAME"
-    alias emacsclient="emacsclient -n -s $EMACS_SERVER_NAME"
-    alias eview="emacs -f view-mode"
+alias e="emacsclient -n -s $EMACS_SERVER_NAME"
+alias emacsclient="emacsclient -n -s $EMACS_SERVER_NAME"n
+
+# 横長画面向きレイアウト
+function widescreen(){
+    local columns=160
+    if ! [ $STY ]
+    then
+        echo 'run `screen`'
+        return
+    elif [ $COLUMNS -lt $columns ]
+    then
+        echo "less than $columns columns"
+        return
+    fi
+
+    screen -X layout new
+    screen -X split -v
 
     if ! emacsclient -s "$EMACS_SERVER_NAME" -e "server-name" > /dev/null 2>&1
     then
-	s emacs --eval "(let () (setq server-name \"$EMACS_SERVER_NAME\") (server-start) (setq confirm-kill-emacs 'yes-or-no-p))"
-	# screen -X "resize -h 85"
-	screen -X focus
+        screen emacs --eval "(let () (setq server-name \"$EMACS_SERVER_NAME\") (server-start) (setq confirm-kill-emacs 'yes-or-no-p))"
     fi
-fi
+
+    screen -X next
+    screen -X focus
+    screen -X select 1
+    screen -X focus
+}
 
 
 # 色一覧
 function color_list(){
     for c in {016..255}
     do
-	echo -n "\e[38;5;${c}m $c"
-	[ $(($((c-16))%6)) -eq 5 ] && echo
+        echo -n "\e[38;5;${c}m $c"
+        [ $(($((c-16))%6)) -eq 5 ] && echo
     done
 }
 
@@ -157,10 +196,10 @@ color256()
 color256_echo(){
     if [ $# -lt 3 ]
     then
-	echo "usage: $0 RED GREEN BLUE [string...]"
-	echo "	RED, GREEN, BLUE: 0-5"
-	echo "sample: $0 0 5 5 foo"
-	return 1
+        echo "usage: $0 RED GREEN BLUE [string...]"
+        echo "  RED, GREEN, BLUE: 0-5"
+        echo "sample: $0 0 5 5 foo"
+        return 1
     fi
 
     local r=$1; shift
@@ -197,8 +236,8 @@ update_rprompt(){
     export VCS_IS_ADDED=t
     if [ $VCS_NAME ]
     then
-	[ -n "$vcs_info_msg_3_" -a ! $vcs_info_msg_3_ = %c ]&&export VCS_IS_COMMITED=
-	[ -n "$vcs_info_msg_4_" -a ! $vcs_info_msg_4_ = %u ]&&export VCS_IS_ADDED=
+        [ -n "$vcs_info_msg_3_" -a ! $vcs_info_msg_3_ = %c ]&&export VCS_IS_COMMITED=
+        [ -n "$vcs_info_msg_4_" -a ! $vcs_info_msg_4_ = %u ]&&export VCS_IS_ADDED=
     fi
     # echo $vcs_info_msg_3_$vcs_info_msg_4_$VCS_IS_COMMITED$VCS_IS_ADDED
 }
@@ -215,7 +254,7 @@ colors=(
     $'\e[0;35m' # purple
     $'\e[0;36m' # cyan
     # $'\e[0;37m' # gray
-    
+
     # light colors
     # $'\e[1;30m' # black
     $'\e[1;31m' # red
@@ -227,20 +266,20 @@ colors=(
     # $'\e[1;37m' # gray
 )
 
-if [ `echotc Co` = "256" ] 
+if [ `echotc Co` = "256" ]
 then
     colors=()
     local c=0
     for c in {000..255}
     do
-	# 無視する色
-	if [ $c -eq 000 ] || [ $c -ge 016 -a $c -le 025 ] ||\
-	   [ $c -ge 052 -a $c -le 060 ] || [ $c -ge 088 -a $c -le 093 ] ||\
-	   [ $c -ge 232 -a $c -le 238 ]
-	then
-	    continue
-	fi
-	colors=($colors $'\e[38;5;'$c'm')
+        # 無視する色
+        if [ $c -eq 000 ] || [ $c -ge 016 -a $c -le 027 ] ||\
+           [ $c -ge 052 -a $c -le 066 ] || [ $c -ge 088 -a $c -le 098 ] ||\
+           [ $c -ge 232 -a $c -le 244 ]
+        then
+            continue
+        fi
+        colors=($colors $'\e[38;5;'$c'm')
     done
 fi
 
@@ -248,7 +287,7 @@ export USER_COLOR=$colors[$((`echo "$USER" | sum | cut -f1 -d' '`%${#colors}))+1
 export HOST_COLOR=$colors[$((`echo "$HOST" | sum | cut -f1 -d' '`%${#colors}))+1]
 export BAR_COLOR=$'\e[0;37m'
 export TIME_COLOR=$'\e[0;37m'
-if [ `echotc Co` = "256" ] 
+if [ `echotc Co` = "256" ]
 then
     export BAR_COLOR=$'\e[38;5;240m'
     export TIME_COLOR=$'\e[38;5;245m'
@@ -258,9 +297,9 @@ construct_left(){
     local non_color=
     while getopts n opt
     do
-	case $opt in
-	    n) local no_color=true;;
-	esac
+        case $opt in
+            n) local no_color=true;;
+        esac
     done
     shift `expr $OPTIND - 1`
     local current_path=$1
@@ -268,15 +307,15 @@ construct_left(){
     local u= h= p= v= d=
     if [ ! $no_color ]
     then
-	local u=$USER_COLOR h=$HOST_COLOR p='%F{yellow}' d='%f'
-	local v=$(
-	    if [ "$vcs_info_msg_3_" = %c ]
-	    then echo -n '%f'
-	    elif [ $VCS_IS_ADDED ] && [ $VCS_IS_COMMITED ]
-	    then echo -n '%F{green}'
-	    else echo -n '%F{red}'
-	    fi
-	)
+        local u=$USER_COLOR h=$HOST_COLOR p='%F{yellow}' d='%f'
+        local v=$(
+            if [ "$vcs_info_msg_3_" = %c ]
+            then echo -n '%f'
+            elif [ $VCS_IS_ADDED ] && [ $VCS_IS_COMMITED ]
+            then echo -n '%F{green}'
+            else echo -n '%F{red}'
+            fi
+        )
     fi
 
     # プロンプトのフォーマット
@@ -298,15 +337,15 @@ update_prompt(){
 
     if [ $num_bar -lt 0 ]
     then
-	local datetime="`date +'%H:%M:%S'`"
-	local right=" ${datetime} "
-	local num_bar=$((${COLUMNS}-${#left}-${#right}))
+        local datetime="`date +'%H:%M:%S'`"
+        local right=" ${datetime} "
+        local num_bar=$((${COLUMNS}-${#left}-${#right}))
     fi
 
     if [ $num_bar -lt 0 ]
     then
-	local right=''
-	local num_bar=$((${COLUMNS}-${#left}-${#right}))
+        local right=''
+        local num_bar=$((${COLUMNS}-${#left}-${#right}))
     fi
 
     local sep='-'
@@ -314,13 +353,13 @@ update_prompt(){
     local i=0
     while [ $num_bar -gt $((${#bar}+${#sep})) ]
     do
-	local bar="$sep$bar"
-	local i=$((i+1))
-	# [ 0 -eq $((i%10)) ] && local bar="-$bar"
+        local bar="$sep$bar"
+        local i=$((i+1))
+        # [ 0 -eq $((i%10)) ] && local bar="-$bar"
     done
     while [ $num_bar -gt ${#bar} ]
     do
-	local bar=" $bar"
+        local bar=" $bar"
     done
 
     local bar="$BAR_COLOR$bar"
@@ -332,6 +371,8 @@ update_prompt(){
 precmd_functions=($precmd_functions update_prompt)
 PROMPT=$'\n'"%F{green}${USER}@${HOST} %F{yellow}%~%f "$'\n'"%(!.#.$) "
 
+[ "$OS" = "Windows_NT" ] && precmd_functions=
+
 ############################################################
 ##  zsh プロパティ
 
@@ -341,7 +382,7 @@ SAVEHIST=100000
 
 ## 補完機能の強化
 autoload -U compinit
-compinit
+compinit -u
 
 ## コアダンプサイズを制限
 limit coredumpsize 102400
@@ -427,22 +468,7 @@ zstyle ':completion:sudo:*' environ PATH="$SUDO_PATH:$PATH"
 ## 特定のコマンドの補完を無効化
 # compdef -d java
 
-############################################################
-##  外部設定ファイル
-
-source_if_exist(){
-    [ -f "$1" ] || return
-    echo load $1
-    source "$1"
-}
-
-## mintty の ANSI Colors の設定
-source_if_exist "$HOME/.zshrc.d/color_schemes/my_colors"
-
-## rvm
-source_if_exist "$HOME/.rvm/scripts/rvm"
-
 ## マシンごとの設定
-! [ -f ~/.zshrc.local ] && touch ~/.zshrc.local 
+! [ -f ~/.zshrc.local ] && touch ~/.zshrc.local
 source ~/.zshrc.local
 
