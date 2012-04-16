@@ -2,6 +2,34 @@
 
 [ -f /etc/zsh/zshrc ] && source /etc/zsh/zshrc
 
+############################################################
+##  外部設定ファイル
+
+source_if_exist(){
+    [ -f "$1" ] || return
+    echo load $1
+    source "$1"
+}
+
+## mintty の ANSI Colors の設定
+source_if_exist "$HOME/.zshrc.d/color_schemes/my_colors"
+
+## rubygems
+GEM_HOME="$HOME/.gem/ruby/1.8"
+if [ -d "$GEM_HOME" ]
+then
+    export GEM_HOME
+fi
+
+## rvm
+source_if_exist "/usr/local/rvm/scripts/rvm"
+source_if_exist "$HOME/.rvm/scripts/rvm"
+
+############################################################
+# env
+EDITOR='vi'
+
+############################################################
 # パスの設定
 ## 重複したパスを登録しない。
 typeset -U path
@@ -12,8 +40,10 @@ typeset -U path
 ##            -: シンボリックリンク先のパスを評価。
 ##            /: ディレクトリのみ残す。
 path=($HOME/{.rvm,local}/bin(N-/)
-        {/usr/local,/usr,}/bin(N-/)
+        /usr{/local,/local/rvm,/usr,}/bin(N-/)
         /app/{script,mingw/tdm/bin,gs/bin,gs/lib}(N-/)
+        /usr/local/rvm/bin(N-/)
+        $GEM_HOME/bin(N-/)
         $path)
 
 # sudo時のパスの設定
@@ -21,7 +51,8 @@ path=($HOME/{.rvm,local}/bin(N-/)
 ## -T: SUDO_PATHとsudo_pathを連動する。
 typeset -xT SUDO_PATH sudo_path
 typeset -U sudo_path
-sudo_path=({,/usr/pkg,/usr/local,/usr}/sbin(N-/))
+sudo_path=({,/usr/pkg,/usr/local,/usr}/sbin(N-/)
+        $sudo_path $path)
 
 if [ $TERM = "xterm" ] && infocmp xterm-256color > /dev/null 2>&1
 then
@@ -32,13 +63,14 @@ fi
 export LANG=ja_JP.UTF-8
 
 # 補完スクリプトのパス
-fpath=($HOME/.rvm/scripts/zsh/Completion(N-/) $fpath)
+fpath=({$HOME/.rvm,/usr/local/rvm}/scripts/zsh/Completion(N-/) $fpath)
 
 ############################################################
 ## alias, funcction の設定
 if which screen > /dev/null 2>&1
 then
     alias s="screen"
+    [ $STY ] && alias s="screen -X focus; screen"
 fi
 
 if ls --color > /dev/null 2>&1
@@ -107,6 +139,14 @@ function g(){
     w3m "google.com/search?q=$@"
 }
 
+## emacs server の設定
+EMACS_SERVER_NAME="$USER"
+[ $STY ] && EMACS_SERVER_NAME="$EMACS_SERVER_NAME-$STY"
+export EMACS_SERVER_NAME
+
+alias e="emacsclient -n -s $EMACS_SERVER_NAME"
+alias emacsclient="emacsclient -n -s $EMACS_SERVER_NAME"n
+
 # 横長画面向きレイアウト
 function widescreen(){
     local columns=160
@@ -116,24 +156,22 @@ function widescreen(){
         return
     elif [ $COLUMNS -lt $columns ]
     then
-        echo 'less than '$columns
+        echo "less than $columns columns"
         return
     fi
 
+    screen -X layout new
     screen -X split -v
-
-    export EMACS_SERVER_NAME="server-$STY"
-    alias e="emacsclient -n -s $EMACS_SERVER_NAME"
-    alias emacsclient="emacsclient -n -s $EMACS_SERVER_NAME"
-    alias eview="emacs -f view-mode"
 
     if ! emacsclient -s "$EMACS_SERVER_NAME" -e "server-name" > /dev/null 2>&1
     then
-        screen -X focus
-        s emacs --eval "(let () (setq server-name \"$EMACS_SERVER_NAME\") (server-start) (setq confirm-kill-emacs 'yes-or-no-p))"
-        # screen -X "resize -h "
-        screen -X focus
+        screen emacs --eval "(let () (setq server-name \"$EMACS_SERVER_NAME\") (server-start) (setq confirm-kill-emacs 'yes-or-no-p))"
     fi
+
+    screen -X next
+    screen -X focus
+    screen -X select 1
+    screen -X focus
 }
 
 
@@ -235,9 +273,9 @@ then
     for c in {000..255}
     do
         # 無視する色
-        if [ $c -eq 000 ] || [ $c -ge 016 -a $c -le 025 ] ||\
-           [ $c -ge 052 -a $c -le 060 ] || [ $c -ge 088 -a $c -le 093 ] ||\
-           [ $c -ge 232 -a $c -le 238 ]
+        if [ $c -eq 000 ] || [ $c -ge 016 -a $c -le 027 ] ||\
+           [ $c -ge 052 -a $c -le 066 ] || [ $c -ge 088 -a $c -le 098 ] ||\
+           [ $c -ge 232 -a $c -le 244 ]
         then
             continue
         fi
@@ -333,7 +371,7 @@ update_prompt(){
 precmd_functions=($precmd_functions update_prompt)
 PROMPT=$'\n'"%F{green}${USER}@${HOST} %F{yellow}%~%f "$'\n'"%(!.#.$) "
 
-[ "$OS" = "Windows_NT" ] && precmd_functions= 
+[ "$OS" = "Windows_NT" ] && precmd_functions=
 
 ############################################################
 ##  zsh プロパティ
@@ -344,7 +382,7 @@ SAVEHIST=100000
 
 ## 補完機能の強化
 autoload -U compinit
-compinit
+compinit -u
 
 ## コアダンプサイズを制限
 limit coredumpsize 102400
@@ -429,21 +467,6 @@ zstyle ':completion:sudo:*' environ PATH="$SUDO_PATH:$PATH"
 
 ## 特定のコマンドの補完を無効化
 # compdef -d java
-
-############################################################
-##  外部設定ファイル
-
-source_if_exist(){
-    [ -f "$1" ] || return
-    echo load $1
-    source "$1"
-}
-
-## mintty の ANSI Colors の設定
-source_if_exist "$HOME/.zshrc.d/color_schemes/my_colors"
-
-## rvm
-source_if_exist "$HOME/.rvm/scripts/rvm"
 
 ## マシンごとの設定
 ! [ -f ~/.zshrc.local ] && touch ~/.zshrc.local

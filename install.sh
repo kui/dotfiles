@@ -11,6 +11,7 @@ link_file_list=(
     dotzshrc.d
     dotzlogin
     dotbashrc
+    dotrsense
 )
 
 if [ $OSTYPE = "cygwin" ]
@@ -51,23 +52,28 @@ main(){
 	ln_opt="-sf"
     fi
 
+    if which ruby >/dev/null && which java >/dev/null
+    then
+        if [ ! -e "$curr_dir/dotrsense" ]
+        then
+            print_and_do "ruby dotemacs.d/src/rsense-*/etc/config.rb > $curr_dir/dotrsense"
+        fi
+    else
+        echo "WARN: cannot install rsense" 2>&1
+        echo "WARN: rsense require ruby and java" 2>&1
+    fi
+
     for file in ${link_file_list[@]}
     do
 	local target_file="${curr_dir}/${file}"
 	local dest_file=`echo "$file" | sed -e 's/^dot/./'`
 	local dest_file="${HOME}/${dest_file}"
 
-	if ! [ -e "$target_file" ]
+	if [ ! -e "$target_file" ] && (! echo "$target_file"| grep "dotrsense$" >/dev/null)
 	then
 	    echo "error: cannot find $target_file" >&2
 	    exit 1
 	fi
-
-	#if 
-	#then
-	#    
-	#    print_and_do "mv \"$dest_file\" \"${dest_file}.old\""
-	#fi
 
 	# skip if $dest_file exist and the link is no change
 	[ -h "$dest_file" -a\
@@ -79,11 +85,12 @@ main(){
     create_empty_zsh ~/.zshrc.local
     create_empty_zsh ~/.zlogin.local
 
+    # all task done?
+
     if [ $counter -eq 0 ]
     then
 	echo "# do nothing"
     fi
-
     cd "$prev_dir"
 }
 
