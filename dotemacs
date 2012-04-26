@@ -97,8 +97,6 @@
       ;; welcome to emacs ... を消す
       (setq inhibit-splash-screen t)
 
-      ;; (add-to-list 'default-frame-alist '(font . "-unknown-Takaoゴシック-normal-normal-normal-*-19-*-*-*-d-0-iso10646-1"))
-
       ))
 
 ;; 列数表示
@@ -170,10 +168,6 @@
 ;; C-h に割り当てられている関数 help-command を C-x C-h に割り当てる
 (global-set-key "\C-x\C-h" 'help-command)
 
-;; C-; でコメントトグル
-;; TODO mark-active の状態で、リージョン/現在の行をコメントアウトするのか切り替え
-;; (global-set-key (kbd "C-u") 'kui/comment-out)
-
 ;; tag のキーバインド変更
 (global-set-key "\M-t" nil)
 (global-set-key "\M-tt" 'find-tag)
@@ -186,9 +180,8 @@
 
 ;; C-w をもう少し賢く
 (defun kui/backward-kill-word-or-kill-region ()
-  "backward"
   (interactive)
-  (if (region-active-p)
+  (if (or (not transient-mark-mode) (region-active-p))
       (kill-region (region-beginning) (region-end))
     (backward-kill-word 1)))
 (global-set-key "\C-w" 'kui/backward-kill-word-or-kill-region)
@@ -515,9 +508,11 @@ or nothing if point is in BoL"
   )
 
 ;; nxhtml
-(defvar kui-nxhtml-file-name "src/nxhtml/autostart.el")
-(when (locate-library kui-nxhtml-file-name)
-  (load kui-nxhtml-file-name))
+(defvar kui/nxhtml-file-name "src/nxhtml/autostart.el")
+(when (locate-library kui/nxhtml-file-name)
+  (defun kui/load-nxhtml ()
+    (interactive)
+    (load kui/nxhtml-file-name)))
 
 ;; js2-mode
 (when (autoload-if-exist 'js2-mode "js2"
