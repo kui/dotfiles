@@ -32,7 +32,7 @@ typeset -U path
 ##               globがマッチしなかったり存在しないパスを無視する。
 ##            -: シンボリックリンク先のパスを評価。
 ##            /: ディレクトリのみ残す。
-path=($HOME/{.rvm,local}/bin(N-/)
+path=($HOME/{.rvm,.rbenv,local}/bin(N-/)
         /usr{/local,/local/rvm,/usr,}/bin(N-/)
         /app/{script,mingw/tdm/bin,gs/bin,gs/lib}(N-/)
         /usr/local/rvm/bin(N-/)
@@ -137,13 +137,16 @@ EMACS_SERVER_NAME="$USER"
 [ $STY ] && EMACS_SERVER_NAME="$EMACS_SERVER_NAME-$STY"
 export EMACS_SERVER_NAME
 
-alias e="emacsclient -n -s $EMACS_SERVER_NAME"
 alias emacsclient="emacsclient -n -s $EMACS_SERVER_NAME"
+
+function e(){
+    emacsclient "$@" || emacsserver "$@"
+}
 
 function emacsserver(){
     if ! emacsclient -s "$EMACS_SERVER_NAME" -e "server-name" > /dev/null 2>&1
     then
-        screen emacs -nw --eval "(let () (setq server-name \"$EMACS_SERVER_NAME\") (server-start) (setq confirm-kill-emacs 'yes-or-no-p))"
+        screen emacs -nw --eval "(let () (setq server-name \"$EMACS_SERVER_NAME\") (server-start) (setq confirm-kill-emacs 'yes-or-no-p))" "$@"
     else
         echo "already started (server name: $EMACS_SERVER_NAME)" >&2
     fi
@@ -474,3 +477,8 @@ zstyle ':completion:sudo:*' environ PATH="$SUDO_PATH:$PATH"
 ! [ -f ~/.zshrc.local ] && touch ~/.zshrc.local
 source ~/.zshrc.local
 
+## rbenv
+if which rbenv > /dev/null 2>&1
+then
+    eval "$(rbenv init -)"
+fi
