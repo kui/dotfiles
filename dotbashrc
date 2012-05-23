@@ -38,22 +38,7 @@ fi
 # -------------------------------------------------------------
 # terminal
 
-# prompt
-# function custom_prompt_command {
-#     typeset _Retv=$?
-#     typeset _PromptColor=""
-#     if [[ ${_Retv} -eq 0 ]] ; then
-#         _PromptColor=$BASH_PROMPT_OK
-#     else
-#         _PromptColor=$BASH_PROMPT_NG
-#     fi
-#   export PS1="${_PromptColor}
-# [ Host: \H | Time: $(/bin/date '+%Y-%m-%d %H:%M:%S') | User: \u | Retv: \$? ]
-# [ Path: \w ]
-# # \e[0m"
-# }
-
-# PROMPT_COMMAND="custom_prompt_command"
+PROMPT_COMMAND="jobs"
 case ${TERM} in
     xterm* )
         stty -ixon -ixoff
@@ -66,6 +51,30 @@ case ${TERM} in
         alias ls='ls --classify --color --show-control-char -C'
         ;;
 esac
+
+colors=(
+    # $'\e[0;30m' # black
+    $'\e[0;31m' # red
+    $'\e[0;32m' # green
+    $'\e[0;33m' # brown
+    $'\e[0;34m' # blue
+    $'\e[0;35m' # purple
+    $'\e[0;36m' # cyan
+    # $'\e[0;37m' # gray
+
+    # light colors
+    # $'\e[1;30m' # black
+    $'\e[1;31m' # red
+    $'\e[1;32m' # green
+    $'\e[1;33m' # brown
+    $'\e[1;34m' # blue
+    $'\e[1;35m' # purple
+    $'\e[1;36m' # cyan
+    # $'\e[1;37m' # gray
+)
+export USER_COLOR=$colors[$((`echo "$USER" | sum | cut -f1 -d' '`%${#colors}))+1]
+export HOST_COLOR=$colors[$((`echo "$HOST" | sum | cut -f1 -d' '`%${#colors}))+1]
+
 
 # -------------------------------------------------------------
 # complete

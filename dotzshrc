@@ -374,9 +374,13 @@ update_prompt(){
     PROMPT=$'\n'"${left}${bar}${right}"$'\n'"%f%(!.#.$) "
 }
 precmd_functions=($precmd_functions update_prompt)
-PROMPT=$'\n'"%F{green}${USER}@${HOST} %F{yellow}%~%f "$'\n'"%(!.#.$) "
+PROMPT="${USER_COLOR}${USER}%f@${HOST_COLOR}${HOST}%f %F{yellow}%~%f "$'\n'"%(!.#.$) "
 
-[ "$OS" = "Windows_NT" ] && precmd_functions=
+display_jobs(){ echo; jobs; }
+
+[ "$OS" = "Windows_NT" ] && precmd_functions=(display_jobs)
+
+
 
 ############################################################
 ##  zsh プロパティ
