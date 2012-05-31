@@ -528,6 +528,11 @@ or nothing if point is in BoL"
       ;; js2-mode が読み込まれた時に評価される
       (message ";; loaded js2.el")
 
+      (add-hook 'before-save-hook
+                '(lambda ()
+                   (delete-trailing-whitespace)
+                   ))
+
       ;; js2-mode 向け flymake
       (when (and (require 'flymake nil t) (executable-find "jslint"))
 
