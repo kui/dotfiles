@@ -449,7 +449,7 @@ or nothing if point is in BoL"
   ;; デフォルトで視覚化を有効にする。
   (global-whitespace-mode 1))
 
-(when (require 'gtags nil t)
+(when nil ;; (require 'gtags nil t)
   (global-set-key "\M-t" nil)
   (global-set-key "\M-tt" 'gtags-find-tag)
   (global-set-key "\M-tr" 'gtags-find-rtag)
