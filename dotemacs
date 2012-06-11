@@ -606,3 +606,21 @@ or nothing if point is in BoL"
                    (set (make-local-variable 'indent-line-function)
                         'kui/coffee-indent-line)))
       )))
+
+;; confluence-el
+(when (require 'confluence)
+
+  ;; コンフルのAPIのURL
+  (setq confluence-url "http://amewiki.cadc.cyberagent.local/rpc/xmlrpc")
+
+  ;; パスワード一回入れたら以降聞かれないようにする
+  (setq confluence-save-credentials t)
+
+  ;; キーバインド設定
+  (add-hook 'confluence-mode-hook
+            '(lambda ()
+               (local-set-key "\C-cc" 'confluence-create-page)
+               (local-set-key "\C-cf" 'confluence-get-page)
+               (local-set-key "\C-cm" 'confluence-ediff-merge-current-page)
+               ))
+  )
