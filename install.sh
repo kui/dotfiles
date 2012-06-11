@@ -12,6 +12,7 @@ link_file_list=(
     dotzlogin
     dotbashrc
     dotrsense
+    dotrbindkeys.rb
 )
 
 if [ $OSTYPE = "cygwin" ]

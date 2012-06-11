@@ -482,7 +482,9 @@ zstyle ':completion:sudo:*' environ PATH="$SUDO_PATH:$PATH"
 source ~/.zshrc.local
 
 ## rbenv
-if which rbenv > /dev/null 2>&1
+if which rbenv > /dev/null 2>&1 &&
+    ! which rvm > /dev/null 2>&1
 then
+    echo "load rbenv"
     eval "$(rbenv init -)"
 fi

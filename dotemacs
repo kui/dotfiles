@@ -242,16 +242,17 @@ or nothing if point is in BoL"
 
   ;; *候補間を移動
   (define-key ac-complete-mode-map "\C-n" 'ac-next)
+  (define-key ac-complete-mode-map "\C-o" 'ac-next)
   (define-key ac-complete-mode-map "\C-p" 'ac-previous)
 
   ;; *補完停止
   (define-key ac-complete-mode-map "\C-[" 'ac-stop)
 
   ;; *補完リスト表示開始
-  (define-key ac-complete-mode-map "\C-o" 'auto-start)
+  (global-set-key "\C-o" 'ac-start)
 
   ;; *補完リスト表示自動開始文字数（nil だと自動表示されない）
-  (setq ac-auto-start 4)
+  (setq ac-auto-start nil)
 
   ;; *大文字・小文字の区別
   ;; nil:        区別しない
