@@ -462,7 +462,7 @@ or nothing if point is in BoL"
 
 ;; ctag-update.el 自動で TAGS アップデートしてくれる
 (when (require 'ctags-update nil t)
-
+  ;; あとで、対象の *-mode-hook に、ctags-update-minor-mode をくっ付ける
   )
 
 ;; -------------------------------------------------------------------------
