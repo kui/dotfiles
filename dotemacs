@@ -1,4 +1,4 @@
-;;;; -*- mode: lisp-interaction; syntax: elisp; coding: utf-8-unix -*-
+;; -*- mode: lisp-interaction; syntax: elisp; coding: utf-8-unix -*-
 
 ;;ライブラリパスを追加
 (add-to-list 'load-path "~/.emacs.d")
@@ -458,6 +458,11 @@ or nothing if point is in BoL"
   (global-set-key "\M-tf" 'gtags-find-file)
   (global-set-key "\M-tb" 'gtags-pop-stack)
   (global-set-key "\M-tp" 'gtags-pop-stack)
+  )
+
+;; ctag-update.el 自動で TAGS アップデートしてくれる
+(when (require 'ctags-update nil t)
+
   )
 
 ;; -------------------------------------------------------------------------
