@@ -45,6 +45,7 @@ bind_key [KEY_LEFTCTRL, KEY_M], KEY_ENTER
 bind_key [KEY_LEFTCTRL, KEY_I], KEY_TAB
 bind_key [KEY_LEFTCTRL, KEY_LEFTBRACE], KEY_ESC
 bind_key [KEY_LEFTCTRL, KEY_S], [KEY_LEFTCTRL, KEY_F]
+bind_key [KEY_LEFTCTRL, KEY_SLASH], [KEY_LEFTCTRL, KEY_Z]
 
 # give a block sample
 @caps_led_state = 0
@@ -118,4 +119,25 @@ window(:through, :class => /gnome-terminal/)
 window(@default_bind_resolver, :class => /google-chrome/) do
   # search
   bind_key [KEY_LEFTCTRL, KEY_S], [KEY_LEFTCTRL, KEY_F]
+end
+
+# add new bind_key to default binds
+window(@default_bind_resolver, :class => /Eclipse/) do
+  # kill line
+  bind_key [KEY_LEFTCTRL, KEY_K] do |event, operator|
+    # select to end of line
+    operator.press_key KEY_LEFTSHIFT
+    operator.press_key KEY_END
+    operator.release_key KEY_END
+    operator.release_key KEY_LEFTSHIFT
+    operator.send_event EV_SYN, 0, 0 # flush the event buffer
+
+    sleep 0.05
+
+    # cut
+    operator.press_key KEY_LEFTCTRL
+    operator.press_key KEY_X
+    operator.release_key KEY_X
+    operator.release_key KEY_LEFTCTRL
+  end
 end
