@@ -92,9 +92,11 @@ bind_key [KEY_LEFTCTRL, KEY_SPACE] do |event, operator|
 end
 bind_key [KEY_LEFTCTRL, KEY_G] do |event, operator|
   if not @region_mode
-    return :through
+    :through
+  else
+    cancel_region operator
+    :ignore
   end
-  cancel_region operator
 end
 
 # 2 stroke binds
