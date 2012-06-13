@@ -47,7 +47,7 @@ main(){
 	echo "##############################################################"
     fi
 
-    local ln_opt="-sb"
+    local ln_opt="-sbT"
     if (echo $OSTYPE | grep "^darwin") > /dev/null
     then
 	ln_opt="-sf"
