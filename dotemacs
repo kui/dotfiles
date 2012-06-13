@@ -160,6 +160,10 @@
              ;; (replace-regexp "[	 ]+$" "" nil (point-min) (point-max))
              ))
 
+(setq tags-table-list
+      '("~/.settings/TAGS")
+      )
+
 ;; -------------------------------------------------------------------------
 ;; キーバインド変更
 ;; C-h でカーソルの左にある文字を消す
@@ -174,6 +178,7 @@
 (global-set-key "\M-t\M-t" 'find-tag)
 (global-set-key "\M-tn" 'next-tag)
 (global-set-key "\M-tp" 'pop-tag-mark)
+(global-set-key "\M-o" 'list-tags)
 
 ;; -------------------------------------------------------------------------
 ;; 自作関数
