@@ -507,7 +507,7 @@ or nothing if point is in BoL"
       ;; yaml-mode 読み込まれた時に評価される
       )))
 
-(when '(require 'ruby-mode)
+(when '(require 'ruby-mode nil t)
   (add-to-list 'auto-mode-alist '("/Rakefile" . ruby-mode))
   (add-to-list 'auto-mode-alist '("\\.gemspec\\'" . ruby-mode))
 
@@ -613,7 +613,7 @@ or nothing if point is in BoL"
       )))
 
 ;; confluence-el
-(when (require 'confluence)
+(when (require 'confluence nil t)
 
   ;; コンフルのAPIのURL
   (setq confluence-url "http://amewiki.cadc.cyberagent.local/rpc/xmlrpc")
