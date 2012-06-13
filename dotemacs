@@ -160,6 +160,10 @@
              ;; (replace-regexp "[	 ]+$" "" nil (point-min) (point-max))
              ))
 
+(setq tags-table-list
+      '("~/.settings/TAGS")
+      )
+
 ;; -------------------------------------------------------------------------
 ;; キーバインド変更
 ;; C-h でカーソルの左にある文字を消す
@@ -174,6 +178,7 @@
 (global-set-key "\M-t\M-t" 'find-tag)
 (global-set-key "\M-tn" 'next-tag)
 (global-set-key "\M-tp" 'pop-tag-mark)
+(global-set-key "\M-o" 'list-tags)
 
 ;; -------------------------------------------------------------------------
 ;; 自作関数
@@ -242,14 +247,16 @@ or nothing if point is in BoL"
 
   ;; *候補間を移動
   (define-key ac-complete-mode-map "\C-n" 'ac-next)
-  (define-key ac-complete-mode-map "\C-o" 'ac-next)
+  ;; (define-key ac-complete-mode-map "\C-o" 'ac-next)
+  (define-key ac-complete-mode-map "\M-/" 'ac-next)
   (define-key ac-complete-mode-map "\C-p" 'ac-previous)
 
   ;; *補完停止
   (define-key ac-complete-mode-map "\C-[" 'ac-stop)
 
   ;; *補完リスト表示開始
-  (global-set-key "\C-o" 'ac-start)
+  ;; (global-set-key "\C-o" 'ac-start)
+  (global-set-key "\M-/" 'ac-start)
 
   ;; *補完リスト表示自動開始文字数（nil だと自動表示されない）
   (setq ac-auto-start nil)
@@ -507,7 +514,7 @@ or nothing if point is in BoL"
       ;; yaml-mode 読み込まれた時に評価される
       )))
 
-(when '(require 'ruby-mode)
+(when '(require 'ruby-mode nil t)
   (add-to-list 'auto-mode-alist '("/Rakefile" . ruby-mode))
   (add-to-list 'auto-mode-alist '("\\.gemspec\\'" . ruby-mode))
 
@@ -613,7 +620,7 @@ or nothing if point is in BoL"
       )))
 
 ;; confluence-el
-(when (require 'confluence)
+(when (require 'confluence nil t)
 
   ;; コンフルのAPIのURL
   (setq confluence-url "http://amewiki.cadc.cyberagent.local/rpc/xmlrpc")

@@ -1,1 +1,0 @@
-../toybox/github/syncsyncgit/syncsyncgit.sh
