@@ -9,6 +9,13 @@
 # for apple keyboard
 @swap_left_opt_with_left_cmd = true
 
+# load a local config
+@local_config = File.join "#{ENV['HOME']}", "/.rbindkeys.local.rb"
+if File.file? @local_config
+  puts "load a local config"
+  eval File.new(@local_config).read
+end
+
 ##
 
 if @swap_left_ctrl_with_caps
