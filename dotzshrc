@@ -143,6 +143,13 @@ function e(){
     emacsclient "$@" || emacsserver "$@"
 }
 
+function view(){
+    [ -f "$1" ] || (echo "ファイルが見つかりませんでした: $file"; exit 1)
+    emacsclient -e "(find-file-read-only \"$1\")"
+}
+alias r=v
+alias v=view
+
 function emacsserver(){
     if ! emacsclient -s "$EMACS_SERVER_NAME" -e "server-name" > /dev/null 2>&1
     then
