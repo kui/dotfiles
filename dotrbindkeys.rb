@@ -66,6 +66,9 @@ bind_key [KEY_LEFTCTRL, KEY_K] do |event, operator|
   operator.press_key KEY_END
   operator.release_key KEY_END
   operator.release_key KEY_LEFTSHIFT
+  operator.send_event EV_SYN, 0, 0 # flush the event buffer
+
+  sleep 0.01
 
   # cut
   operator.press_key KEY_LEFTCTRL
@@ -123,6 +126,8 @@ end
 
 # add new bind_key to default binds
 window(@default_bind_resolver, :class => /Eclipse/) do
+  bind_key [KEY_LEFTCTRL, KEY_TAB], [KEY_LEFTSHIFT, KEY_LEFTCTRL, KEY_E]
+
   # kill line
   bind_key [KEY_LEFTCTRL, KEY_K] do |event, operator|
     # select to end of line
