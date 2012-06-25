@@ -186,7 +186,6 @@ function widescreen(){
     screen -X focus
 }
 
-
 # 色一覧
 function color_list(){
     for c in {016..255}
@@ -195,6 +194,13 @@ function color_list(){
         [ $(($((c-16))%6)) -eq 5 ] && echo
     done
 }
+
+# open
+if [ -f /usr/bin/xdg-open ]
+then
+    alias open=/usr/bin/xdg-open
+    alias o=/usr/bin/xdg-open
+fi
 
 ## 256色生成用便利関数
 ### red: 0-5
