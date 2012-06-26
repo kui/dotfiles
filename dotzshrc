@@ -396,7 +396,7 @@ update_screen_title() {
     local dir=`print -P '%~' | xargs basename`
     echo -n "\033k${shell}#${dir}\033\\" 2>/dev/null
 }
-precmd_functions=($precmd_functions update_screen_title)
+[ "$STY" ] && precmd_functions=($precmd_functions update_screen_title)
 
 ############################################################
 ##  windows で動いてる時は、job 一覧表示だけする
