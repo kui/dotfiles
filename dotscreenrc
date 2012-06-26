@@ -7,7 +7,10 @@ escape ^Tt
 vbell off
 
 ## ステータス行の設定
-hardstatus alwayslastline "%{= wk}%?%-Lw%?%{= rw}%n*%f %t%?(%u)%?%{-}%?%+Lw%? %= %H %d/%m/%Y %0c "
+hardstatus alwayslastline "%{= wk}%-w%{b bw}%n-%t%{-}%+w %=%{= wK}%0c "
+
+## キャプションの設定
+caption always "%?%F%{b bw}%:%{= Kw}%? %n-%t %=%h"
 
 ## スタートアップ時メッセージ無効
 startup_message off
@@ -48,4 +51,4 @@ bind ^f
 bind ^g
 
 layout new
-next
+
