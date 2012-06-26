@@ -1,11 +1,24 @@
 #!/bin/sh -eu
 # -*- coding:utf-8-unix; mode:sh; -*-
-# usage: screen_ssh.sh pid hostname username
+#
+# GNU screen で ssh を立ちあげた時に、タイトルを設定するためのスクリプト
+#
+# 使い方
+# ==================
 #
 # .ssh/config の最初の行に下記の三行を追加
-#	Host *
-#	PermitLocalCommand yes
-#	LocalCommand /path/to/screen_ssh.sh $PPID %n %r
+#
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Host *
+#   PermitLocalCommand yes
+#   LocalCommand /path/to/screen_ssh.sh $PPID %n %r
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#
+# 参考にしたもの
+# ==================
+#
+# * http://www.tenshu.net/p/screenssh.html
+# * http://ninad.pundaliks.in/blog/2011/10/show-hostname-and-username-during-ssh-in-screen-or-byobus-window-title/
 #
 
 # 0以外: デバッグ出力する
