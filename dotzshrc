@@ -389,11 +389,19 @@ update_prompt(){
 precmd_functions=($precmd_functions update_prompt)
 PROMPT="${USER_COLOR}${USER}%f@${HOST_COLOR}${HOST}%f %F{yellow}%~%f "$'\n'"%(!.#.$) "
 
+############################################################
+##  screen の window タイトルを設定
+update_screen_title() {
+    local shell=`echo -n ${SHELL} | sed -e 's/^.*\///'`
+    local dir=`print -P '%~' | xargs basename`
+    echo -n "\033k${shell}#${dir}\033\\" 2>/dev/null
+}
+precmd_functions=($precmd_functions update_screen_title)
+
+############################################################
+##  windows で動いてる時は、job 一覧表示だけする
 display_jobs(){ echo; jobs; }
-
 [ "$OS" = "Windows_NT" ] && precmd_functions=(display_jobs)
-
-
 
 ############################################################
 ##  zsh プロパティ
