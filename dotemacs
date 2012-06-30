@@ -152,13 +152,9 @@
                     :background "#000022"
                     :foreground nil)
 
-;; セーブ時の挙動
+; 保存前に末尾空白の削除
 (add-hook 'before-save-hook
-          '(lambda ()
-             ;; 末尾空白の削除
-             (delete-trailing-whitespace)
-             ;; (replace-regexp "[	 ]+$" "" nil (point-min) (point-max))
-             ))
+          'delete-trailing-whitespace)
 
 (setq tags-table-list
       '("~/.settings/TAGS")
@@ -499,10 +495,23 @@ or nothing if point is in BoL"
                 '(lambda ()
                    (set (make-variable-buffer-local 'indent-tabs-mode) t)
                    (set (make-variable-buffer-local 'tab-width) 4)
-                   (add-hook (make-variable-buffer-local 'before-save-hook)
-                             '(lambda () (tabify (point-min) (point-max))))
-                  ))
-      )))
+
+                   (remove-hook (make-variable-buffer-local 'before-save-hook)
+                                'delete-trailing-whitespace)
+
+                   (set (make-variable-buffer-local 'whitespace-style)
+                        '(face ;; faceを使って視覚化する。
+                          ;; タブ
+                          tabs
+                          ;; タブの前にあるスペース
+                          space-before-tab
+                          ;; タブの後にあるスペース
+                          space-after-tab
+                          ))
+
+                   ))
+      ))
+  )
 
 ;; yaml-mode
 (when (autoload-if-exist 'yaml-mode "yaml-mode"
@@ -517,6 +526,7 @@ or nothing if point is in BoL"
 (when '(require 'ruby-mode nil t)
   (add-to-list 'auto-mode-alist '("/Rakefile" . ruby-mode))
   (add-to-list 'auto-mode-alist '("\\.gemspec\\'" . ruby-mode))
+  (setq ruby-deep-indent-paren nil)
 
   ;; flymakeでrubyの構文チェック
   (when (require 'flymake-ruby nil t)
@@ -540,11 +550,6 @@ or nothing if point is in BoL"
     (let ()
       ;; js2-mode が読み込まれた時に評価される
       (message ";; loaded js2.el")
-
-      (add-hook 'before-save-hook
-                '(lambda ()
-                   (delete-trailing-whitespace)
-                   ))
 
       ;; js2-mode 向け flymake
       (when (and (require 'flymake nil t) (executable-find "jslint"))
@@ -636,3 +641,16 @@ or nothing if point is in BoL"
                (local-set-key "\C-cm" 'confluence-ediff-merge-current-page)
                ))
   )
+(custom-set-variables
+  ;; custom-set-variables was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ '(ruby-deep-arglist nil)
+ '(ruby-deep-indent-paren nil))
+(custom-set-faces
+  ;; custom-set-faces was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ )

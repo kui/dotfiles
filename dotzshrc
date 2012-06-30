@@ -152,6 +152,13 @@ function e(){
     emacsclient "$@" || emacsserver "$@"
 }
 
+function view(){
+    [ -f "$1" ] || (echo "ファイルが見つかりませんでした: $file"; exit 1)
+    emacsclient -e "(find-file-read-only \"$1\")"
+}
+alias r=v
+alias v=view
+
 function emacsserver(){
     if ! emacsclient -s "$EMACS_SERVER_NAME" -e "server-name" > /dev/null 2>&1
     then
@@ -188,7 +195,6 @@ function widescreen(){
     screen -X focus
 }
 
-
 # 色一覧
 function color_list(){
     for c in {016..255}
@@ -197,6 +203,13 @@ function color_list(){
         [ $(($((c-16))%6)) -eq 5 ] && echo
     done
 }
+
+# open
+if [ -f /usr/bin/xdg-open ]
+then
+    alias open=/usr/bin/xdg-open
+    alias o=/usr/bin/xdg-open
+fi
 
 ## 256色生成用便利関数
 ### red: 0-5
@@ -385,11 +398,19 @@ update_prompt(){
 precmd_functions=($precmd_functions update_prompt)
 PROMPT="${USER_COLOR}${USER}%f@${HOST_COLOR}${HOST}%f %F{yellow}%~%f "$'\n'"%(!.#.$) "
 
+############################################################
+##  screen の window タイトルを設定
+update_screen_title() {
+    local shell=`echo -n ${SHELL} | sed -e 's/^.*\///'`
+    local dir=`print -P '%~' | xargs basename`
+    echo -n "\033k${shell}#${dir}\033\\" 2>/dev/null
+}
+[ "$STY" ] && precmd_functions=($precmd_functions update_screen_title)
+
+############################################################
+##  windows で動いてる時は、job 一覧表示だけする
 display_jobs(){ echo; jobs; }
-
 [ "$OS" = "Windows_NT" ] && precmd_functions=(display_jobs)
-
-
 
 ############################################################
 ##  zsh プロパティ
