@@ -26,7 +26,7 @@
 DEBUG=1
 
 d() {
-    [ $DEBUG != 0 ] && (echo "$@" | tee $HOME/.ssh/screen_ssh.sh)
+    [ $DEBUG != 0 ] && (echo "$@" | tee -a $HOME/.ssh/screen_ssh.sh)
 }
 a() {
     d "abort: $@" >&2
@@ -52,7 +52,7 @@ d "host:	$HOST"
 d "user:	$USER"
 
 # タイトルの名前どうする？
-TITLE="$USER@$HOST"
+TITLE="@$HOST"
 d "title:	$TITLE"
 
 # ウィンドウタイトル変更

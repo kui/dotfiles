@@ -7,10 +7,10 @@ escape ^Tt
 vbell off
 
 ## ステータス行の設定
-hardstatus alwayslastline "%{= wk}%-w%{b bw}%n-%t%{-}%+w %=%{= wK}%0c "
+hardstatus alwayslastline "%{= KW}%-w%{= Wk}%n-%t%{-}%+w %=%{= KW}%0c "
 
 ## キャプションの設定
-caption always "%?%F%{b bw}%:%{= Kw}%? %n-%t %=%h"
+caption always "%?%F%{= Wk}%:%{= KW}%? %n-%t %=%h"
 
 ## スタートアップ時メッセージ無効
 startup_message off
