@@ -23,7 +23,6 @@ defscrollback 10240
 
 ## utf8 で表示する
 defencoding utf8
-encoding utf8 utf8
 
 ## 256色表示を有効に
 term xterm-256color
@@ -49,6 +48,7 @@ bind l focus right
 bind f
 bind ^f
 bind ^g
+bind ^x
 
 layout new
 
