@@ -131,6 +131,13 @@ function j(){
     fi
 }
 
+
+# screen のコピー機能と、X Window System のクリップボードの同期
+[ $STY ] && which xsel > /dev/null 2>&1 &&\
+  screen -X bindkey -m ' ' eval "stuff ' '" writebuf\
+    "exec sh -c 'xsel -i -b < /tmp/screen-exchange;\
+                 xsel -i -p < /tmp/screen-exchange'"
+
 ## refe の文字コードをUTF-8に修正
 function refe(){
     refe "$@" | nkf -Ew
