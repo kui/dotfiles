@@ -133,10 +133,22 @@ function j(){
 
 
 # screen のコピー機能と、X Window System のクリップボードの同期
-[ $STY ] && which xsel > /dev/null 2>&1 &&\
-  screen -X bindkey -m ' ' eval "stuff ' '" writebuf\
-    "exec sh -c 'xsel -i -b < /tmp/screen-exchange;\
-                 xsel -i -p < /tmp/screen-exchange'"
+if which xsel > /dev/null 2>&1
+then
+    # X Window System 環境でのコピー （xsel をインストールする必要あり）
+    copy_cmd="xsel -i -b < /tmp/screen-exchange;\
+              xsel -i -p < /tmp/screen-exchange"
+elif which pbcopy > /dev/null 2>&1
+then
+    # Mac OS X 環境でのコピー （要動作テスト）
+    copy_cmd="pbcopy < /tmp/screen-exchange"
+elif which putclip > /dev/null 2>&1
+then
+    # Cygwin 環境でのコピー（要動作テスト）
+    copy_cmd="putclip < /tmp/screen-exchange"
+fi
+[ $STY ] && [ $copy_cmd ] &&\
+  screen -X bindkey -m ' ' eval "stuff ' '" writebuf "exec sh -c '$copy_cmd'"
 
 ## refe の文字コードをUTF-8に修正
 function refe(){
