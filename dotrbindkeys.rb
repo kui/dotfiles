@@ -117,7 +117,7 @@ end
 # settings per window class (or title)
 
 # through all key inputs if active
-window(:through, :class => /^(?:gnome-terminal|roxterm|sakura)$/)
+window(:through, :class => /^(?:gnome-terminal|roxterm|sakura|clusterssh)$/)
 
 # add new bind_key to default binds
 window(@default_bind_resolver, :class => /google-chrome/) do
