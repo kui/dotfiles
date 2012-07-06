@@ -108,6 +108,8 @@ bind_key [KEY_LEFTCTRL, KEY_W] do |ev, op|
   op.release_key KEY_X
   op.release_key KEY_LEFTCTRL
 
+  @region_mode = false
+
   :ignore
 end
 bind_key [KEY_LEFTALT, KEY_W] do |ev, op|
@@ -126,6 +128,8 @@ bind_key [KEY_LEFTALT, KEY_W] do |ev, op|
   end
 
   op.press_key KEY_LEFTALT
+
+  @region_mode = false
 
   :ignore
 end
