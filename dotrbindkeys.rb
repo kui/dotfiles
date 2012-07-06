@@ -54,11 +54,6 @@ bind_key KEY_CAPSLOCK do |event, operator|
   operator.send_event EV_LED, LED_CAPSL, @caps_led_state
 end
 
-# binds related kill-ring
-bind_key [KEY_LEFTCTRL, KEY_W], [KEY_LEFTCTRL,KEY_X]
-bind_key [KEY_LEFTALT, KEY_W], [KEY_LEFTCTRL,KEY_C]
-bind_key [KEY_LEFTCTRL, KEY_Y], [KEY_LEFTCTRL,KEY_V]
-
 # kill line
 bind_key [KEY_LEFTCTRL, KEY_K] do |event, operator|
   # select to end of line
@@ -103,6 +98,40 @@ bind_key [KEY_LEFTCTRL, KEY_G] do |event, operator|
     :ignore
   end
 end
+
+# binds related kill-ring
+bind_key [KEY_LEFTCTRL, KEY_W] do |ev, op|
+  op.release_key KEY_LEFTSHIFT if @region_mode
+
+  op.press_key KEY_LEFTCTRL
+  op.press_key KEY_X
+  op.release_key KEY_X
+  op.release_key KEY_LEFTCTRL
+
+  :ignore
+end
+bind_key [KEY_LEFTALT, KEY_W] do |ev, op|
+  op.release_key KEY_LEFTSHIFT if @region_mode
+  op.release_key KEY_LEFTALT
+
+  op.press_key KEY_LEFTCTRL
+  op.press_key KEY_C
+  op.release_key KEY_C
+  op.release_key KEY_LEFTCTRL
+
+  # cancel the selection
+  if @region_mode
+    op.press_key KEY_RIGHT
+    op.release_key KEY_RIGHT
+  end
+
+  op.press_key KEY_LEFTALT
+
+  :ignore
+end
+bind_key [KEY_LEFTCTRL, KEY_Y], [KEY_LEFTCTRL,KEY_V]
+
+bind_key [KEY_LEFTALT, KEY_R], [KEY_LEFTCTRL,KEY_C]
 
 # 2 stroke binds
 bind_prefix_key [KEY_LEFTCTRL, KEY_X] do
