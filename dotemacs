@@ -11,7 +11,6 @@
 (setq default-buffer-file-coding-system 'utf-8)
 
 ;; リセットされた場合に UTF-8 に戻す
-;; http://0xcc.net/blog/archives/000041.html
 (set-default-coding-systems 'utf-8)
 
 ;; meadow で使うときの日本語周り
@@ -259,7 +258,7 @@ or nothing if point is in BoL"
   (global-set-key "\M-/" 'ac-start)
 
   ;; *補完リスト表示自動開始文字数（nil だと自動表示されない）
-  (setq ac-auto-start nil)
+  (setq ac-auto-start 2)
 
   ;; *大文字・小文字の区別
   ;; nil:        区別しない

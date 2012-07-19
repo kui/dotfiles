@@ -83,21 +83,6 @@ then
     alias ls="ls -F -G"
 fi
 
-function md(){
-    cat <<EOF
-<html><head>
-<meta charset="UTF-8" />
-<style>
-  h1,h2,h3,h4,h5,h6 {font-family: "Hiragino Kaku Gothic Pro W3", "ヒラギノ角ゴ Pro W3", Meiryo,
-"メイリオ", "MS P Gothic", "ＭＳ Ｐゴシック", sans-serif}
-  p, li {font-family:Georgia, Times, "Times New Roman", serif}
-</style>
-</head><body>
-EOF
-    markdown "$1"
-    echo '</body></html>'
-}
-
 function markdown_preview(){
     if [ $# -ne 1 ]; then
         echo "error: invalid arguments"
