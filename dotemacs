@@ -543,11 +543,14 @@ or nothing if point is in BoL"
     (interactive)
     (load kui/nxhtml-file-name)))
 
+;; js-mode
+(setq js-indent-level 2)
+
 ;; js2-mode
 (when (autoload-if-exist 'js2-mode "js2"
                          "Major mode for editing javascript files" t)
 
-  (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+  ;; (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
 
   (eval-after-load "js2"
     (let ()
