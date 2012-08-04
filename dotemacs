@@ -558,7 +558,7 @@ or nothing if point is in BoL"
 (when (autoload-if-exist 'js2-mode "js2"
                          "Major mode for editing javascript files" t)
 
-  (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+  ;; (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
 
   (eval-after-load "js2"
     (let ()
@@ -659,6 +659,11 @@ or nothing if point is in BoL"
 ;; css-mode
 (setq css-indent-offset 2)
 
+;; js-mode
+(setq js-indent-level 2)
+(add-to-list 'auto-mode-alist '("\\.js\\'" . js-mode))
+(add-to-list 'auto-mode-alist '("\\.json\\'" . js-mode))
+
 ;; ----------------------------------------------------------------------------
 ;; face についての設定
 (custom-set-faces
@@ -667,14 +672,15 @@ or nothing if point is in BoL"
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(mode-line
-   ((t :foreground "#005f00")))
+   ((t :foreground "#005f00"
+       :background "#aaaaaa")))
  '(mode-line-buffer-id
    ((t :foreground "#5f0000"
        :background nil
        :bold t
        :inherit 'mode-line)))
 
-'(highlight
+ '(highlight
    ((t :foreground nil
        :background "#111100")))
 
@@ -691,7 +697,7 @@ or nothing if point is in BoL"
 
  '(custom-changed-face
    ((t :background "#0000ff")))
-)
+ )
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
