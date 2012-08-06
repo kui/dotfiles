@@ -16,6 +16,19 @@
 ;; meadow で使うときの日本語周り
 ; (if (string-equal system-type "windows-nt")    (let ()  ))
 
+;; 基本的な色
+(if (functionp 'load-theme)
+    ;; (load-theme 'manoj-dark)
+  (setq default-frame-alist
+        (append
+         '(
+           ;; (corsor-type . bar)
+           (corsor-color . "green")
+           (foreground-color . "white")
+           (background-color . "#000000")
+           )
+         default-frame-alist)))
+
 ;; 自動保存機能
 (setq auto-save-default t
       auto-save-list-file-name "~/.emacs-auto-save-list" ;; 自動保存に関する情報
@@ -45,14 +58,14 @@
 ;; 対応するカッコの face
 (set-face-attribute 'show-paren-match-face nil
                     :foreground nil
-                    :background "#333333"
-                    :bold t)
-
+                    :background "#005f00"
+                    ;; :bold t
+                    )
 ;; 対応するカッコが無い時の face
 (set-face-attribute 'show-paren-mismatch-face nil
-                    ;:foreground "white"
-                    ;:background "#666666"
-                    :bold t)
+                    :foreground nil
+                    :background "#af0000"
+                    )
 
 ;; バッファ末尾に余計な改行コードを防ぐための設定
 (setq next-line-add-newlines nil)
@@ -134,21 +147,13 @@
 ;; "The local variables list in .emacs" と言われるのを抑止
 (add-to-list 'ignored-local-variables 'syntax)
 
-;; 基本的な色
-(setq default-frame-alist
-      (append
-       '(
-         ;; (corsor-type . bar)
-         (corsor-color . "green")
-         (foreground-color . "white")
-         (background-color . "#000000")
-         )
-       default-frame-alist))
-
 ;; 現在の行をハイライト
 (global-hl-line-mode)
+(set-face-attribute 'highlight nil
+                    :background "#5f5f00"
+                    :foreground nil)
 (set-face-attribute 'hl-line nil
-                    :background "#000022"
+                    :background "#00005f"
                     :foreground nil)
 
 ; 保存前に末尾空白の削除
@@ -231,6 +236,12 @@ or nothing if point is in BoL"
                "-*-\n"))
     (message "Both current coding and major-mode are nil.")))
 
+;; 確認なしでバッファの削除
+(defun kui/kill-buffer-with-no-confirmation ()
+  (interactive)
+  (kill-buffer nil))
+(global-set-key "\C-xk" 'kui/kill-buffer-with-no-confirmation)
+
 ;; -------------------------------------------------------------------------
 ;; 便利な感じのマイナーモード
 
@@ -279,7 +290,7 @@ or nothing if point is in BoL"
 (when (require 'tabbar nil t)
 
   ;; タブの間に挟む文字
-  (setq tabbar-separator-value " ")
+  (setq tabbar-separator-value "/")
 
   ;; tabbar のタブのグループの仕方
   ;;   デフォルト: 一部を除き major-mode ごとにタブをグループ化
@@ -302,7 +313,7 @@ or nothing if point is in BoL"
 
   ;; faces
   (set-face-attribute 'tabbar-default nil
-                      :background "white" ;;"#333333"
+                      :background "brightblack" ;;"#333333"
                       :foreground "black" ;; "#000000"
                       :underline t
                       :box nil)
@@ -312,12 +323,12 @@ or nothing if point is in BoL"
                       :underline nil
                       :box nil)
   (set-face-attribute 'tabbar-unselected nil
-                      :background nil ;;"#333333"
-                      :foreground nil ;; "#cccccc"
+                      :background "white" ;;"#333333"
+                      :foreground "black" ;; "#cccccc"
                       :underline t
                       :box nil)
   (set-face-attribute 'tabbar-separator nil
-                      :background nil
+                      :background "black"
                       )
   ;; 左に表示されるボタンを消す
   (dolist (button '(tabbar-buffer-home-button
@@ -333,8 +344,8 @@ or nothing if point is in BoL"
   (global-set-key "\C-xn" 'tabbar-forward)
   (global-set-key "\C-xp" 'tabbar-backward)
 
-
-  (tabbar-mode))
+  (tabbar-mode)
+  )
 
 ;; flymake 使うとき
 (defvar flymake-display-err-delay 1
@@ -424,7 +435,7 @@ or nothing if point is in BoL"
 
 ;; anything.el
 (when (require 'anything-config nil t)
-  (global-set-key "\M-a" 'anything-c-apropos)
+  (global-set-key "\C-xa" 'anything-c-apropos)
   (global-set-key "\C-xf" 'anything-for-files)
   (global-set-key "\C-xb" 'anything-buffers-list)
   )
@@ -443,14 +454,14 @@ or nothing if point is in BoL"
           ;; タブ
           tabs
           ;; タブの前にあるスペース
-          space-before-tab
+          ;; space-before-tab
           ;; タブの後にあるスペース
-          space-after-tab
+          ;; space-after-tab
           ))
 
   (set-face-attribute 'whitespace-tab nil
                       :foreground nil
-                      :background "#222222")
+                      :background "#111111")
 
   ;; デフォルトで視覚化を有効にする。
   (global-whitespace-mode 1))
@@ -647,16 +658,52 @@ or nothing if point is in BoL"
                (local-set-key "\C-cm" 'confluence-ediff-merge-current-page)
                ))
   )
-(custom-set-variables
-  ;; custom-set-variables was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
- '(ruby-deep-arglist nil)
- '(ruby-deep-indent-paren nil))
+
+;; css-mode
+(setq css-indent-offset 2)
+
+;; js-mode
+(setq js-indent-level 2)
+(add-to-list 'auto-mode-alist '("\\.js\\'" . js-mode))
+(add-to-list 'auto-mode-alist '("\\.json\\'" . js-mode))
+
+;; ----------------------------------------------------------------------------
+;; face についての設定
 (custom-set-faces
-  ;; custom-set-faces was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(mode-line
+   ((t :foreground "#005f00"
+       :background "#aaaaaa")))
+ '(mode-line-buffer-id
+   ((t :foreground "#5f0000"
+       :background nil
+       :bold t
+       :inherit 'mode-line)))
+
+ '(highlight
+   ((t :foreground nil
+       :background "#111100")))
+
+ '(hl-line
+   ((t :foreground nil
+       :background "#000011")))
+
+ '(button
+   ((t :foreground "black"
+       :bold nil)))
+
+ '(confluence-panel-face
+   ((t :background "#333333")))
+
+ '(custom-changed-face
+   ((t :background "#0000ff")))
  )
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(custom-enabled-themes (quote (manoj-dark))))
