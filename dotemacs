@@ -245,6 +245,11 @@ or nothing if point is in BoL"
 ;; -------------------------------------------------------------------------
 ;; 便利な感じのマイナーモード
 
+;; (when (require 'col-highlight)
+;;   (col-highlight-set-interval 3)
+;;   (col-highlight-toggle-when-idle 1)
+;;   )
+
 ;; auto-complete-mode
 ;; http://cx4a.org/software/auto-complete/index.ja.html
 ;; (define-key ac-complete-mode-map "\M-/" 'ac-stop)
@@ -598,6 +603,12 @@ or nothing if point is in BoL"
   (add-to-list 'auto-mode-alist '("\\.coffee\\'" . coffee-mode))
   (add-to-list 'auto-mode-alist '("/Cakefile\\'" . coffee-mode))
 
+  (add-hook 'coffee-mode-hook
+            (lambda ()
+              (when (require 'col-highlight)
+                (column-highlight-mode))
+              ))
+
   (eval-after-load "coffee"
     (let* ((coffee-command "coffee"))
       ;; coffee-mode が読み込まれた時に評価される
@@ -674,6 +685,7 @@ or nothing if point is in BoL"
  '(mode-line
    ((t :foreground "#005f00"
        :background "#aaaaaa")))
+
  '(mode-line-buffer-id
    ((t :foreground "#5f0000"
        :background nil
@@ -690,6 +702,7 @@ or nothing if point is in BoL"
 
  '(button
    ((t :foreground "black"
+       :background "gray"
        :bold nil)))
 
  '(confluence-panel-face
@@ -697,6 +710,10 @@ or nothing if point is in BoL"
 
  '(custom-changed-face
    ((t :background "#0000ff")))
+
+ '(col-highlight
+   ((t :inherit 'hl-line
+       :background nil)))
  )
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
