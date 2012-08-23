@@ -23,6 +23,16 @@ source_if_exist "$HOME/.rvm/scripts/rvm"
 EDITOR='vi'
 
 ############################################################
+# java
+JAVA=`which java 2>/dev/null`
+if [ $? -eq 0 ]
+then
+    JAVA="`readlink -n -f $JAVA`"
+    JAVA_BIN="`dirname $JAVA`"
+    export JAVA_HOME="`dirname $JAVA_BIN`"
+fi
+
+############################################################
 # パスの設定
 ## 重複したパスを登録しない。
 typeset -U path
