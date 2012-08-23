@@ -687,7 +687,7 @@ or nothing if point is in BoL"
  ;; If there is more than one, they won't work right.
  '(mode-line
    ((t :foreground "#005f00"
-       :background "#aaaaaa")))
+       :background "#999999")))
 
  '(mode-line-buffer-id
    ((t :foreground "#5f0000"

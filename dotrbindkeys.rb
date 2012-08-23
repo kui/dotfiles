@@ -135,8 +135,6 @@ bind_key [KEY_LEFTALT, KEY_W] do |ev, op|
 end
 bind_key [KEY_LEFTCTRL, KEY_Y], [KEY_LEFTCTRL,KEY_V]
 
-bind_key [KEY_LEFTALT, KEY_R], [KEY_LEFTCTRL,KEY_C]
-
 # 2 stroke binds
 bind_prefix_key [KEY_LEFTCTRL, KEY_X] do
   bind_key KEY_K, [KEY_LEFTCTRL, KEY_W]
