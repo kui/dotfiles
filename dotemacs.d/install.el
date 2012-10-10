@@ -2,8 +2,12 @@
 
 ;; インストールするパッケージリスト
 (setq target-packages
-      (list 'helm
-            'auto-complete
+      (list 'auto-complete
+            'anything
+            'anything-config
+            'anything-complete
+            'anything-obsolete
+            'anything-match-plugin
             'tabbar
             'flymake-ruby
             'rsense

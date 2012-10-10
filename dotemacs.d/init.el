@@ -364,11 +364,11 @@ or nothing if point is in BoL"
      ;;  (setq flymake-display-err-timer nil)))
      ))
 
-;; helm
-(when (require 'helm nil t)
-  (global-set-key "\C-xa" 'helm-c-apropos)
-  (global-set-key "\C-xf" 'helm-for-files)
-  (global-set-key "\C-xb" 'helm-buffers-list)
+;; anything
+(when (and (require 'anything-config nil t) (require 'anything-complete nil t))
+  (global-set-key "\C-xa" 'anything-apropos)
+  (global-set-key "\C-xf" 'anything-for-files)
+  (global-set-key "\C-xb" 'anything-buffers+)
   )
 
 ;; whitespace-mode
@@ -562,12 +562,12 @@ or nothing if point is in BoL"
   (when (locate-library "color-theme-twilight")
     (load-library "color-theme-twilight")
     (color-theme-twilight)
+    (when (require 'anything nil t)
+      (set-face-attribute 'highlight nil
+                          :background "#333300"
+                          :bold t))
     (set-face-attribute 'region nil
                         :background "#002299")
-    (set-face-attribute 'helm-selection nil
-                        :background "#333300"
-                        :bold t)
     (set-face-attribute 'whitespace-tab nil
-                        :background "#222222")
-    )
+                        :background "#222222"))
   )
