@@ -147,8 +147,11 @@ end
 
 # settings per window class (or title)
 
-# through all key inputs if active
+# through all key inputs if terminal applications
 window(:through, :class => /^(?:gnome-terminal|roxterm|sakura|clusterssh|xterm)$/)
+
+# through all key inputs if emacs
+window(:through, :class => /^emacs$/)
 
 # add new bind_key to default binds
 window(@default_bind_resolver, :class => /google-chrome/) do
@@ -178,3 +181,4 @@ window(@default_bind_resolver, :class => /Eclipse/) do
     operator.release_key KEY_LEFTCTRL
   end
 end
+
