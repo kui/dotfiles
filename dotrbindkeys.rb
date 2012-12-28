@@ -153,6 +153,9 @@ window(:through, :class => /^(?:gnome-terminal|roxterm|sakura|clusterssh|xterm)$
 # through all key inputs if emacs
 window(:through, :class => /^emacs$/)
 
+# through all key inputs if emacs
+window(:through, :class => /^Redcar$/)
+
 # add new bind_key to default binds
 window(@default_bind_resolver, :class => /google-chrome/) do
   # search
