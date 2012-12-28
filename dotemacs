@@ -18,16 +18,15 @@
 
 ;; 基本的な色
 (if (functionp 'load-theme)
-    ;; (load-theme 'manoj-dark)
-  (setq default-frame-alist
-        (append
-         '(
-           ;; (corsor-type . bar)
-           (corsor-color . "green")
-           (foreground-color . "white")
-           (background-color . "#000000")
-           )
-         default-frame-alist)))
+    (setq default-frame-alist
+          (append
+           '(
+             ;; (corsor-type . bar)
+             (corsor-color . "green")
+             (foreground-color . "white")
+             (background-color . "#000000")
+             )
+           default-frame-alist)))
 
 ;; 自動保存機能
 (setq auto-save-default t
@@ -58,17 +57,19 @@
 (show-paren-mode 1)
 (setq show-paren-style 'mixed)
 
-;; 対応するカッコの face
-(set-face-attribute 'show-paren-match-face nil
-                    :foreground nil
-                    :background "#005f00"
-                    ;; :bold t
-                    )
-;; 対応するカッコが無い時の face
-(set-face-attribute 'show-paren-mismatch-face nil
-                    :foreground nil
-                    :background "#af0000"
-                    )
+(when (not window-system)
+  ;; 対応するカッコの face
+  (set-face-attribute 'show-paren-match-face nil
+                      :foreground nil
+                      :background "#005f00"
+                      ;; :bold t
+                      )
+  ;; 対応するカッコが無い時の face
+  (set-face-attribute 'show-paren-mismatch-face nil
+                      :foreground nil
+                      :background "#af0000"
+                      )
+  )
 
 ;; バッファ末尾に余計な改行コードを防ぐための設定
 (setq next-line-add-newlines nil)
@@ -155,12 +156,12 @@
 
 ;; 現在の行をハイライト
 (global-hl-line-mode)
-(set-face-attribute 'highlight nil
-                    :background "#5f5f00"
-                    :foreground nil)
-(set-face-attribute 'hl-line nil
-                    :background "#00005f"
-                    :foreground nil)
+;; (set-face-attribute 'highlight nil
+;;                     :background "#5f5f00"
+;;                     :foreground nil)
+;; (set-face-attribute 'hl-line nil
+;;                     :background "#00005f"
+;;                     :foreground nil)
 
 ; 保存前に末尾空白の削除
 (add-hook 'before-save-hook
@@ -326,17 +327,16 @@ or nothing if point is in BoL"
     (set button (cons (cons "" nil) (cons "" nil))))
 
   ;; faces
-  (set-face-attribute 'tabbar-default nil
-                      :foreground "white"
-                      :background "dark gray")
+  ;; (set-face-attribute 'tabbar-default nil
+  ;;                     :foreground "white"
+  ;;                     :background "dark gray")
   (set-face-attribute 'tabbar-selected nil
                       :background "dim gray"
                       :foreground "white"
-                      :box nil
                       )
-  (set-face-attribute 'tabbar-unselected nil
-                      :box '(:line-width 2 :color "light gray" :style "released-button")
-                      )
+  ;; (set-face-attribute 'tabbar-unselected nil
+  ;;                     :box '(:line-width 2 :color "light gray" :style "released-button")
+  ;;                     )
 
   ;; ウィンドウシステムを使ってる時だけ
   (when (not window-system)
@@ -711,6 +711,12 @@ or nothing if point is in BoL"
      ((t :foreground "#005f00"
          :background "#999999")))
 
+   '(mode-line-buffer-id
+     ((t :foreground "#5f0000"
+         :background nil
+         :bold t
+         :inherit 'mode-line)))
+
    '(button
      ((t :foreground "black"
          :background "gray"
@@ -722,33 +728,26 @@ or nothing if point is in BoL"
    '(custom-changed-face
      ((t :background "#0000ff")))
    ))
+
 (custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
  '(highlight
    ((t :foreground nil
-       :background "#111100")))
+       :background "#0000ff")))
 
  '(hl-line
    ((t :foreground nil
-       :background "#000011")))
+       :background "#000033")))
 
  '(col-highlight
-   ((t :inherit 'hl-line
-       :background nil)))
-
- '(mode-line-buffer-id
-   ((t :foreground "#5f0000"
-       :background nil
-       :bold t
-       :inherit 'mode-line)))
+   ((t :inherit 'hl-line)))
  )
+
+
 (custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(custom-enabled-themes (quote (manoj-dark)))
-)
+ '(custom-enabled-themes "tsdh-dark")
+ )
+
+(when (not window-system)
+  (custom-set-variables
+   '(custom-enabled-themes (quote (manoj-dark)))
+   ))
