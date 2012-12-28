@@ -51,6 +51,9 @@
 ;; C-x C-u が何もしないように変更する (undo の typo 時誤動作防止)
 (global-unset-key "\C-x\C-u")
 
+;; C-t 使わないので
+(global-unset-key "\C-t")
+
 ;; 括弧の対応をハイライト.
 (show-paren-mode 1)
 (setq show-paren-style 'mixed)
@@ -101,7 +104,7 @@
       (add-to-list 'default-frame-alist '(cursor-color . "green"))
 
       ;; ツールバーを消す
-      (tool-bar-mode nil)
+      (tool-bar-mode -1)
 
       ;; スクロールバーを消す(nil:消える,right:右側)
       (set-scroll-bar-mode "right")
@@ -109,6 +112,9 @@
       ;; welcome to emacs ... を消す
       (setq inhibit-splash-screen t)
 
+      (add-to-list 'default-frame-alist
+                   (cons 'height (/ (- (x-display-pixel-height) 50)
+                                    (frame-char-height))))
       ))
 
 ;; 列数表示
@@ -294,9 +300,6 @@ or nothing if point is in BoL"
 ;; tabbar-mode
 (when (require 'tabbar nil t)
 
-  ;; タブの間に挟む文字
-  (setq tabbar-separator-value "/")
-
   ;; tabbar のタブのグループの仕方
   ;;   デフォルト: 一部を除き major-mode ごとにタブをグループ化
   ;;   下: 全部同じグループに
@@ -316,36 +319,43 @@ or nothing if point is in BoL"
                                        (buffer-name b)))))
              (buffer-list)))))
 
-  ;; faces
-  (set-face-attribute 'tabbar-default nil
-                      :background "brightblack" ;;"#333333"
-                      :foreground "black" ;; "#000000"
-                      :underline t
-                      :box nil)
-  (set-face-attribute 'tabbar-selected nil
-                      :background "black"
-                      :foreground "white"
-                      :underline nil
-                      :box nil)
-  (set-face-attribute 'tabbar-unselected nil
-                      :background "white" ;;"#333333"
-                      :foreground "black" ;; "#cccccc"
-                      :underline t
-                      :box nil)
-  (set-face-attribute 'tabbar-separator nil
-                      :background "black"
-                      )
-  ;; 左に表示されるボタンを消す
-  (dolist (button '(tabbar-buffer-home-button
-                    tabbar-scroll-left-button
-                    tabbar-scroll-right-button))
-    (set button (cons (cons "" nil) (cons "" nil))))
+  ;; ウィンドウシステムを使ってる時だけ
+  (when (not window-system)
+
+    ;; タブの間に挟む文字
+    (setq tabbar-separator-value "/")
+
+    ;; faces
+    (set-face-attribute 'tabbar-default nil
+                        :background "brightblack" ;;"#333333"
+                        :foreground "black" ;; "#000000"
+                        :underline t
+                        :box nil)
+    (set-face-attribute 'tabbar-selected nil
+                        :background "black"
+                        :foreground "white"
+                        :underline nil
+                        :box nil)
+    (set-face-attribute 'tabbar-unselected nil
+                        :background "white" ;;"#333333"
+                        :foreground "black" ;; "#cccccc"
+                        :underline t
+                        :box nil)
+    (set-face-attribute 'tabbar-separator nil
+                        :background "black")
+
+    ;; 左に表示されるボタンを消す
+    (dolist (button '(tabbar-buffer-home-button
+                      tabbar-scroll-left-button
+                      tabbar-scroll-right-button))
+      (set button (cons (cons "" nil) (cons "" nil)))))
 
   ;; Ctrl+Tab でタブ切り替え
   (global-set-key "\M-[1;5i" 'tabbar-forward)  ;; for mintty
   (global-set-key "\M-[1;6i" 'tabbar-backward) ;; for mintty
   (global-set-key [(control tab)] 'tabbar-forward)
   (global-set-key [(control shift tab)] 'tabbar-backward)
+  (global-set-key [(control shift iso-lefttab)] 'tabbar-backward) ;; for x window system
   (global-set-key "\C-xn" 'tabbar-forward)
   (global-set-key "\C-xp" 'tabbar-backward)
 
@@ -680,21 +690,35 @@ or nothing if point is in BoL"
 
 ;; ----------------------------------------------------------------------------
 ;; face についての設定
+(when (not window-system)
+  (custom-set-faces
+
+   '(mode-line
+     ((t :foreground "#005f00"
+         :background "#999999")))
+
+   '(mode-line-buffer-id
+     ((t :foreground "#5f0000"
+         :background nil
+         :bold t
+         :inherit 'mode-line)))
+
+   '(button
+     ((t :foreground "black"
+         :background "gray"
+         :bold nil)))
+
+   '(confluence-panel-face
+     ((t :background "#333333")))
+
+   '(custom-changed-face
+     ((t :background "#0000ff")))
+   ))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(mode-line
-   ((t :foreground "#005f00"
-       :background "#999999")))
-
- '(mode-line-buffer-id
-   ((t :foreground "#5f0000"
-       :background nil
-       :bold t
-       :inherit 'mode-line)))
-
  '(highlight
    ((t :foreground nil
        :background "#111100")))
@@ -702,17 +726,6 @@ or nothing if point is in BoL"
  '(hl-line
    ((t :foreground nil
        :background "#000011")))
-
- '(button
-   ((t :foreground "black"
-       :background "gray"
-       :bold nil)))
-
- '(confluence-panel-face
-   ((t :background "#333333")))
-
- '(custom-changed-face
-   ((t :background "#0000ff")))
 
  '(col-highlight
    ((t :inherit 'hl-line
@@ -723,4 +736,5 @@ or nothing if point is in BoL"
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(custom-enabled-themes (quote (manoj-dark))))
+ '(custom-enabled-themes (quote (manoj-dark)))
+)
