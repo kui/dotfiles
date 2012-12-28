@@ -176,7 +176,7 @@ alias v=view
 function emacsserver(){
     if ! emacsclient -s "$EMACS_SERVER_NAME" -e "server-name" > /dev/null 2>&1
     then
-        screen emacs -nw --eval "(let () (setq server-name \"$EMACS_SERVER_NAME\") (server-start) (setq confirm-kill-emacs 'yes-or-no-p))" "$@"
+        screen emacs --eval "(let () (setq server-name \"$EMACS_SERVER_NAME\") (server-start) (setq confirm-kill-emacs 'yes-or-no-p))" "$@"
     else
         echo "already started (server name: $EMACS_SERVER_NAME)" >&2
     fi
