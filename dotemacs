@@ -319,6 +319,25 @@ or nothing if point is in BoL"
                                        (buffer-name b)))))
              (buffer-list)))))
 
+  ;; 左に表示されるボタンを消す
+  (dolist (button '(tabbar-buffer-home-button
+                    tabbar-scroll-left-button
+                    tabbar-scroll-right-button))
+    (set button (cons (cons "" nil) (cons "" nil))))
+
+  ;; faces
+  (set-face-attribute 'tabbar-default nil
+                      :foreground "white"
+                      :background "dark gray")
+  (set-face-attribute 'tabbar-selected nil
+                      :background "dim gray"
+                      :foreground "white"
+                      :box nil
+                      )
+  (set-face-attribute 'tabbar-unselected nil
+                      :box '(:line-width 2 :color "light gray" :style "released-button")
+                      )
+
   ;; ウィンドウシステムを使ってる時だけ
   (when (not window-system)
 
@@ -343,12 +362,7 @@ or nothing if point is in BoL"
                         :box nil)
     (set-face-attribute 'tabbar-separator nil
                         :background "black")
-
-    ;; 左に表示されるボタンを消す
-    (dolist (button '(tabbar-buffer-home-button
-                      tabbar-scroll-left-button
-                      tabbar-scroll-right-button))
-      (set button (cons (cons "" nil) (cons "" nil)))))
+    )
 
   ;; Ctrl+Tab でタブ切り替え
   (global-set-key "\M-[1;5i" 'tabbar-forward)  ;; for mintty
@@ -697,12 +711,6 @@ or nothing if point is in BoL"
      ((t :foreground "#005f00"
          :background "#999999")))
 
-   '(mode-line-buffer-id
-     ((t :foreground "#5f0000"
-         :background nil
-         :bold t
-         :inherit 'mode-line)))
-
    '(button
      ((t :foreground "black"
          :background "gray"
@@ -730,6 +738,12 @@ or nothing if point is in BoL"
  '(col-highlight
    ((t :inherit 'hl-line
        :background nil)))
+
+ '(mode-line-buffer-id
+   ((t :foreground "#5f0000"
+       :background nil
+       :bold t
+       :inherit 'mode-line)))
  )
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
