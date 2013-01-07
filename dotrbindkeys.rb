@@ -184,4 +184,3 @@ window(@default_bind_resolver, :class => /Eclipse/) do
     operator.release_key KEY_LEFTCTRL
   end
 end
-
