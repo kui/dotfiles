@@ -1,6 +1,6 @@
 ;; -*- mode: lisp-interaction; syntax: elisp; coding: utf-8-unix -*-
 
-(set-language-environment "Japanese")
+(set-language-environment nil)
 
 ;; meadow 向けの設定
 ; (if (string-equal system-type "windows-nt") (let () ))
