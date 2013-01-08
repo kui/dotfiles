@@ -1,15 +1,15 @@
 # -*- coding:utf-8 -*-
 
+/core
 \#*
 .\#*
 *~
 .DS_Store
 Thumbs.db
 /dotemacs.d/ac-comphist.dat
-/dotemacs.d/src/nxhtml/etc/schema/xhtml-loader.rnc
 /dotemacs.d/url/*
 /dotrsense
-tags
 TAGS
 /dotemacs.d/tramp
 /dotemacs.d/elpa
+/src
