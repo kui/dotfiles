@@ -13,6 +13,7 @@
             ))
 
 (message "** start inital installation **")
+(package-refresh-contents)
 (let ()
   (dolist (pkg target-packages)
     (if (not (package-installed-p pkg))

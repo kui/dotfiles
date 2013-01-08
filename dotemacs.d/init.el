@@ -162,6 +162,7 @@ or nothing if point is in BoL"
   (kill-buffer nil))
 (global-set-key "\C-xk" 'kui/kill-buffer-with-no-confirmation)
 
+
 ;; -------------------------------------------------------------------------
 ;; 便利な感じのマイナーモード
 
@@ -408,6 +409,7 @@ or nothing if point is in BoL"
 (when (require 'ctags-update nil t)
   ;; あとで、対象の *-mode-hook に、ctags-update-minor-mode をくっ付ける
   )
+
 
 ;; -------------------------------------------------------------------------
 ;; メジャーモードの設定や読み込み
