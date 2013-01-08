@@ -201,9 +201,10 @@ or nothing if point is in BoL"
   )
 
 ;; rsense
-(setq rsense-home (expand-file-name "~/.emacs.d/src/rsense-0.3"))
-(add-to-list 'load-path (concat rsense-home "/etc"))
-(and (require 'cl nil t) (require 'rsense nil t))
+(when (and (require 'cl nil t) (require 'rsense nil t))
+  (setq rsense-home (expand-file-name "~/.settings/src/rsense-0.3"))
+  (add-to-list 'load-path (concat rsense-home "/etc"))
+  )
 
 ;; tabbar-mode
 (when (require 'tabbar nil t)
