@@ -18,8 +18,8 @@ link_file_list=(
 if [ $OSTYPE = "cygwin" ]
 then
     link_file_list=(
-	dotminttyrc
-	${link_file_list[@]}
+        dotminttyrc
+        ${link_file_list[@]}
     )
 fi
 
@@ -35,22 +35,22 @@ main(){
     run_flag=1
     while getopts r opt
     do
-	case $opt in
-	    r) run_flag=0 ;;
-	esac
+        case $opt in
+            r) run_flag=0 ;;
+        esac
     done
 
     if [ $run_flag -eq 1 ]
     then
-	echo "##############################################################"
-	echo "# dry-run (if these commands are correct, attach -r option.) #"
-	echo "##############################################################"
+        echo "##############################################################"
+        echo "# dry-run (if these commands are correct, attach -r option.) #"
+        echo "##############################################################"
     fi
 
     local ln_opt="-sbT"
     if (echo $OSTYPE | grep "^darwin") > /dev/null
     then
-	ln_opt="-sf"
+        ln_opt="-sf"
     fi
 
     if which ruby >/dev/null && which java >/dev/null
@@ -66,21 +66,21 @@ main(){
 
     for file in ${link_file_list[@]}
     do
-	local target_file="${curr_dir}/${file}"
-	local dest_file=`echo "$file" | sed -e 's/^dot/./'`
-	local dest_file="${HOME}/${dest_file}"
+        local target_file="${curr_dir}/${file}"
+        local dest_file=`echo "$file" | sed -e 's/^dot/./'`
+        local dest_file="${HOME}/${dest_file}"
 
-	if [ ! -e "$target_file" ] && (! echo "$target_file"| grep "dotrsense$" >/dev/null)
-	then
-	    echo "error: cannot find $target_file" >&2
-	    exit 1
-	fi
+        if [ ! -e "$target_file" ] && (! echo "$target_file"| grep "dotrsense$" >/dev/null)
+        then
+            echo "error: cannot find $target_file" >&2
+            exit 1
+        fi
 
-	# skip if $dest_file exist and the link is no change
-	[ -h "$dest_file" -a\
-	  "$target_file" = "`readlink "$dest_file"`" ] && continue
+        # skip if $dest_file exist and the link is no change
+        [ -h "$dest_file" -a\
+          "$target_file" = "`readlink "$dest_file"`" ] && continue
 
-	print_and_do "ln $ln_opt \"$target_file\" \"$dest_file\""
+        print_and_do "ln $ln_opt \"$target_file\" \"$dest_file\""
     done
 
     create_empty_zsh ~/.zshrc.local
@@ -90,7 +90,7 @@ main(){
 
     if [ $counter -eq 0 ]
     then
-	echo "# do nothing"
+        echo "# do nothing"
     fi
     cd "$prev_dir"
 }
@@ -98,7 +98,7 @@ main(){
 create_empty_zsh(){
     if ! [ -e $1 ]
     then
-	print_and_do "echo \"# -*- mode: sh; coding: utf-8 -*-\" > $1"
+        print_and_do "echo \"# -*- mode: sh; coding: utf-8 -*-\" > $1"
     fi
 }
 
