@@ -3,15 +3,7 @@
 ;;ライブラリパスを追加
 (add-to-list 'load-path "~/.emacs.d")
 
-;; 日本語設定 (UTF-8)
 (set-language-environment "Japanese")
-(set-terminal-coding-system 'utf-8)
-(set-keyboard-coding-system 'utf-8)
-(set-buffer-file-coding-system 'utf-8)
-(setq default-buffer-file-coding-system 'utf-8)
-
-;; リセットされた場合に UTF-8 に戻す
-(set-default-coding-systems 'utf-8)
 
 ;; meadow で使うときの日本語周り
 ; (if (string-equal system-type "windows-nt")    (let ()  ))
