@@ -89,7 +89,7 @@ main(){
 setup_emacs(){
     mkdir -p src
 
-    if [ -d src/rsense-0.3 ]
+    if [ ! -d src/rsense-0.3 ]
     then
         cd src
         print_and_do "wget http://cx4a.org/pub/rsense/rsense-0.3.tar.bz2"
@@ -99,10 +99,7 @@ setup_emacs(){
 
     if which ruby >/dev/null && which java >/dev/null
     then
-        if [ ! -e "$curr_dir/dotrsense" ]
-        then
-            print_and_do "ruby src/rsense-0.3/etc/config.rb > $curr_dir/dotrsense"
-        fi
+        print_and_do "ruby src/rsense-0.3/etc/config.rb > $curr_dir/dotrsense"
     else
         echo "WARN: cannot install rsense" 2>&1
         echo "WARN: rsense require ruby and java" 2>&1
@@ -110,7 +107,7 @@ setup_emacs(){
 
     if emacs --version > /dev/null
     then
-        emacs --batch --file dotemacs.d/install.el
+        print_and_do "emacs --batch --file dotemacs.d/install.el"
     fi
 }
 
