@@ -2,10 +2,8 @@
 
 (set-language-environment "Japanese")
 
-(set-cursor-color "green")
-
 ;; meadow 向けの設定
-; (if (string-equal system-type "windows-nt")    (let ()  ))
+; (if (string-equal system-type "windows-nt") (let () ))
 
 ;; 自動保存機能
 (setq auto-save-default t
@@ -15,9 +13,6 @@
 
 ;; フォントロックモード (強調表示等) を有効にする
 ;; (global-font-lock-mode t)
-
-;; マークしている範囲をハイライトする
-(setq-default transient-mark-mode t)
 
 ;; 対応する括弧をハイライト
 (show-paren-mode 1)
@@ -65,8 +60,11 @@
                                     (frame-char-height))))
       ))
 
-;; BS で選択範囲を消す
+;; BS でマーク範囲を消す
 (delete-selection-mode 1)
+
+;; マーク範囲をハイライト
+(setq-default transient-mark-mode t)
 
 ;; 現在の行をハイライト
 (global-hl-line-mode)
@@ -86,8 +84,8 @@
 ;; グローバルキーバインド変更
 
 ;; 不要なキーバインド削除
-(global-unset-key "\C-\\")	;; 入力モード切り替え
-(global-unset-key "\C-t")	;; 文字入れ替え
+(global-unset-key "\C-\\") ;; 入力モード切り替え
+(global-unset-key "\C-t")  ;; 文字入れ替え
 
 ;; C-h でカーソルの左にある文字を消す
 (global-set-key "\C-h" 'delete-backward-char)
@@ -167,16 +165,10 @@ or nothing if point is in BoL"
 ;; -------------------------------------------------------------------------
 ;; 便利な感じのマイナーモード
 
-;; (when (require 'col-highlight)
-;;   (col-highlight-set-interval 3)
-;;   (col-highlight-toggle-when-idle 1)
-;;   )
-
 ;; auto-complete-mode
 ;; http://cx4a.org/software/auto-complete/index.ja.html
 ;; (define-key ac-complete-mode-map "\M-/" 'ac-stop)
 (when (require 'auto-complete-config nil t)
-  (add-to-list 'ac-dictionary-directories "~/.emacs.d/ac-dict")
   (ac-config-default)
 
   ;; ac-modes に登録されてるメジャーモード時に ac 発動
@@ -243,9 +235,12 @@ or nothing if point is in BoL"
 
   ;; 色とか
   (set-face-attribute 'tabbar-selected nil
-                      :background "dim gray"
+                      :background "#444444"
                       :foreground "white"
+                      :bold t
                       )
+  (set-face-attribute 'tabbar-unselected nil
+                      :foreground "#eeeeee")
 
   ;; ウィンドウシステムを使っていないとき
   (when (not window-system)
@@ -255,8 +250,8 @@ or nothing if point is in BoL"
 
     ;; faces
     (set-face-attribute 'tabbar-default nil
-                        :background "brightblack" ;;"#333333"
-                        :foreground "black" ;; "#000000"
+                        :background "#333333"
+                        :foreground "black"
                         :underline t
                         :box nil)
     (set-face-attribute 'tabbar-selected nil
@@ -265,12 +260,10 @@ or nothing if point is in BoL"
                         :underline nil
                         :box nil)
     (set-face-attribute 'tabbar-unselected nil
-                        :background "white" ;;"#333333"
-                        :foreground "black" ;; "#cccccc"
+                        :background "white"
+                        :foreground "black"
                         :underline t
                         :box nil)
-    (set-face-attribute 'tabbar-separator nil
-                        :background "black")
     )
 
   ;; Ctrl+Tab でタブ切り替え
@@ -326,7 +319,6 @@ or nothing if point is in BoL"
                                  flymake-display-err-before-colmun
                                  (= cur-line flymake-display-err-before-line)
                                  (= cur-col flymake-display-err-before-colmun))))
-         ;; (message (concat "line:" cur-line ", col:" cur-col))
          (setq flymake-display-err-before-line cur-line
                flymake-display-err-before-colmun cur-col)
          (not is-not-moved)))
@@ -368,7 +360,6 @@ or nothing if point is in BoL"
      ;;  (when (timerp flymake-display-err-timer)
      ;;  (cancel-timer flymake-display-err-timer)
      ;;  (setq flymake-display-err-timer nil)))
-
      ))
 
 ;; helm
@@ -381,14 +372,14 @@ or nothing if point is in BoL"
 ;; whitespace-mode
 (when (require 'whitespace nil t)
   ;; n 列以上はハイライトで警告
-  (setq whitespace-line-column 90)
+  ;; (setq whitespace-line-column 90)
 
   (setq whitespace-style
         '(face ;; faceを使って視覚化する。
           ;; 行末の空白
           trailing
-          ;; 長すぎる行のうち whitespace-line-column 以降部分
-          lines-tail
+          ;; 長すぎる行のうち whitespace-line-column 以降部分をハイライト
+          ;; lines-tail
           ;; タブ
           tabs
           ;; タブの前にあるスペース
@@ -396,10 +387,6 @@ or nothing if point is in BoL"
           ;; タブの後にあるスペース
           ;; space-after-tab
           ))
-
-  (set-face-attribute 'whitespace-tab nil
-                      :foreground nil
-                      :background "#111111")
 
   ;; デフォルトで視覚化を有効にする。
   (global-whitespace-mode 1))
@@ -566,18 +553,18 @@ or nothing if point is in BoL"
 
 ;; -------------------------------------------------------------------------
 ;; 色とか
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(ansi-color-names-vector ["#2d3743" "#ff4242" "#74af68" "#dbdb95" "#34cae2" "#008b8b" "#00ede1" "#e1e1e0"])
- '(custom-enabled-themes (quote (tango-dark))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(col-highlight ((t :inherit (quote hl-line))) t)
- '(highlight ((t :foreground nil)))
- '(hl-line ((t :foreground nil :background "black"))))
+(when (require 'color-theme nil t)
+  (color-theme-initialize)
+
+  (when (locate-library "color-theme-twilight")
+    (load-library "color-theme-twilight")
+    (color-theme-twilight)
+    (set-face-attribute 'region nil
+                        :background "#002299")
+    (set-face-attribute 'helm-selection nil
+                        :background "#333300"
+                        :bold t)
+    (set-face-attribute 'whitespace-tab nil
+                        :background "#222222")
+    )
+  )
