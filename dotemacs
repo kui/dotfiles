@@ -566,6 +566,7 @@ or nothing if point is in BoL"
       ;; yaml-mode 読み込まれた時に評価される
       )))
 
+;; ruby-mode
 (when '(require 'ruby-mode nil t)
   (add-to-list 'auto-mode-alist '("/Rakefile" . ruby-mode))
   (add-to-list 'auto-mode-alist '("\\.gemspec\\'" . ruby-mode))
@@ -574,6 +575,12 @@ or nothing if point is in BoL"
   ;; flymakeでrubyの構文チェック
   (when (require 'flymake-ruby nil t)
     (add-hook 'ruby-mode-hook 'flymake-ruby-load))
+
+  (add-hook 'ruby-mode-hook
+            (lambda ()
+              (add-to-list 'ac-sources 'ac-source-rsense-method)
+              (add-to-list 'ac-sources 'ac-source-rsense-constant)
+              ))
   )
 
 ;; nxhtml
