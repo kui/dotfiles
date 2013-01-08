@@ -1,173 +1,94 @@
 ;; -*- mode: lisp-interaction; syntax: elisp; coding: utf-8-unix -*-
 
-;;ライブラリパスを追加
-(add-to-list 'load-path "~/.emacs.d")
-
 (set-language-environment "Japanese")
 
-;; meadow で使うときの日本語周り
-; (if (string-equal system-type "windows-nt")    (let ()  ))
+(set-cursor-color "green")
 
-;; 基本的な色
-(if (functionp 'load-theme)
-    (setq default-frame-alist
-          (append
-           '(
-             ;; (corsor-type . bar)
-             (corsor-color . "green")
-             (foreground-color . "white")
-             (background-color . "#000000")
-             )
-           default-frame-alist)))
+;; meadow 向けの設定
+; (if (string-equal system-type "windows-nt")    (let ()  ))
 
 ;; 自動保存機能
 (setq auto-save-default t
       auto-save-list-file-name "~/.emacs-auto-save-list" ;; 自動保存に関する情報
-      auto-save-interval 50  ;; 自動保存する打鍵回数
+      auto-save-intrval 50  ;; 自動保存する打鍵回数
       auto-save-timeout 10)  ;; 自動保存する時間
 
-;; emacs 終了時に確認
-; (setq confirm-kill-emacs 'yes-or-no-p)
-
-;; マウス操作を有効に
-;(xterm-mouse-mode t)
-;(mouse-wheel-mode t)
-
 ;; フォントロックモード (強調表示等) を有効にする
-(global-font-lock-mode t)
+;; (global-font-lock-mode t)
 
 ;; マークしている範囲をハイライトする
 (setq-default transient-mark-mode t)
 
-;; C-x C-u が何もしないように変更する (undo の typo 時誤動作防止)
-(global-unset-key "\C-x\C-u")
-
-;; C-t 使わないので
-(global-unset-key "\C-t")
-
-;; 括弧の対応をハイライト.
+;; 対応する括弧をハイライト
 (show-paren-mode 1)
 (setq show-paren-style 'mixed)
-
-(when (not window-system)
-  ;; 対応するカッコの face
-  (set-face-attribute 'show-paren-match-face nil
-                      :foreground nil
-                      :background "#005f00"
-                      ;; :bold t
-                      )
-  ;; 対応するカッコが無い時の face
-  (set-face-attribute 'show-paren-mismatch-face nil
-                      :foreground nil
-                      :background "#af0000"
-                      )
-  )
 
 ;; バッファ末尾に余計な改行コードを防ぐための設定
 (setq next-line-add-newlines nil)
 
 ;; 縦分割の時、一行で表示しきれない時の挙動
-;;   nil: 改行
-;;   t:   はみ出し？
+;; nil: 改行、t: オーバーフロー
 (setq truncate-partial-width-windows nil)
-
-;; C-x l で goto-line を実行
-(define-key ctl-x-map "l" 'goto-line)
 
 ;; インデントの際にタブを用いるか否か
 (setq-default indent-tabs-mode nil)
 
-;; 時間を表示
-;; (display-time)
-
-;; メニューバーを消す
+;; メニューバーの表示
 (menu-bar-mode (if window-system 1 0))
 
-;; "Symbolic link to Git-controlled source file;" みたいに聞かれるの回避
+;; シンボリックリンク先がバージョンコントロール化にある時の
+;; プロンプトを表示しない
 (setq vc-follow-symlinks t)
+
+;; "The local variables list in .emacs" と言われるのを抑止
+(add-to-list 'ignored-local-variables 'syntax)
+
+;; 列数表示
+(column-number-mode 1)
+
+;; スプラッシュ画面を表示しない
+(setq inhibit-splash-screen t)
 
 ;; ウィンドウシステムを使っているとき
 (if window-system
     (let ()
 
-      ;; (add-to-list 'default-frame-alist '(foreground-color . "white"))
-      ;; (add-to-list 'default-frame-alist
-      ;;             '(border-color . "cyan"));;
-
-      (add-to-list 'default-frame-alist '(cursor-color . "green"))
-
-      ;; ツールバーを消す
+      ;; ツールバーの表示
       (tool-bar-mode -1)
 
       ;; スクロールバーを消す(nil:消える,right:右側)
       (set-scroll-bar-mode "right")
 
-      ;; welcome to emacs ... を消す
-      (setq inhibit-splash-screen t)
-
+      ;; ウィンドウサイズを画面に揃える（精度は微妙）
       (add-to-list 'default-frame-alist
                    (cons 'height (/ (- (x-display-pixel-height) 50)
                                     (frame-char-height))))
       ))
 
-;; 列数表示
-(column-number-mode 1)
-
-;; C-o に動的略語展開機能を割り当てる
-;; (define-key global-map "\C-o" 'dabbrev-expand)
-;; (setq dabbrev-case-fold-search nil) ; 大文字小文字を区別
-
-;; 日本語・英語混じり文での区切判定
-;; http://www.alles.or.jp/~torutk/oojava/meadow/Meadow210Install.html
-(defadvice dabbrev-expand
-  (around modify-regexp-for-japanese activate compile)
-  "Modify `dabbrev-abbrev-char-regexp' dynamically for Japanese words."
-  (if (bobp)
-      ad-do-it
-    (let ((dabbrev-abbrev-char-regexp
-           (let ((c (char-category-set (char-before))))
-             (cond
-              ((aref c ?a) "[-_A-Za-z0-9]") ; ASCII
-              ((aref c ?j) ; Japanese
-               (cond
-                ((aref c ?K) "\\cK") ; katakana
-                ((aref c ?A) "\\cA") ; 2byte alphanumeric
-                ((aref c ?H) "\\cH") ; hiragana
-                ((aref c ?C) "\\cC") ; kanji
-                (t "\\cj")))
-              ((aref c ?k) "\\ck") ; hankaku-kana
-              ((aref c ?r) "\\cr") ; Japanese roman ?
-              (t dabbrev-abbrev-char-regexp)))))
-      ad-do-it)))
-
 ;; BS で選択範囲を消す
 (delete-selection-mode 1)
 
-;; "The local variables list in .emacs" と言われるのを抑止
-(add-to-list 'ignored-local-variables 'syntax)
-
 ;; 現在の行をハイライト
 (global-hl-line-mode)
-;; (set-face-attribute 'highlight nil
-;;                     :background "#5f5f00"
-;;                     :foreground nil)
-;; (set-face-attribute 'hl-line nil
-;;                     :background "#00005f"
-;;                     :foreground nil)
 
-; 保存前に末尾空白の削除
-(add-hook 'before-save-hook
-          'delete-trailing-whitespace)
+;; 保存前に末尾空白の削除
+;; (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
-(setq tags-table-list
-      '("~/.settings/TAGS")
-      )
+;; パッケージ管理
+(require 'package)
+(add-to-list 'package-archives
+             '("melpa" . "http://melpa.milkbox.net/packages/") t)
+(add-to-list 'package-archives
+             '("marmalade" . "http://marmalade-repo.org/packages/"))
+(package-initialize)
+
 
 ;; -------------------------------------------------------------------------
-;; キーバインド変更
+;; グローバルキーバインド変更
 
 ;; 不要なキーバインド削除
-(global-unset-key "\C-\\")
+(global-unset-key "\C-\\")	;; 入力モード切り替え
+(global-unset-key "\C-t")	;; 文字入れ替え
 
 ;; C-h でカーソルの左にある文字を消す
 (global-set-key "\C-h" 'delete-backward-char)
@@ -175,13 +96,16 @@
 ;; C-h に割り当てられている関数 help-command を C-x C-h に割り当てる
 (global-set-key "\C-x\C-h" 'help-command)
 
-;; tag のキーバインド変更
+;; tag のキーバインド
 (global-set-key "\M-t" nil)
 (global-set-key "\M-tt" 'find-tag)
 (global-set-key "\M-t\M-t" 'find-tag)
 (global-set-key "\M-tn" 'next-tag)
 (global-set-key "\M-tp" 'pop-tag-mark)
 (global-set-key "\M-o" 'list-tags)
+
+;; goto-line を実行
+(define-key ctl-x-map "l" 'goto-line)
 
 ;; -------------------------------------------------------------------------
 ;; 自作関数
@@ -318,19 +242,13 @@ or nothing if point is in BoL"
                     tabbar-scroll-right-button))
     (set button (cons (cons "" nil) (cons "" nil))))
 
-  ;; faces
-  ;; (set-face-attribute 'tabbar-default nil
-  ;;                     :foreground "white"
-  ;;                     :background "dark gray")
+  ;; 色とか
   (set-face-attribute 'tabbar-selected nil
                       :background "dim gray"
                       :foreground "white"
                       )
-  ;; (set-face-attribute 'tabbar-unselected nil
-  ;;                     :box '(:line-width 2 :color "light gray" :style "released-button")
-  ;;                     )
 
-  ;; ウィンドウシステムを使ってる時だけ
+  ;; ウィンドウシステムを使っていないとき
   (when (not window-system)
 
     ;; タブの間に挟む文字
@@ -487,6 +405,7 @@ or nothing if point is in BoL"
   ;; デフォルトで視覚化を有効にする。
   (global-whitespace-mode 1))
 
+;; gnu global (gtags)
 (when nil ;; (require 'gtags nil t)
   (global-set-key "\M-t" nil)
   (global-set-key "\M-tt" 'gtags-find-tag)
@@ -505,14 +424,6 @@ or nothing if point is in BoL"
 
 ;; -------------------------------------------------------------------------
 ;; メジャーモードの設定や読み込み
-
-;; css-mode
-;;(when (autoload-if-exist 'css-mode "css-mode" "Mode for editing CSS files" t)
-;;  (add-to-list 'auto-mode-alist '("\\.css$" . css-mode))
-;;  (eval-after-load "css-mode"
-;;    (let ()
-;;      ;; css-mode 読み込まれた時に評価される
-;;      )))
 
 ;; markdown-mode
 (when (autoload-if-exist 'markdown-mode "markdown-mode"
@@ -574,53 +485,6 @@ or nothing if point is in BoL"
               (add-to-list 'ac-sources 'ac-source-rsense-constant)
               ))
   )
-
-;; nxhtml
-(defvar kui/nxhtml-file-name "src/nxhtml/autostart.el")
-(when (locate-library kui/nxhtml-file-name)
-  (defun kui/load-nxhtml ()
-    (interactive)
-    (load kui/nxhtml-file-name)))
-
-;; js-mode
-(setq js-indent-level 2)
-
-;; js2-mode
-(when (autoload-if-exist 'js2-mode "js2"
-                         "Major mode for editing javascript files" t)
-
-  ;; (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
-
-  (eval-after-load "js2"
-    (let ()
-      ;; js2-mode が読み込まれた時に評価される
-      (message ";; loaded js2.el")
-
-      ;; js2-mode 向け flymake
-      (when (and (require 'flymake nil t) (executable-find "jslint"))
-
-        (message "Load flymake for js2-mode")
-
-        (defun flymake-js-init ()
-          (let* ((temp-file (flymake-init-create-temp-buffer-copy
-                             'flymake-create-temp-inplace))
-                 (local-file (file-relative-name
-                              temp-file
-                              (file-name-directory buffer-file-name))))
-            (list "jslint" (list local-file))))
-
-        (add-to-list 'flymake-allowed-file-name-masks '("\\.js\\'" flymake-js-init))
-
-        (defun flymake-js-load ()
-          (interactive)
-          (setq flymake-err-line-patterns
-                (cons '("^  Line:\\([0-9]+\\), Pos:\\([0-9]+\\), Reason:\\(.+\\)$"
-                        nil 1 2 3)
-                      flymake-err-line-patterns))
-          (flymake-mode t))
-
-        (add-hook 'js2-mode-hook 'flymake-js-load)
-  ))))
 
 ;; coffee-mode
 (when (autoload-if-exist 'coffee-mode "coffee-mode"
@@ -700,53 +564,3 @@ or nothing if point is in BoL"
 (setq js-indent-level 2)
 (add-to-list 'auto-mode-alist '("\\.js\\'" . js-mode))
 (add-to-list 'auto-mode-alist '("\\.json\\'" . js-mode))
-
-;; ----------------------------------------------------------------------------
-;; face についての設定
-(when (not window-system)
-  (custom-set-faces
-
-   '(mode-line
-     ((t :foreground "#005f00"
-         :background "#999999")))
-
-   '(mode-line-buffer-id
-     ((t :foreground "#5f0000"
-         :background nil
-         :bold t
-         :inherit 'mode-line)))
-
-   '(button
-     ((t :foreground "black"
-         :background "gray"
-         :bold nil)))
-
-   '(confluence-panel-face
-     ((t :background "#333333")))
-
-   '(custom-changed-face
-     ((t :background "#0000ff")))
-   ))
-
-(custom-set-faces
- '(highlight
-   ((t :foreground nil
-       :background "#0000ff")))
-
- '(hl-line
-   ((t :foreground nil
-       :background "#000033")))
-
- '(col-highlight
-   ((t :inherit 'hl-line)))
- )
-
-
-(custom-set-variables
- '(custom-enabled-themes "tsdh-dark")
- )
-
-(when (not window-system)
-  (custom-set-variables
-   '(custom-enabled-themes (quote (manoj-dark)))
-   ))
