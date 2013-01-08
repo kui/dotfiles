@@ -72,7 +72,7 @@
 (global-hl-line-mode)
 
 ;; 保存前に末尾空白の削除
-;; (add-hook 'before-save-hook 'delete-trailing-whitespace)
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
 
 ;; パッケージ管理
 (require 'package)
@@ -81,7 +81,6 @@
 (add-to-list 'package-archives
              '("marmalade" . "http://marmalade-repo.org/packages/"))
 (package-initialize)
-
 
 ;; -------------------------------------------------------------------------
 ;; グローバルキーバインド変更
@@ -564,3 +563,21 @@ or nothing if point is in BoL"
 (setq js-indent-level 2)
 (add-to-list 'auto-mode-alist '("\\.js\\'" . js-mode))
 (add-to-list 'auto-mode-alist '("\\.json\\'" . js-mode))
+
+;; -------------------------------------------------------------------------
+;; 色とか
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(ansi-color-names-vector ["#2d3743" "#ff4242" "#74af68" "#dbdb95" "#34cae2" "#008b8b" "#00ede1" "#e1e1e0"])
+ '(custom-enabled-themes (quote (tango-dark))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(col-highlight ((t :inherit (quote hl-line))) t)
+ '(highlight ((t :foreground nil)))
+ '(hl-line ((t :foreground nil :background "black"))))
