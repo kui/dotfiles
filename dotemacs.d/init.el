@@ -371,11 +371,11 @@ or nothing if point is in BoL"
 
      ))
 
-;; anything.el
-(when (require 'anything-config nil t)
-  (global-set-key "\C-xa" 'anything-c-apropos)
-  (global-set-key "\C-xf" 'anything-for-files)
-  (global-set-key "\C-xb" 'anything-buffers-list)
+;; helm
+(when (require 'helm nil t)
+  (global-set-key "\C-xa" 'helm-c-apropos)
+  (global-set-key "\C-xf" 'helm-for-files)
+  (global-set-key "\C-xb" 'helm-buffers-list)
   )
 
 ;; whitespace-mode
