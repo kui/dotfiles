@@ -4,7 +4,6 @@
 
 link_file_list=(
     dotscreenrc
-    dotemacs
     dotemacs.d
     dotgitconfig
     dotzshrc
