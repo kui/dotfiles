@@ -1,8 +1,0 @@
-[submodule "dotemacs.d/flymake-coffeescript"]
-	path = dotemacs.d/flymake-coffeescript
-	url = git://github.com/kui/flymake-coffeescript.git
-	branch = master
-[submodule "dotemacs.d/coffee-mode"]
-	path = dotemacs.d/coffee-mode
-	url = git://github.com/defunkt/coffee-mode.git
-	branch = master
