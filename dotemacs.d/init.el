@@ -58,6 +58,9 @@
       (add-to-list 'default-frame-alist
                    (cons 'height (/ (- (x-display-pixel-height) 50)
                                     (frame-char-height))))
+
+      ;; フォントの指定
+      (set-default-font "Inconsolata")
       ))
 
 ;; BS でマーク範囲を消す
@@ -68,7 +71,6 @@
 
 ;; 現在の行をハイライト
 (global-hl-line-mode)
-
 ;; 保存前に末尾空白の削除
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
@@ -237,12 +239,12 @@ or nothing if point is in BoL"
 
   ;; 色とか
   (set-face-attribute 'tabbar-selected nil
-                      :background "#444444"
+                      :background "#262626"
                       :foreground "white"
                       :bold t
                       )
   (set-face-attribute 'tabbar-unselected nil
-                      :foreground "#eeeeee")
+                      :foreground "#dedede")
 
   ;; ウィンドウシステムを使っていないとき
   (when (not window-system)
@@ -369,6 +371,7 @@ or nothing if point is in BoL"
   (global-set-key "\C-xa" 'anything-apropos)
   (global-set-key "\C-xf" 'anything-for-files)
   (global-set-key "\C-xb" 'anything-buffers+)
+  (global-set-key "\M-x" 'anything-M-x)
   )
 
 ;; whitespace-mode
@@ -564,10 +567,27 @@ or nothing if point is in BoL"
     (color-theme-twilight)
     (when (require 'anything nil t)
       (set-face-attribute 'highlight nil
-                          :background "#333300"
+                          :background "#191970"
+                          :bold t)
+      (set-face-attribute 'anything-header nil
+                          :height 1.3
+                          :foreground "white"
+                          :background "#4169e1"
+                          :bold t)
+      (set-face-attribute 'anything-match nil
+                          :foreground nil
+                          :background "#8b8b00"
                           :bold t))
+    (set-face-attribute 'hl-line nil
+                        :background "#191970")
     (set-face-attribute 'region nil
-                        :background "#002299")
+                        :background "#4169e1")
+    (set-face-attribute 'show-paren-match nil
+                        :background "#2e8b57")
+    (set-face-attribute 'font-lock-comment-face nil
+                        :foreground "#cd6600")
+    (set-face-attribute 'font-lock-keyword-face nil
+                        :foreground "#ff6eb4")
     (set-face-attribute 'whitespace-tab nil
-                        :background "#222222"))
+                        :background "#1f1f1f"))
   )
