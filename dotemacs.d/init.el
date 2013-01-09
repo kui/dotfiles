@@ -71,6 +71,7 @@
 
 ;; 現在の行をハイライト
 (global-hl-line-mode)
+
 ;; 保存前に末尾空白の削除
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
@@ -167,6 +168,9 @@ or nothing if point is in BoL"
 
 ;; -------------------------------------------------------------------------
 ;; 便利な感じのマイナーモード
+
+(when (require 'popwin nil t)
+  (setq display-buffer-function 'popwin:display-buffer))
 
 ;; auto-complete-mode
 ;; http://cx4a.org/software/auto-complete/index.ja.html
@@ -369,7 +373,7 @@ or nothing if point is in BoL"
 ;; anything
 (when (and (require 'anything-config nil t) (require 'anything-complete nil t))
   (global-set-key "\C-xa" 'anything-apropos)
-  (global-set-key "\C-xf" 'anything-for-files)
+  (global-set-key "\C-x\C-f" 'anything-find-file)
   (global-set-key "\C-xb" 'anything-buffers+)
   (global-set-key "\M-x" 'anything-M-x)
   )
