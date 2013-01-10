@@ -1,5 +1,17 @@
 ;; -*- mode: lisp-interaction; syntax: elisp; coding: utf-8-unix -*-
 
+(require 'cl)
+
+;; パッケージ管理
+(require 'package)
+(add-to-list 'package-archives
+             '("melpa" . "http://melpa.milkbox.net/packages/") t)
+(add-to-list 'package-archives
+             '("marmalade" . "http://marmalade-repo.org/packages/"))
+(package-initialize)
+
+
+;; 言語設定は環境変数に依存
 (set-language-environment nil)
 
 ;; meadow 向けの設定
@@ -66,6 +78,14 @@
 ;; BS でマーク範囲を消す
 (delete-selection-mode 1)
 
+(when (require 'markdown-mode nil t)
+  ;; *scratch* のときの major-mode
+  (setq initial-major-mode 'markdown-mode)
+
+  ;; *scratch* のときのメッセージ
+  (setq initial-scratch-message "Scratch\n========\n\n"))
+
+
 ;; マーク範囲をハイライト
 (setq-default transient-mark-mode t)
 
@@ -74,14 +94,6 @@
 
 ;; 保存前に末尾空白の削除
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
-
-;; パッケージ管理
-(require 'package)
-(add-to-list 'package-archives
-             '("melpa" . "http://melpa.milkbox.net/packages/") t)
-(add-to-list 'package-archives
-             '("marmalade" . "http://marmalade-repo.org/packages/"))
-(package-initialize)
 
 ;; -------------------------------------------------------------------------
 ;; グローバルキーバインド変更
@@ -208,7 +220,7 @@ or nothing if point is in BoL"
   )
 
 ;; rsense
-(when (and (require 'cl nil t) (require 'rsense nil t))
+(when (require 'rsense nil t)
   (setq rsense-home (expand-file-name "~/.settings/src/rsense-0.3"))
   (add-to-list 'load-path (concat rsense-home "/etc"))
   )
@@ -222,18 +234,16 @@ or nothing if point is in BoL"
   ;;       (http://www.emacswiki.org/emacs/TabBarMode)
   (setq tabbar-buffer-groups-function (lambda () (list "Buffers")))
 
-  (when (require 'cl nil t) ;; remove-if とかに必要
-
-    ;; 表示するタブのフィルタリング
-    ;;   * で始まるバッファはタブに表示しない
-    (setq tabbar-buffer-list-function
-          (lambda ()
-            (remove-if
-             (lambda (b)
-               (and (string-match "^ ?\\*" (buffer-name b))
-                    (not (string-equal (buffer-name (current-buffer))
-                                       (buffer-name b)))))
-             (buffer-list)))))
+  ;; 表示するタブのフィルタリング
+  ;;   * で始まるバッファはタブに表示しない
+  (setq tabbar-buffer-list-function
+        (lambda ()
+          (remove-if
+           (lambda (b)
+             (and (string-match "^ ?\\*" (buffer-name b))
+                  (not (string-equal (buffer-name (current-buffer))
+                                     (buffer-name b)))))
+           (buffer-list))))
 
   ;; 左に表示されるボタンを消す
   (dolist (button '(tabbar-buffer-home-button
@@ -592,6 +602,14 @@ or nothing if point is in BoL"
                         :foreground "#cd6600")
     (set-face-attribute 'font-lock-keyword-face nil
                         :foreground "#ff6eb4")
+    (set-face-attribute 'markdown-header-face nil
+                        :height 1.1
+                        :foreground "#87ceff"
+                        :bold t)
+    (set-face-attribute 'markdown-header-rule-face nil
+                        :inherit 'markdown-header-face)
+    (set-face-attribute 'markdown-header-delimiter-face nil
+                        :inherit 'markdown-header-face)
     (set-face-attribute 'whitespace-tab nil
                         :background "#1f1f1f"))
   )
