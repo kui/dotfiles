@@ -2,6 +2,8 @@
 
 (require 'cl)
 
+(add-to-list 'load-path "~/.emacs.d")
+
 ;; パッケージ管理
 (require 'package)
 (add-to-list 'package-archives
@@ -9,7 +11,6 @@
 (add-to-list 'package-archives
              '("marmalade" . "http://marmalade-repo.org/packages/"))
 (package-initialize)
-
 
 ;; 言語設定は環境変数に依存
 (set-language-environment nil)
@@ -156,20 +157,18 @@ or nothing if point is in BoL"
 (defun insert-magic-comment ()
   "insert magic comment with current coding & major-mode into current line."
   (interactive)
-  (if (or buffer-file-coding-system major-mode)
-      (insert
-       (concat "-*- "
-               (if buffer-file-coding-system
-                   (concat "coding:"
-                           (symbol-name buffer-file-coding-system)
-                           "; "))
-               (if major-mode
-                   (concat "mode:"
-                           (replace-regexp-in-string "-mode\\'" ""
-                                                     (symbol-name major-mode))
-                           "; "))
-               "-*-\n"))
-    (message "Both current coding and major-mode are nil.")))
+  (let* ((coding (if buffer-file-coding-system
+                     (symbol-name buffer-file-coding-system)))
+         (mode (if major-mode
+                   (replace-regexp-in-string "-mode\\'" ""
+                                             (symbol-name major-mode))))
+
+         (magic-comment (format "-*- %s%s-*-"
+                                (if coding (format "coding:%s; " coding) "")
+                                (if mode (format "mode:%s; " mode) ""))))
+    (if (or coding mode)
+        (insert magic-comment)
+      (message "Both current coding and major-mode are nil."))))
 
 ;; 確認なしでバッファの削除
 (defun kui/kill-buffer-with-no-confirmation ()
@@ -195,7 +194,6 @@ or nothing if point is in BoL"
 
   ;; *候補間を移動
   (define-key ac-complete-mode-map "\C-n" 'ac-next)
-  ;; (define-key ac-complete-mode-map "\C-o" 'ac-next)
   (define-key ac-complete-mode-map "\M-/" 'ac-next)
   (define-key ac-complete-mode-map "\C-p" 'ac-previous)
 
@@ -221,9 +219,9 @@ or nothing if point is in BoL"
 
 ;; rsense
 (when (require 'rsense nil t)
-  (setq rsense-home (expand-file-name "~/.settings/src/rsense-0.3"))
-  (add-to-list 'load-path (concat rsense-home "/etc"))
-  )
+  (let (rsense-home (expand-file-name "~/.settings/src/rsense-0.3"))
+    (add-to-list 'load-path (concat rsense-home "/etc"))
+    ))
 
 ;; tabbar-mode
 (when (require 'tabbar nil t)
@@ -381,10 +379,12 @@ or nothing if point is in BoL"
      ))
 
 ;; anything
-(when (and (require 'anything-config nil t) (require 'anything-complete nil t))
+(when (and (require 'anything-config nil t)
+           (require 'anything-complete nil t))
   (global-set-key "\C-xa" 'anything-apropos)
   (global-set-key "\C-x\C-f" 'anything-find-file)
   (global-set-key "\C-xb" 'anything-buffers+)
+  (global-set-key "\C-o" 'anything-occur)
   (global-set-key "\M-x" 'anything-M-x)
   )
 
@@ -411,15 +411,15 @@ or nothing if point is in BoL"
   (global-whitespace-mode 1))
 
 ;; gnu global (gtags)
-(when nil ;; (require 'gtags nil t)
-  (global-set-key "\M-t" nil)
-  (global-set-key "\M-tt" 'gtags-find-tag)
-  (global-set-key "\M-tr" 'gtags-find-rtag)
-  (global-set-key "\M-ts" 'gtags-find-symbol)
-  (global-set-key "\M-tv" 'gtags-find-symbol)
-  (global-set-key "\M-tf" 'gtags-find-file)
-  (global-set-key "\M-tb" 'gtags-pop-stack)
-  (global-set-key "\M-tp" 'gtags-pop-stack)
+(when (require 'gtags nil t)
+  (global-set-key "\M-tg" nil)
+  (global-set-key "\M-tgt" 'gtags-find-tag)
+  (global-set-key "\M-tgr" 'gtags-find-rtag)
+  (global-set-key "\M-tgs" 'gtags-find-symbol)
+  (global-set-key "\M-tgv" 'gtags-find-symbol)
+  (global-set-key "\M-tgf" 'gtags-find-file)
+  (global-set-key "\M-tgb" 'gtags-pop-stack)
+  (global-set-key "\M-tgp" 'gtags-pop-stack)
   )
 
 ;; ctag-update.el 自動で TAGS アップデートしてくれる
@@ -447,9 +447,8 @@ or nothing if point is in BoL"
                 '(lambda ()
                    (set (make-variable-buffer-local 'indent-tabs-mode) t)
                    (set (make-variable-buffer-local 'tab-width) 4)
-
-                   (remove-hook (make-variable-buffer-local 'before-save-hook)
-                                'delete-trailing-whitespace)
+                   (remove-hook 'before-save-hook
+                                'delete-trailing-whitespace t)
 
                    (set (make-variable-buffer-local 'whitespace-style)
                         '(face ;; faceを使って視覚化する。
@@ -485,11 +484,12 @@ or nothing if point is in BoL"
   (when (require 'flymake-ruby nil t)
     (add-hook 'ruby-mode-hook 'flymake-ruby-load))
 
-  (add-hook 'ruby-mode-hook
-            (lambda ()
-              (add-to-list 'ac-sources 'ac-source-rsense-method)
-              (add-to-list 'ac-sources 'ac-source-rsense-constant)
-              ))
+  (when (require 'rsense nil t)
+    (add-hook 'ruby-mode-hook
+              (lambda ()
+                (add-to-list 'ac-sources 'ac-source-rsense-method)
+                (add-to-list 'ac-sources 'ac-source-rsense-constant)
+                )))
   )
 
 ;; coffee-mode
@@ -545,38 +545,32 @@ or nothing if point is in BoL"
                         'kui/coffee-indent-line)))
       )))
 
-;; confluence-el
-(when (require 'confluence nil t)
-
-  ;; コンフルのAPIのURL
-  (setq confluence-url "http://amewiki.cadc.cyberagent.local/rpc/xmlrpc")
-
-  ;; パスワード一回入れたら以降聞かれないようにする
-  (setq confluence-save-credentials t)
-
-  ;; キーバインド設定
-  (add-hook 'confluence-mode-hook
-            '(lambda ()
-               (local-set-key "\C-cc" 'confluence-create-page)
-               (local-set-key "\C-cf" 'confluence-get-page)
-               (local-set-key "\C-cm" 'confluence-ediff-merge-current-page)
-               ))
-  )
-
 ;; css-mode
 (setq css-indent-offset 2)
 
 ;; js-mode
-(setq js-indent-level 2)
-(add-to-list 'auto-mode-alist '("\\.js\\'" . js-mode))
-(add-to-list 'auto-mode-alist '("\\.json\\'" . js-mode))
+(when (autoload-if-exist 'js-mode "js")
+  (add-to-list 'auto-mode-alist '("\\.js\\'" . js-mode))
+  (add-to-list 'auto-mode-alist '("\\.json\\'" . js-mode))
+  (eval-after-load "js"
+    (setq js-indent-level 2)))
 
 ;; -------------------------------------------------------------------------
 ;; 色とか
 (when (require 'color-theme nil t)
   (color-theme-initialize)
 
-  (when (locate-library "color-theme-twilight")
+  (when (require 'color-theme-sanityinc-tomorrow)
+    (color-theme-sanityinc-tomorrow-night)
+    (unless window-system
+      (set-face-attribute 'mode-line nil
+                          :background "#444444"))
+    (set-face-attribute 'anything-header nil
+                        :inverse-video t
+                        :bold t
+                        :height 1.2))
+
+  (when nil ;(locate-library "color-theme-twilight")
     (load-library "color-theme-twilight")
     (color-theme-twilight)
     (when (require 'anything nil t)
@@ -613,3 +607,5 @@ or nothing if point is in BoL"
     (set-face-attribute 'whitespace-tab nil
                         :background "#1f1f1f"))
   )
+
+(set-cursor-color "green")
