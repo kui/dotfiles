@@ -6,10 +6,12 @@
 *~
 .DS_Store
 Thumbs.db
-/dotemacs.d/ac-comphist.dat
-/dotemacs.d/url/*
-/dotrsense
+core
 TAGS
+/dotemacs.d/ac-comphist.dat
+/dotemacs.d/url
 /dotemacs.d/tramp
 /dotemacs.d/elpa
+/dotemacs.d/anything-c-adaptive-history
+/dotrsense
 /src
