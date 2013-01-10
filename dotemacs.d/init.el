@@ -58,23 +58,23 @@
 (setq inhibit-splash-screen t)
 
 ;; ウィンドウシステムを使っているとき
-(if window-system
-    (let ()
+(when window-system
 
-      ;; ツールバーの表示
-      (tool-bar-mode -1)
+  ;; ツールバーの表示
+  (tool-bar-mode -1)
 
-      ;; スクロールバーを消す(nil:消える,right:右側)
-      (set-scroll-bar-mode "right")
+  ;; スクロールバーを消す(nil:消える,right:右側)
+  (set-scroll-bar-mode "right")
 
-      ;; ウィンドウサイズを画面に揃える（精度は微妙）
-      (add-to-list 'default-frame-alist
-                   (cons 'height (/ (- (x-display-pixel-height) 50)
-                                    (frame-char-height))))
+  ;; ウィンドウサイズを画面に揃える（精度は微妙）
+  (set-frame-size (selected-frame)
+                  (/ line-number-display-limit-width 2)
+                  (/ (display-pixel-height)
+                     (frame-char-height)))
 
-      ;; フォントの指定
-      (set-default-font "Inconsolata")
-      ))
+  ;; フォントの指定
+  (set-default-font "Inconsolata")
+  )
 
 ;; BS でマーク範囲を消す
 (delete-selection-mode 1)
@@ -142,20 +142,27 @@ or nothing if point is in BoL"
     (set 'old-point (point))
     (back-to-indentation)
     (if (= old-point (point))
-        (move-beginning-of-line nil)))
-  )
+        (move-beginning-of-line nil))))
 (global-set-key "\C-a" 'kui/move-beginning-of-line)
 
 ;; require の代わりに使う
-(defun autoload-if-exist (function file &optional docstring interactive type)
+(defun kui/autoload-if-exist (function file &optional docstring interactive type)
   "autoload if FILE exist"
   (if (locate-library file)
       (let () (autoload function file docstring interactive type) t)
     ))
 
-;; emacs 用マジックコメント挿入
-(defun insert-magic-comment ()
-  "insert magic comment with current coding & major-mode into current line."
+;; 現在の行をコメントアウト
+(defun kui/comment-or-uncomment-current-line ()
+  "comment or uncomment current line"
+  (interactive)
+  (comment-or-uncomment-region (line-beginning-position)
+                               (line-end-position)))
+(global-set-key (kbd "C-;") 'kui/comment-or-uncomment-current-line)
+
+;; マジックコメント挿入
+(defun kui/insert-magic-comment ()
+  "insert magic comment with current coding & major-mode"
   (interactive)
   (let* ((coding (if buffer-file-coding-system
                      (symbol-name buffer-file-coding-system)))
@@ -167,15 +174,19 @@ or nothing if point is in BoL"
                                 (if coding (format "coding:%s; " coding) "")
                                 (if mode (format "mode:%s; " mode) ""))))
     (if (or coding mode)
-        (insert magic-comment)
-      (message "Both current coding and major-mode are nil."))))
+        (let ()
+          (goto-char (point-min))
+          (if (looking-at "^#!") (beginning-of-line 2))
+          (insert magic-comment)
+          (comment-region (line-beginning-position) (line-end-position))
+          (newline))
+      (message "Error: both current coding and major-mode are nil."))))
 
 ;; 確認なしでバッファの削除
 (defun kui/kill-buffer-with-no-confirmation ()
   (interactive)
   (kill-buffer nil))
 (global-set-key "\C-xk" 'kui/kill-buffer-with-no-confirmation)
-
 
 ;; -------------------------------------------------------------------------
 ;; 便利な感じのマイナーモード
@@ -432,7 +443,7 @@ or nothing if point is in BoL"
 ;; メジャーモードの設定や読み込み
 
 ;; markdown-mode
-(when (autoload-if-exist 'markdown-mode "markdown-mode"
+(when (kui/autoload-if-exist 'markdown-mode "markdown-mode"
                          "Major mode for editing Markdown files" t)
 
   (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
@@ -465,7 +476,7 @@ or nothing if point is in BoL"
   )
 
 ;; yaml-mode
-(when (autoload-if-exist 'yaml-mode "yaml-mode"
+(when (kui/autoload-if-exist 'yaml-mode "yaml-mode"
                          "Major mode for editing yaml files" t)
 
   (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
@@ -493,7 +504,7 @@ or nothing if point is in BoL"
   )
 
 ;; coffee-mode
-(when (autoload-if-exist 'coffee-mode "coffee-mode"
+(when (kui/autoload-if-exist 'coffee-mode "coffee-mode"
                          "Major mode for editing coffescript files" t)
 
   (add-to-list 'auto-mode-alist '("\\.coffee\\'" . coffee-mode))
@@ -549,7 +560,7 @@ or nothing if point is in BoL"
 (setq css-indent-offset 2)
 
 ;; js-mode
-(when (autoload-if-exist 'js-mode "js")
+(when (kui/autoload-if-exist 'js-mode "js")
   (add-to-list 'auto-mode-alist '("\\.js\\'" . js-mode))
   (add-to-list 'auto-mode-alist '("\\.json\\'" . js-mode))
   (eval-after-load "js"
