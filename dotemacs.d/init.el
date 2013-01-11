@@ -34,9 +34,8 @@
 ;; バッファ末尾に余計な改行コードを防ぐための設定
 (setq next-line-add-newlines nil)
 
-;; 縦分割の時、一行で表示しきれない時の挙動
-;; nil: 改行、t: オーバーフロー
-(setq truncate-partial-width-windows nil)
+;; 一行で表示しきれない時の挙動 (nil/t)
+(setq truncate-partial-width-windows t)
 
 ;; インデントの際にタブを用いるか否か
 (setq-default indent-tabs-mode nil)
@@ -57,35 +56,23 @@
 ;; スプラッシュ画面を表示しない
 (setq inhibit-splash-screen t)
 
-;; ウィンドウシステムを使っているとき
-(when window-system
-
-  ;; ツールバーの表示
-  (tool-bar-mode -1)
-
-  ;; スクロールバーを消す(nil:消える,right:右側)
-  (set-scroll-bar-mode "right")
-
-  ;; ウィンドウサイズを画面に揃える（精度は微妙）
-  (set-frame-size (selected-frame)
-                  (/ line-number-display-limit-width 2)
-                  (/ (display-pixel-height)
-                     (frame-char-height)))
-
-  ;; フォントの指定
-  (set-default-font "Inconsolata")
-  )
-
 ;; BS でマーク範囲を消す
 (delete-selection-mode 1)
 
-(when (require 'markdown-mode nil t)
-  ;; *scratch* のときの major-mode
-  (setq initial-major-mode 'markdown-mode)
+;; *scratch* 関連
+(eval-after-load "markdown-mode"
+  (let ()
+    ;; *scratch* のときの major-mode
+    (setq initial-major-mode 'markdown-mode)
 
-  ;; *scratch* のときのメッセージ
-  (setq initial-scratch-message "Scratch\n========\n\n"))
+    ;; *scratch* のときのメッセージ
+    (setq initial-scratch-message "Scratch\n========\n\n")))
 
+;; Emacs のフレームの横幅最小値（文字数で指定）
+(defvar kui/min-colmun-number 80) ;; 80 文字
+
+;; Emacs のフレームの横幅最大値（文字数で指定）
+(defvar kui/max-colmun-number (/ 1000 (frame-char-width))) ;; 1000 px
 
 ;; マーク範囲をハイライト
 (setq-default transient-mark-mode t)
@@ -206,7 +193,20 @@ or nothing if point is in BoL"
 ;; 便利な感じのマイナーモード
 
 (when (require 'popwin nil t)
-  (setq display-buffer-function 'popwin:display-buffer))
+  (setq
+   ;; display-buffer の置き換え
+   display-buffer-function 'popwin:display-buffer
+
+   ;; popwin がでてくる場所のデフォルト値
+   ;; popwin:popup-window-position 'right
+   )
+  (set 'popwin:special-display-config
+       (append
+        '(("*anything buffers*" :position :right)
+          ("*anything imenu*" :position :right)
+          ("*anything find-file*" :position :right))
+        popwin:special-display-config))
+  )
 
 ;; auto-complete-mode
 ;; http://cx4a.org/software/auto-complete/index.ja.html
@@ -276,18 +276,21 @@ or nothing if point is in BoL"
 
   ;; 色とか
   (set-face-attribute 'tabbar-selected nil
-                      :background "#262626"
                       :foreground "white"
-                      :bold t
+                      :background nil
+                      :box nil
+                      :inherit nil
+                      :height 1.0
                       )
   (set-face-attribute 'tabbar-unselected nil
+                      :height 1.0
                       :foreground "#dedede")
 
   ;; ウィンドウシステムを使っていないとき
   (when (not window-system)
 
     ;; タブの間に挟む文字
-    (setq tabbar-separator-value "/")
+    (setq tabbar-separator-value "|")
 
     ;; faces
     (set-face-attribute 'tabbar-default nil
@@ -410,6 +413,7 @@ or nothing if point is in BoL"
   (global-set-key "\C-x\C-f" 'anything-find-file)
   (global-set-key "\C-xb" 'anything-buffers+)
   (global-set-key "\C-o" 'anything-occur)
+  (global-set-key "\M-i" 'anything-imenu)
   (global-set-key "\M-x" 'anything-M-x)
   )
 
@@ -426,13 +430,14 @@ or nothing if point is in BoL"
           ;; lines-tail
           ;; タブ
           tabs
+          tab-mark
           ;; タブの前にあるスペース
           ;; space-before-tab
           ;; タブの後にあるスペース
           ;; space-after-tab
           ))
 
-  ;; デフォルトで視覚化を有効にする。
+  ;; デフォルトで有効にする。
   (global-whitespace-mode 1))
 
 ;; gnu global (gtags)
@@ -452,41 +457,35 @@ or nothing if point is in BoL"
   ;; あとで、対象の *-mode-hook に、ctags-update-minor-mode をくっ付ける
   )
 
-
 ;; -------------------------------------------------------------------------
 ;; メジャーモードの設定や読み込み
 
 ;; markdown-mode
-(when (kui/autoload-if-exist 'markdown-mode "markdown-mode"
-                         "Major mode for editing Markdown files" t)
+;; 読み込めたら *scratch* に使うから kui/autoload-if-exist じゃなくて require
+(when (require 'markdown-mode)
 
   (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
   (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
 
-  (eval-after-load "markdown-mode"
-    (let ()
-      ;; markdown-mode 読み込まれた時に評価される
-      ;;(define-key markdown-mode-map "\C-i" 'indent-for-tab-command)
-      ;;(define-key markdown-mode-map "TAB" 'indent-for-tab-command)
-      (add-hook 'markdown-mode-hook
-                '(lambda ()
-                   (set (make-variable-buffer-local 'indent-tabs-mode) t)
-                   (set (make-variable-buffer-local 'tab-width) 4)
-                   (remove-hook 'before-save-hook
-                                'delete-trailing-whitespace t)
+  ;;(define-key markdown-mode-map "\C-i" 'indent-for-tab-command)
+  ;;(define-key markdown-mode-map "TAB" 'indent-for-tab-command)
 
-                   (set (make-variable-buffer-local 'whitespace-style)
-                        '(face ;; faceを使って視覚化する。
-                          ;; タブ
-                          tabs
-                          ;; タブの前にあるスペース
-                          space-before-tab
-                          ;; タブの後にあるスペース
-                          space-after-tab
-                          ))
-
-                   ))
-      ))
+  (defun kui/markdown-init-set-values ()
+    (set (make-variable-buffer-local 'indent-tabs-mode) t)
+    (set (make-variable-buffer-local 'tab-width) 4)
+    (remove-hook 'before-save-hook
+                 'delete-trailing-whitespace t)
+    (set (make-variable-buffer-local 'whitespace-style)
+         '(;; faceを使って視覚化する。
+           face
+           ;; タブ
+           tabs
+           ;; タブの前にあるスペース
+           space-before-tab
+           ;; タブの後にあるスペース
+           space-after-tab
+           )))
+  (add-hook 'markdown-mode-hook 'kui/markdown-init-set-values)
   )
 
 ;; yaml-mode
@@ -633,4 +632,26 @@ or nothing if point is in BoL"
                         :background "#1f1f1f"))
   )
 
-(set-cursor-color "green")
+;; -------------------------------------------------------------------------
+;; window system がある時
+(when window-system
+  ;; カーソルの色
+  (set-cursor-color "green")
+
+  ;; ツールバーの表示
+  (tool-bar-mode -1)
+
+  ;; スクロールバーを消す(nil:消える,right:右側)
+  (set-scroll-bar-mode "right")
+
+  ;; フォントの指定
+  (set-default-font "Inconsolata-12")
+
+  ;; ウィンドウサイズを画面に揃える（精度は微妙）
+  (set-frame-size
+   (selected-frame)
+   (max (min (/ (/ (display-pixel-width) 2) (frame-char-width))
+             kui/max-colmun-number)
+        kui/min-colmun-number)
+   (/ (display-pixel-height) (frame-char-height)))
+  )
