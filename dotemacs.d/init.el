@@ -188,6 +188,20 @@ or nothing if point is in BoL"
   (kill-buffer nil))
 (global-set-key "\C-xk" 'kui/kill-buffer-with-no-confirmation)
 
+;; フルスクリーン状態をトグル
+(defun kui/toggle-fullscreen ()
+  "Toggle full screen"
+  (interactive)
+  (cond
+   ((eq window-system 'x) ;; x window system
+    (set-frame-parameter
+     nil 'fullscreen
+     (when (not (frame-parameter nil 'fullscreen)) 'fullboth)))
+   (t ;; default
+    (message "window-system:%s not supported" (symbol-name window-system)))))
+(global-set-key [M-return] 'kui/toggle-fullscreen)
+(global-set-key [f11] 'kui/toggle-fullscreen)
+
 ;; -------------------------------------------------------------------------
 ;; 便利な感じのマイナーモード
 
