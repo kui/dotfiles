@@ -61,7 +61,7 @@
 
 ;; *scratch* 関連
 (eval-after-load "markdown-mode"
-  (let ()
+  '(let ()
     ;; *scratch* のときの major-mode
     (setq initial-major-mode 'markdown-mode)
 
@@ -102,7 +102,7 @@
 (global-set-key "\M-t\M-t" 'find-tag)
 (global-set-key "\M-tn" 'next-tag)
 (global-set-key "\M-tp" 'pop-tag-mark)
-(global-set-key "\M-o" 'list-tags)
+;; (global-set-key "\M-o" 'list-tags)
 
 ;; goto-line を実行
 (define-key ctl-x-map "l" 'goto-line)
@@ -189,6 +189,11 @@ or nothing if point is in BoL"
 (global-set-key [M-return] 'kui/toggle-fullscreen)
 (global-set-key [f11] 'kui/toggle-fullscreen)
 
+;; 実行可能なコマンドを返す
+(defun kui/find-if-executable (seq)
+  "Find and Return first executable command in SEQ."
+  (find-if (lambda (cmd) (executable-find cmd))
+           seq))
 ;; -------------------------------------------------------------------------
 ;; 便利な感じのマイナーモード
 
@@ -243,10 +248,10 @@ or nothing if point is in BoL"
   )
 
 ;; rsense
-(when (require 'rsense nil t)
-  (let (rsense-home (expand-file-name "~/.settings/src/rsense-0.3"))
-    (add-to-list 'load-path (concat rsense-home "/etc"))
-    ))
+(eval-after-load "rsense"
+  '(let ((rsense-home (expand-file-name "~/.settings/src/rsense-0.3")))
+     (add-to-list 'load-path (concat rsense-home "/etc")))
+  )
 
 ;; tabbar-mode
 (when (require 'tabbar nil t)
@@ -454,7 +459,10 @@ or nothing if point is in BoL"
 
 ;; ctag-update.el 自動で TAGS アップデートしてくれる
 (when (require 'ctags-update nil t)
-  ;; あとで、対象の *-mode-hook に、ctags-update-minor-mode をくっ付ける
+  (set 'ctags-update-command
+       (kui/find-if-executable '("ctags-exuberant"
+                                 "exuberant-ctags"
+                                 "ctags")))
   )
 
 ;; -------------------------------------------------------------------------
@@ -494,12 +502,13 @@ or nothing if point is in BoL"
 
   (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
   (eval-after-load "yaml-mode"
-    (let ()
+    '(let ()
       ;; yaml-mode 読み込まれた時に評価される
       )))
 
 ;; ruby-mode
-(when '(require 'ruby-mode nil t)
+(when (kui/autoload-if-exist 'ruby-mode "ruby-mode")
+
   (add-to-list 'auto-mode-alist '("/Rakefile" . ruby-mode))
   (add-to-list 'auto-mode-alist '("\\.gemspec\\'" . ruby-mode))
   (setq ruby-deep-indent-paren nil)
@@ -508,12 +517,11 @@ or nothing if point is in BoL"
   (when (require 'flymake-ruby nil t)
     (add-hook 'ruby-mode-hook 'flymake-ruby-load))
 
-  (when (require 'rsense nil t)
-    (add-hook 'ruby-mode-hook
-              (lambda ()
+  (add-hook 'ruby-mode-hook
+            (lambda ()
+              (when (require 'rsense nil t)
                 (add-to-list 'ac-sources 'ac-source-rsense-method)
-                (add-to-list 'ac-sources 'ac-source-rsense-constant)
-                )))
+                (add-to-list 'ac-sources 'ac-source-rsense-constant))))
   )
 
 ;; coffee-mode
@@ -530,7 +538,7 @@ or nothing if point is in BoL"
               ))
 
   (eval-after-load "coffee"
-    (let* ((coffee-command "coffee"))
+    '(let* ((coffee-command "coffee"))
       ;; coffee-mode が読み込まれた時に評価される
       (message "Load coffee-settings")
       (add-to-list 'ac-modes 'coffee-mode)
@@ -577,7 +585,7 @@ or nothing if point is in BoL"
   (add-to-list 'auto-mode-alist '("\\.js\\'" . js-mode))
   (add-to-list 'auto-mode-alist '("\\.json\\'" . js-mode))
   (eval-after-load "js"
-    (setq js-indent-level 2)))
+    '(setq js-indent-level 2)))
 
 ;; -------------------------------------------------------------------------
 ;; 色とか
