@@ -11,9 +11,6 @@ source_if_exist(){
     source "$1"
 }
 
-## mintty の ANSI Colors の設定
-source_if_exist "$HOME/.zshrc.d/color_schemes/my_colors"
-
 ## rvm
 source_if_exist "/usr/local/rvm/scripts/rvm"
 source_if_exist "$HOME/.rvm/scripts/rvm"
@@ -214,6 +211,9 @@ function widescreen(){
     screen -X select 1
     screen -X focus
 }
+
+# カーソルの色設定（暗い緑）
+echo -ne '\e]12;#009900\a'
 
 # 色一覧
 function color_list(){
