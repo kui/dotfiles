@@ -194,6 +194,15 @@ or nothing if point is in BoL"
   "Find and Return first executable command in SEQ."
   (find-if (lambda (cmd) (executable-find cmd))
            seq))
+
+;; *scratch* バッファに切り替え（消してしまっていたら作成）
+(defun kui/switch-to-scratch-buffer ()
+  "switch to *scratch*.
+create *scratch* if it did not exists"
+  (interactive)
+  (switch-to-buffer "*scratch*")
+  (insert initial-scratch-message))
+
 ;; -------------------------------------------------------------------------
 ;; 便利な感じのマイナーモード
 
@@ -207,9 +216,10 @@ or nothing if point is in BoL"
    )
   (set 'popwin:special-display-config
        (append
-        '(("*anything buffers*" :position :right)
+        '(;;("*anything buffers*" :position :right)
           ("*anything imenu*" :position :right)
-          ("*anything find-file*" :position :right))
+          ;;("*anything find-file*" :position :right)
+          )
         popwin:special-display-config))
   )
 
