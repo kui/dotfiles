@@ -546,7 +546,7 @@ create *scratch* if it did not exists"
 
 ;; coffee-mode
 (when (kui/autoload-if-exist 'coffee-mode "coffee-mode"
-                         "Major mode for editing coffescript files" t)
+                             "Major mode for editing coffescript files" t)
 
   (add-to-list 'auto-mode-alist '("\\.coffee\\'" . coffee-mode))
   (add-to-list 'auto-mode-alist '("/Cakefile\\'" . coffee-mode))
@@ -559,46 +559,53 @@ create *scratch* if it did not exists"
 
   (eval-after-load "coffee"
     '(let* ((coffee-command "coffee"))
-      ;; coffee-mode が読み込まれた時に評価される
-      (message "Load coffee-settings")
-      (add-to-list 'ac-modes 'coffee-mode)
+       ;; coffee-mode が読み込まれた時に評価される
 
-      ;; タブ幅
-      (setq coffee-tab-width 2)
+       (add-to-list 'ac-modes 'coffee-mode)
 
-      ;; flymake
-      (when (and (require 'flymake nil t)
-                 (require 'flymake-coffeescript nil t)
-                 (executable-find flymake-coffeescript-command))
-        (add-hook 'coffee-mode-hook 'flymake-coffeescript-load))
+       ;; タブ幅
+       (setq coffee-tab-width 2)
 
-      (setq coffee-debug-mode t)
+       ;; flymake
+       (when (and (require 'flymake nil t)
+                  (require 'flymake-coffeescript nil t)
+                  (executable-find flymake-coffeescript-command))
+         (add-hook 'coffee-mode-hook 'flymake-coffeescript-load))
 
-      ;; 独自インデント
-      ;; インデントの先頭に移動してからじゃないと、
-      ;; insert-tab しない
-      (defun kui/coffee-indent-line ()
-        "Indent current line as CoffeeScript."
-        (interactive)
-        (let ((old-point nil)
-              (new-point nil))
-          (save-excursion
-            (set 'old-point (point))
-            (back-to-indentation)
-            (set 'new-point (point)))
+       (setq coffee-debug-mode t)
 
-          (if (< old-point new-point)
-              (back-to-indentation)
-            (coffee-indent-line))
-          ))
-      (add-hook 'coffee-mode-hook
-                '(lambda ()
-                   (set (make-local-variable 'indent-line-function)
-                        'kui/coffee-indent-line)))
-      )))
+       ;; 独自インデント
+       ;; インデントの先頭に移動してからじゃないと、
+       ;; insert-tab しない
+       (defun kui/coffee-indent-line ()
+         "Indent current line as CoffeeScript."
+         (interactive)
+         (let ((old-point nil)
+               (new-point nil))
+           (save-excursion
+             (set 'old-point (point))
+             (back-to-indentation)
+             (set 'new-point (point)))
+
+           (if (< old-point new-point)
+               (back-to-indentation)
+             (coffee-indent-line))
+           ))
+       (add-hook 'coffee-mode-hook
+                 '(lambda ()
+                    (set (make-local-variable 'indent-line-function)
+                         'kui/coffee-indent-line)))
+       )))
 
 ;; css-mode
 (setq css-indent-offset 2)
+
+;; scss-mode
+(when (kui/autoload-if-exist 'scss-mode "scss-mode" nil t)
+  (add-to-list 'auto-mode-alist '("\\.scss\\'" . scss-mode))
+  (eval-after-load "scss-mode"
+    '(let nil
+       (setq scss-compile-at-save nil))))
 
 ;; js-mode
 (when (kui/autoload-if-exist 'js-mode "js")
