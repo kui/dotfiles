@@ -134,10 +134,9 @@ or nothing if point is in BoL"
 
 ;; require の代わりに使う
 (defun kui/autoload-if-exist (function file &optional docstring interactive type)
-  "autoload if FILE exist"
+  "do `(autoload FUNCTION FILE)` if FILE exist"
   (if (locate-library file)
-      (let () (autoload function file docstring interactive type) t)
-    ))
+      (let () (autoload function file docstring interactive type) t)))
 
 ;; 現在の行をコメントアウト
 (defun kui/comment-or-uncomment-current-line ()
@@ -145,7 +144,17 @@ or nothing if point is in BoL"
   (interactive)
   (comment-or-uncomment-region (line-beginning-position)
                                (line-end-position)))
-(global-set-key (kbd "C-;") 'kui/comment-or-uncomment-current-line)
+
+;; region ある時は、そのリージョンをコメントアウト
+;; region ない時は、現在行をコメントアウト
+(defun kui/comment-or-uncomment ()
+  "comment or uncomment region, but if region is not active, comment or \
+uncomment the current line"
+  (interactive)
+  (if (or (not transient-mark-mode) (region-active-p))
+      (comment-or-uncomment-region (region-beginning) (region-end))
+    (kui/comment-or-uncomment-current-line)))
+(global-set-key (kbd "C-;") 'kui/comment-or-uncomment)
 
 ;; マジックコメント挿入
 (defun kui/insert-magic-comment ()
@@ -170,20 +179,21 @@ or nothing if point is in BoL"
       (message "Error: both current coding and major-mode are nil."))))
 
 ;; 確認なしでバッファの削除
-(defun kui/kill-buffer-with-no-confirmation ()
+(defun kui/kill-buffer-without-interaction ()
+  "Kill the current buffer without interaction"
   (interactive)
   (kill-buffer nil))
-(global-set-key "\C-xk" 'kui/kill-buffer-with-no-confirmation)
+(global-set-key "\C-xk" 'kui/kill-buffer-without-interaction)
 
 ;; フルスクリーン状態をトグル
 (defun kui/toggle-fullscreen ()
   "Toggle full screen"
   (interactive)
   (cond
-   ((eq window-system 'x) ;; x window system
+   ((eq window-system 'x) ;; when x window system
     (set-frame-parameter
      nil 'fullscreen
-     (when (not (frame-parameter nil 'fullscreen)) 'fullboth)))
+     (if (not (frame-parameter nil 'fullscreen)) 'fullboth)))
    (t ;; default
     (message "window-system:%s not supported" (symbol-name window-system)))))
 (global-set-key [M-return] 'kui/toggle-fullscreen)
