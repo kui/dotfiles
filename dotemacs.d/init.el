@@ -553,7 +553,7 @@ create *scratch* if it did not exists"
 
   (add-hook 'coffee-mode-hook
             (lambda ()
-              (when (require 'col-highlight)
+              (when (require 'col-highlight nil t)
                 (column-highlight-mode))
               ))
 
@@ -620,7 +620,14 @@ create *scratch* if it did not exists"
     (set-face-attribute 'anything-header nil
                         :inverse-video t
                         :bold t
-                        :height 1.2))
+                        :height 1.2)
+    (set-face-attribute 'highlight nil
+                        :inverse-video t
+                        :foreground "#81a2be"
+                        :background "#1d1f21")
+    (set-face-attribute 'hl-line nil
+                        :background "#282a2e"
+                        :inherit nil))
 
   (when nil ;(locate-library "color-theme-twilight")
     (load-library "color-theme-twilight")
