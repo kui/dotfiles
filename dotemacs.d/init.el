@@ -531,6 +531,7 @@ create *scratch* if it did not exists"
 
   (add-to-list 'auto-mode-alist '("/Rakefile" . ruby-mode))
   (add-to-list 'auto-mode-alist '("\\.gemspec\\'" . ruby-mode))
+  (add-to-list 'auto-mode-alist '("/config\\.ru\\'" . ruby-mode))
   (setq ruby-deep-indent-paren nil)
 
   ;; flymakeでrubyの構文チェック
