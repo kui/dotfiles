@@ -1,3 +1,6 @@
 [submodule "dotzshrc.d/zaw"]
 	path = dotzshrc.d/zaw
 	url = git://github.com/zsh-users/zaw.git
+[submodule "dotzshrc.d/syntax-highlighting"]
+	path = dotzshrc.d/syntax-highlighting
+	url = git://github.com/zsh-users/zsh-syntax-highlighting.git
