@@ -1,0 +1,3 @@
+[submodule "dotzshrc.d/zaw"]
+	path = dotzshrc.d/zaw
+	url = git://github.com/zsh-users/zaw.git
