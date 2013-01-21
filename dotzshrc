@@ -433,6 +433,14 @@ display_jobs(){ echo; jobs; }
 [ "$OS" = "Windows_NT" ] && precmd_functions=(display_jobs)
 
 ############################################################
+##  cdr の設定
+autoload -Uz chpwd_recent_dirs cdr add-zsh-hook
+add-zsh-hook chpwd chpwd_recent_dirs
+zstyle ':chpwd:*' recent-dirs-max 1000
+zstyle ':chpwd:*' recent-dirs-default yes
+zstyle ':completion:*' recent-dirs-insert both
+
+############################################################
 ##  zsh プロパティ
 
 HISTFILE=$HOME/.zsh-history
@@ -539,3 +547,6 @@ then
     echo "load rbenv"
     eval "$(rbenv init -)"
 fi
+
+# zaw
+source_if_exist "$HOME/.zshrc.d/zaw/zaw.zsh"
