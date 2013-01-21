@@ -550,3 +550,6 @@ fi
 
 # zaw
 source_if_exist "$HOME/.zshrc.d/zaw/zaw.zsh"
+
+# syntax-highligting
+source_if_exist "$HOME/.zshrc.d/syntax-highlighting/zsh-syntax-highlighting.zsh"
