@@ -15,6 +15,9 @@
 ;; 言語設定は環境変数に依存
 (set-language-environment nil)
 
+;; dired などでマルチバイト文字が化ける
+(setq default-file-name-coding-system 'utf-8-unix)
+
 ;; meadow 向けの設定
 ; (if (string-equal system-type "windows-nt") (let () ))
 
