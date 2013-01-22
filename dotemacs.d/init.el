@@ -113,6 +113,21 @@
 ;; -------------------------------------------------------------------------
 ;; 自作関数
 
+;; require のパッケージが無かった時に自動的に package-install を実行してくれる
+(defun kui/require-package (feature &optional filename packagename noerror)
+  "If PACKAGENAME was installed, execute (`require' FEATURE &optional FILENAME
+ NOERROR).
+if PACKAGENAME was not installed, install PACKAGENAME and then execute `require'."
+  (unless kui/require-package-refreshed
+    (package-refresh-contents)
+    (setq kui/require-package-refreshed t))
+  (let* ((pname (if packagename packagename feature)))
+    (unless (package-installed-p pname)
+        (package-install pname)))
+  (require feature filename noerror)
+  )
+(defvar kui/require-package-refreshed nil)
+
 ;; C-w をもう少し賢く
 (defun kui/backward-kill-word-or-kill-region ()
   (interactive)
