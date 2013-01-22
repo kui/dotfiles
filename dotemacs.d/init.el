@@ -60,13 +60,13 @@
 (delete-selection-mode 1)
 
 ;; *scratch* 関連
-(eval-after-load "markdown-mode"
-  '(let ()
-    ;; *scratch* のときの major-mode
-    (setq initial-major-mode 'markdown-mode)
+(when (require 'markdown-mode nil t)
+  (setq
+   ;; *scratch* の major-mode
+   initial-major-mode 'markdown-mode
 
-    ;; *scratch* のときのメッセージ
-    (setq initial-scratch-message "Scratch\n========\n\n")))
+   ;; *scratch* の初期文字列
+   initial-scratch-message "Scratch\n========\n\n"))
 
 ;; Emacs のフレームの横幅最小値（文字数で指定）
 (defvar kui/min-colmun-number 80) ;; 80 文字
@@ -265,12 +265,6 @@ create *scratch* if it did not exists"
 
   ;; 直ちに補完メニューを表示する
   ;; (ac-show-menu-immediately-on-auto-complete t)
-  )
-
-;; rsense
-(eval-after-load "rsense"
-  '(let ((rsense-home (expand-file-name "~/.settings/src/rsense-0.3")))
-     (add-to-list 'load-path (concat rsense-home "/etc")))
   )
 
 ;; tabbar-mode
@@ -532,17 +526,27 @@ create *scratch* if it did not exists"
   (add-to-list 'auto-mode-alist '("/Rakefile" . ruby-mode))
   (add-to-list 'auto-mode-alist '("\\.gemspec\\'" . ruby-mode))
   (add-to-list 'auto-mode-alist '("/config\\.ru\\'" . ruby-mode))
-  (setq ruby-deep-indent-paren nil)
 
-  ;; flymakeでrubyの構文チェック
-  (when (require 'flymake-ruby nil t)
-    (add-hook 'ruby-mode-hook 'flymake-ruby-load))
+  (eval-after-load "ruby-mode"
+    '(let nil
+       (setq ruby-deep-indent-paren nil)
 
-  (add-hook 'ruby-mode-hook
-            (lambda ()
-              (when (require 'rsense nil t)
-                (add-to-list 'ac-sources 'ac-source-rsense-method)
-                (add-to-list 'ac-sources 'ac-source-rsense-constant))))
+       (when (require 'flymake-ruby nil t)
+         (add-hook 'ruby-mode-hook 'flymake-ruby-load))
+
+       (let ((rhome (expand-file-name "~/.settings/src/rsense-0.3")))
+         (when (file-directory-p rhome)
+           (setq rsense-home rhome)
+           (add-to-list 'load-path (concat rsense-home "/etc"))
+           (message "try to load rsense")
+           (when (require 'rsense nil t)
+             (message "done (rsense)")
+             (add-hook 'ruby-mode-hook
+                       (lambda ()
+                         (add-to-list 'ac-sources 'ac-source-rsense-method)
+                         (add-to-list 'ac-sources 'ac-source-rsense-constant))))))
+       (message "load ruby-mode")
+       ))
   )
 
 ;; coffee-mode
