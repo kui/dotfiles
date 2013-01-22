@@ -544,7 +544,6 @@ source ~/.zshrc.local
 if which rbenv > /dev/null 2>&1 &&
     ! which rvm > /dev/null 2>&1
 then
-    echo "load rbenv"
     eval "$(rbenv init -)"
 fi
 
