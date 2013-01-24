@@ -104,6 +104,10 @@
 ;; -------------------------------------------------------------------------
 ;; 自作関数
 
+(defun kui/vbutlast (vector &optional n)
+  "Return a copy of VECTOR with the last N elements removed."
+  (vconcat (butlast (append vector nil) n)))
+
 ;; require のパッケージが無かった時に自動的に package-install を実行してくれる
 (defun kui/package-require (feature &optional filename packagename noerror)
   "If PACKAGENAME(or FEATURE) was installed, execute (`require' FEATURE
@@ -240,6 +244,27 @@ create *scratch* if it did not exists"
           )
         popwin:special-display-config))
   )
+
+;; guide-key
+(when (kui/package-require 'guide-key nil nil t)
+  (defvar guide-key/popup-if-super-key-sequence nil)
+  ;; "C-x" に設定しても "C-x C-h" でも起動するように、起動条件を再定期
+  (defun guide-key/popup-guide-buffer-p (key-seq)
+    "Return t if guide buffer should be popped up."
+    (and (> (length key-seq) 0)
+         (or (member key-seq (mapcar 'guide-key/convert-key-sequence-to-vector
+                                     guide-key/guide-key-sequence))
+             (and guide-key/popup-if-super-key-sequence
+                  (guide-key/popup-guide-buffer-p (kui/vbutlast key-seq))))))
+
+  (setq
+   guide-key/guide-key-sequence '("M-t" "C-c" "C-x RET" "C-x C-h" "C-x r")
+   guide-key/popup-window-position 'bottom
+   guide-key/polling-time 0.5
+   guide-key/popup-if-super-key-sequence t
+   )
+
+  (guide-key-mode 1))
 
 ;; auto-complete-mode
 (when (kui/package-require 'auto-complete-config nil 'auto-complete t)
