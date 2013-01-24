@@ -114,19 +114,17 @@
 ;; 自作関数
 
 ;; require のパッケージが無かった時に自動的に package-install を実行してくれる
-(defun kui/require-package (feature &optional filename packagename noerror)
+(defun kui/package-require (feature &optional filename packagename noerror)
   "If PACKAGENAME(or FEATURE) was installed, execute (`require' FEATURE
  &optional FILENAME NOERROR).
 if not installed, install PACKAGENAME(or FEATURE) and then execute `require'."
-  (unless kui/require-package-refreshed
-    (package-refresh-contents)
-    (setq kui/require-package-refreshed t))
+  (unless package-archive-contents
+    (package-refresh-contents))
   (let* ((pname (if packagename packagename feature)))
     (unless (package-installed-p pname)
         (package-install pname)))
   (require feature filename noerror)
   )
-(defvar kui/require-package-refreshed nil)
 
 ;; C-w をもう少し賢く
 (defun kui/backward-kill-word-or-kill-region ()
@@ -234,7 +232,11 @@ create *scratch* if it did not exists"
 ;; -------------------------------------------------------------------------
 ;; 便利な感じのマイナーモード
 
-(when (require 'popwin nil t)
+;; popup
+(when (kui/package-require 'popup nil nil t))
+
+;; popwin
+(when (kui/package-require 'popwin nil nil t)
   (setq
    ;; display-buffer の置き換え
    display-buffer-function 'popwin:display-buffer
@@ -244,15 +246,13 @@ create *scratch* if it did not exists"
    )
   (set 'popwin:special-display-config
        (append
-        '(;;("*anything buffers*" :position :right)
-          ("*anything imenu*" :position :right)
-          ;;("*anything find-file*" :position :right)
+        '(("*anything imenu*" :position :right)
           )
         popwin:special-display-config))
   )
 
 ;; auto-complete-mode
-(when (require 'auto-complete-config nil t)
+(when (kui/package-require 'auto-complete-config nil 'auto-complete t)
   (ac-config-default)
 
   ;; ac-modes に登録されてるメジャーモード時に ac 発動
@@ -284,7 +284,7 @@ create *scratch* if it did not exists"
   )
 
 ;; tabbar-mode
-(when (require 'tabbar nil t)
+(when (kui/package-require 'tabbar nil nil t)
 
   ;; tabbar のタブのグループの仕方
   ;;   デフォルト: 一部を除き major-mode ごとにタブをグループ化
@@ -438,11 +438,14 @@ create *scratch* if it did not exists"
      ;;  (when (timerp flymake-display-err-timer)
      ;;  (cancel-timer flymake-display-err-timer)
      ;;  (setq flymake-display-err-timer nil)))
-     ))
+     )))
 
 ;; anything
-(when (and (require 'anything-config nil t)
-           (require 'anything-complete nil t))
+(when (and (kui/package-require 'anything nil nil t)
+           (kui/package-require 'anything-obsolete nil nil t)
+           (kui/package-require 'anything-config nil nil t)
+           (kui/package-require 'anything-match-plugin nil nil t)
+           (kui/package-require 'anything-complete nil nil t))
   (global-set-key "\C-xa" 'anything-apropos)
   (global-set-key "\C-x\C-f" 'anything-find-file)
   (global-set-key "\C-xb" 'anything-buffers+)
@@ -487,7 +490,7 @@ create *scratch* if it did not exists"
   )
 
 ;; ctag-update.el 自動で TAGS アップデートしてくれる
-(when (require 'ctags-update nil t)
+(when (kui/package-require 'ctags-update nil nil t)
   (set 'ctags-update-command
        (kui/find-if-executable '("ctags-exuberant"
                                  "exuberant-ctags"
@@ -499,7 +502,7 @@ create *scratch* if it did not exists"
 
 ;; markdown-mode
 ;; 読み込めたら *scratch* に使うから kui/autoload-if-exist じゃなくて require
-(when (require 'markdown-mode)
+(when (kui/package-require 'markdown-mode nil t)
 
   (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
   (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
