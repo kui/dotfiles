@@ -115,9 +115,9 @@
 
 ;; require のパッケージが無かった時に自動的に package-install を実行してくれる
 (defun kui/require-package (feature &optional filename packagename noerror)
-  "If PACKAGENAME was installed, execute (`require' FEATURE &optional FILENAME
- NOERROR).
-if PACKAGENAME was not installed, install PACKAGENAME and then execute `require'."
+  "If PACKAGENAME(or FEATURE) was installed, execute (`require' FEATURE
+ &optional FILENAME NOERROR).
+if not installed, install PACKAGENAME(or FEATURE) and then execute `require'."
   (unless kui/require-package-refreshed
     (package-refresh-contents)
     (setq kui/require-package-refreshed t))
@@ -252,8 +252,6 @@ create *scratch* if it did not exists"
   )
 
 ;; auto-complete-mode
-;; http://cx4a.org/software/auto-complete/index.ja.html
-;; (define-key ac-complete-mode-map "\M-/" 'ac-stop)
 (when (require 'auto-complete-config nil t)
   (ac-config-default)
 
@@ -290,8 +288,7 @@ create *scratch* if it did not exists"
 
   ;; tabbar のタブのグループの仕方
   ;;   デフォルト: 一部を除き major-mode ごとにタブをグループ化
-  ;;   下: 全部同じグループに
-  ;;       (http://www.emacswiki.org/emacs/TabBarMode)
+  ;; see http://www.emacswiki.org/emacs/TabBarMode
   (setq tabbar-buffer-groups-function (lambda () (list "Buffers")))
 
   ;; 表示するタブのフィルタリング
