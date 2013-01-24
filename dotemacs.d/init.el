@@ -114,8 +114,7 @@ if not installed, install PACKAGENAME(or FEATURE) and then execute `require'."
   (let* ((pname (if packagename packagename feature)))
     (unless (package-installed-p pname)
         (package-install pname)))
-  (require feature filename noerror)
-  )
+  (require feature filename noerror))
 
 ;; C-w をもう少し賢く
 (defun kui/backward-kill-word-or-kill-region ()
@@ -494,7 +493,7 @@ create *scratch* if it did not exists"
 
 ;; markdown-mode
 ;; 読み込めたら *scratch* に使うから kui/autoload-if-exist じゃなくて require
-(when (kui/package-require 'markdown-mode nil t)
+(when (kui/package-require 'markdown-mode nil nil t)
 
   (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
   (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
