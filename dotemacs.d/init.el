@@ -62,15 +62,6 @@
 ;; BS でマーク範囲を消す
 (delete-selection-mode 1)
 
-;; *scratch* 関連
-(when (require 'markdown-mode nil t)
-  (setq
-   ;; *scratch* の major-mode
-   initial-major-mode 'markdown-mode
-
-   ;; *scratch* の初期文字列
-   initial-scratch-message "Scratch\n========\n\n"))
-
 ;; Emacs のフレームの横幅最小値（文字数で指定）
 (defvar kui/min-colmun-number 80) ;; 80 文字
 
@@ -357,56 +348,57 @@ create *scratch* if it did not exists"
   )
 
 ;; flymake 使うとき
-(defvar flymake-display-err-delay 1
-  "delay to display flymake error message ")
-(defvar flymake-display-err-timer nil
-  "timer for flymake-display-err-menu-for-current-line")
-(defvar flymake-display-err-before-line nil)
-(defvar flymake-display-err-before-colmun nil)
-
 (eval-after-load "flymake"
-  '(when (require 'popup nil t)
+  '(let nil
+     (defvar flymake-display-err-delay 1
+       "delay to display flymake error message ")
+     (defvar flymake-display-err-timer nil
+       "timer for flymake-display-err-menu-for-current-line")
+     (defvar flymake-display-err-before-line nil)
+     (defvar flymake-display-err-before-colmun nil)
 
-     ;; flymake 現在行のエラーをpopup.elのツールチップで表示する
-     ;; https://gist.github.com/292827
-     (defun flymake-display-err-menu-for-current-line ()
-       (interactive)
-       (let* ((line-no (flymake-current-line-no))
-              (line-err-info-list (nth 0 (flymake-find-err-info flymake-err-info
-                                                                line-no))))
-         (when (and (flymake-display-err-check-moved line-no (current-column))
-                    line-err-info-list)
-           (setq flymake-display-err-before-line-no line-no)
-           (let* ((count (length line-err-info-list))
-                  (menu-item-text nil))
-             (while (> count 0)
-               (setq menu-item-text
-                     (flymake-ler-text (nth (1- count) line-err-info-list)))
-               (let* ((file (flymake-ler-file (nth (1- count) line-err-info-list)))
-                      (line (flymake-ler-line (nth (1- count) line-err-info-list))))
-                 (if file
-                     (setq menu-item-text
-                           (concat menu-item-text " - " file "(" (format "%d" line) ")"))))
-               (setq count (1- count))
-               (if (> count 0) (setq menu-item-text (concat menu-item-text "\n")))
-               )
-             (popup-tip menu-item-text)))))
+     (when (require 'popup nil t)
 
-     (defun flymake-display-err-check-moved (cur-line cur-col)
-       (let* ((is-not-moved (and flymake-display-err-before-line
-                                 flymake-display-err-before-colmun
-                                 (= cur-line flymake-display-err-before-line)
-                                 (= cur-col flymake-display-err-before-colmun))))
-         (setq flymake-display-err-before-line cur-line
-               flymake-display-err-before-colmun cur-col)
-         (not is-not-moved)))
+       ;; flymake 現在行のエラーをpopup.elのツールチップで表示する
+       ;; https://gist.github.com/292827
+       (defun flymake-display-err-menu-for-current-line ()
+         (interactive)
+         (let* ((line-no (flymake-current-line-no))
+                (line-err-info-list (nth 0 (flymake-find-err-info flymake-err-info
+                                                                  line-no))))
+           (when (and (flymake-display-err-check-moved line-no (current-column))
+                      line-err-info-list)
+             (setq flymake-display-err-before-line-no line-no)
+             (let* ((count (length line-err-info-list))
+                    (menu-item-text nil))
+               (while (> count 0)
+                 (setq menu-item-text
+                       (flymake-ler-text (nth (1- count) line-err-info-list)))
+                 (let* ((file (flymake-ler-file (nth (1- count) line-err-info-list)))
+                        (line (flymake-ler-line (nth (1- count) line-err-info-list))))
+                   (if file
+                       (setq menu-item-text
+                             (concat menu-item-text " - " file "(" (format "%d" line) ")"))))
+                 (setq count (1- count))
+                 (if (> count 0) (setq menu-item-text (concat menu-item-text "\n")))
+                 )
+               (popup-tip menu-item-text)))))
 
-     (global-set-key "\M-e"
-                     '(lambda ()
-                        (interactive)
-                        (let ()
-                          (message "next error")
-                          (flymake-goto-next-error)
+       (defun flymake-display-err-check-moved (cur-line cur-col)
+         (let* ((is-not-moved (and flymake-display-err-before-line
+                                   flymake-display-err-before-colmun
+                                   (= cur-line flymake-display-err-before-line)
+                                   (= cur-col flymake-display-err-before-colmun))))
+           (setq flymake-display-err-before-line cur-line
+                 flymake-display-err-before-colmun cur-col)
+           (not is-not-moved)))
+
+       (global-set-key "\M-e"
+                       '(lambda ()
+                          (interactive)
+                          (let ()
+                            (message "next error")
+                            (flymake-goto-next-error)
                           (flymake-display-err-menu-for-current-line))))
      (global-set-key "\M-E"
                      '(lambda ()
@@ -520,12 +512,21 @@ create *scratch* if it did not exists"
            face
            ;; タブ
            tabs
+           tab-mark
            ;; タブの前にあるスペース
            space-before-tab
            ;; タブの後にあるスペース
            space-after-tab
            )))
   (add-hook 'markdown-mode-hook 'kui/markdown-init-set-values)
+
+  ;; *scratch* 関連を更新
+  (setq
+   ;; *scratch* の major-mode
+   initial-major-mode 'markdown-mode
+
+   ;; *scratch* の初期文字列
+   initial-scratch-message "Scratch\n========\n\n")
   )
 
 ;; yaml-mode
