@@ -121,16 +121,17 @@ If NOERROR is non-nil, then return nil if PACKAGENAME(or FEATURE) is not
 available package."
   (unless package--initialized (package-initialize t))
   (unless package-archive-contents (package-refresh-contents))
-  (if (assq pname package-archive-contents)
-      (let ((pname (if packagename packagename feature)))
-        (unless (package-installed-p pname) (package-install pname))
-        (or (require feature filename t)
-            (if noerror nil
-              (error "Package `%s' does not provide the feature `%s'"
-                     (symbol-name pname) (symbol-name feature)))))
-    (if noerror nil
-      (error "Package `%s' is not available for installation"
-             (symbol-name feature)))))
+  (let ((pname (or packagename feature)))
+    (if (assq pname package-archive-contents)
+        (let nil
+          (unless (package-installed-p pname) (package-install pname))
+          (or (require feature filename t)
+              (if noerror nil
+                (error "Package `%s' does not provide the feature `%s'"
+                       (symbol-name pname) (symbol-name feature)))))
+      (if noerror nil
+        (error "Package `%s' is not available for installation"
+               (symbol-name feature))))))
 
 ;; C-w をもう少し賢く
 (defun kui/backward-kill-word-or-kill-region ()
