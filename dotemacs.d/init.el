@@ -685,6 +685,13 @@ create *scratch* if it did not exists"
     (unless window-system
       (set-face-attribute 'mode-line nil
                           :background "#444444"))
+    (when window-system
+      (set-face-attribute 'show-paren-match nil
+                          :inverse-video nil
+                          :bold t
+                          :foreground nil
+                          :background "#000000"
+                          :underline t))
     (set-face-attribute 'anything-header nil
                         :inverse-video t
                         :bold t
@@ -694,7 +701,7 @@ create *scratch* if it did not exists"
                         :foreground "#81a2be"
                         :background "#1d1f21")
     (set-face-attribute 'hl-line nil
-                        :background "#111133"
+                        :background "#112250"
                         :inherit nil))
 
   (when nil ;(locate-library "color-theme-twilight")
