@@ -694,7 +694,7 @@ create *scratch* if it did not exists"
                         :foreground "#81a2be"
                         :background "#1d1f21")
     (set-face-attribute 'hl-line nil
-                        :background "#282a2e"
+                        :background "#111133"
                         :inherit nil))
 
   (when nil ;(locate-library "color-theme-twilight")
