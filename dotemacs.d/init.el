@@ -108,17 +108,29 @@
   "Return a copy of VECTOR with the last N elements removed."
   (vconcat (butlast (append vector nil) n)))
 
-;; require のパッケージが無かった時に自動的に package-install を実行してくれる
+;; インストールされていないパッケージを require した時に、
+;; 自動でインストールしたあとに require してくれる
 (defun kui/package-require (feature &optional filename packagename noerror)
-  "If PACKAGENAME(or FEATURE) was installed, execute (`require' FEATURE
- &optional FILENAME NOERROR).
-if not installed, install PACKAGENAME(or FEATURE) and then execute `require'."
-  (unless package-archive-contents
-    (package-refresh-contents))
-  (let* ((pname (if packagename packagename feature)))
-    (unless (package-installed-p pname)
-        (package-install pname)))
-  (require feature filename noerror))
+  "If PACKAGENAME(or FEATURE) was installed, execute `require' as:
+
+	(require FEATURE &optional FILENAME NOERROR)
+
+If PACKAGENAME(or FEATURE) not installed, execute `package-install' with
+PACKAGENAME(or FEATURE) and then execute `require'.
+If NOERROR is non-nil, then return nil if PACKAGENAME(or FEATURE) is not
+available package."
+  (unless package--initialized (package-initialize t))
+  (unless package-archive-contents (package-refresh-contents))
+  (if (assq pname package-archive-contents)
+      (let ((pname (if packagename packagename feature)))
+        (unless (package-installed-p pname) (package-install pname))
+        (or (require feature filename t)
+            (if noerror nil
+              (error "Package `%s' does not provide the feature `%s'"
+                     (symbol-name pname) (symbol-name feature)))))
+    (if noerror nil
+      (error "Package `%s' is not available for installation"
+             (symbol-name feature)))))
 
 ;; C-w をもう少し賢く
 (defun kui/backward-kill-word-or-kill-region ()
