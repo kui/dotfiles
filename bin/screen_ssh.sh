@@ -23,10 +23,10 @@
 
 # 0以外: デバッグ出力する
 # 0    : 出力しない
-DEBUG=1
+DEBUG=0
 
 d() {
-    [ $DEBUG != 0 ] && (echo "$@" | tee -a $HOME/.ssh/screen_ssh.sh)
+    [ $DEBUG != 0 ] && (echo "$@" | tee -a $HOME/.ssh/screen_ssh.log)
 }
 a() {
     d "abort: $@" >&2
