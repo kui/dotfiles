@@ -104,17 +104,44 @@
 ;; -------------------------------------------------------------------------
 ;; 自作関数
 
-(defun kui/vbutlast (vector &optional n)
-  "Return a copy of VECTOR with the last N elements removed."
-  (vconcat (butlast (append vector nil) n)))
+;; pkg-alist から pkg-name のバージョンを取り出す
+(defun kui/package-get-vers (pkg-name pkg-alist)
+  "Return version of PKG-NAME in PKG-ALIST"
+  (let ((pkg-desc (cdr (assoc pkg-name pkg-alist))))
+    (if pkg-desc (package-desc-vers pkg-desc))))
 
-(defun kui/reopen-with-sudo ()
-  "Reopen current buffer-file with sudo using tramp."
+;; インストール済みの pkg-name のバージョン
+(defun kui/package-get-activated-vers (pkg-name)
+  "Return activated version of PKG-NAME"
+  (kui/package-get-vers pkg-name package-alist))
+
+;; アーカイブにある最新の pkg-name のバージョン
+(defun kui/package-get-latest-vers (pkg-name)
+  "Return latest version of PKG-NAME in archives"
+  (kui/package-get-vers pkg-name package-archive-contents))
+
+;; pkg-name のアップデートがある時は t を返す
+(defun kui/package-update-available-p (pkg-name)
+  "Return t if PKG-NAME's update is available."
+  (version-list-< (kui/package-get-activated-vers pkg-name)
+                  (kui/package-get-latest-vers pkg-name)))
+
+;; インストール済みでアップデート可能なパッケージをリストアップ
+(defun kui/package-update-available-package-list ()
+  "Return package list which have updates."
+  (remove-if (lambda (pname) (not (kui/package-update-available-p pname)))
+             package-activated-list))
+
+;; アップデート可能なインストール済みパッケージ全てをアップデート
+(defun kui/package-update-all-package ()
+  "Update all package which is update-available"
   (interactive)
-  (let ((file-name (buffer-file-name)))
-    (if file-name
-        (find-alternate-file (concat "/sudo::" file-name))
-      (error "Cannot get a file name"))))
+  (unless package--initialized (package-initialize t))
+  (unless package-archive-contents (package-refresh-contents))
+  (let ((pkg-list (kui/package-update-available-package-list)))
+    (if pkg-list
+        (dolist (pkg-name pkg-list) (package-install pkg-name))
+      (message "No update available package"))))
 
 ;; インストールされていないパッケージを require した時に、
 ;; 自動でインストールしたあとに require してくれる
@@ -140,6 +167,22 @@ available package."
       (if noerror nil
         (error "Package `%s' is not available for installation"
                (symbol-name feature))))))
+
+;; このファイル(init.el)を開く
+(defun kui/find-init-file ()
+  "Edit init file.
+Switch to a buffer visiting init file."
+  (interactive)
+  (find-file-existing user-init-file))
+
+;; sudo で開き直す
+(defun kui/reopen-with-sudo ()
+  "Reopen current buffer-file with sudo using tramp."
+  (interactive)
+  (let ((file-name (buffer-file-name)))
+    (if file-name
+        (find-alternate-file (concat "/sudo::" file-name))
+      (error "Cannot get a file name"))))
 
 ;; C-w をもう少し賢く
 (defun kui/backward-kill-word-or-kill-region ()
