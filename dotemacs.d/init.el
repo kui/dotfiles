@@ -260,21 +260,12 @@ create *scratch* if it did not exists"
 
 ;; guide-key
 (when (kui/package-require 'guide-key nil nil t)
-  (defvar guide-key/popup-if-super-key-sequence nil)
-  ;; "C-x" に設定しても "C-x C-h" でも起動するように、起動条件を再定期
-  (defun guide-key/popup-guide-buffer-p (key-seq)
-    "Return t if guide buffer should be popped up."
-    (and (> (length key-seq) 0)
-         (or (member key-seq (mapcar 'guide-key/convert-key-sequence-to-vector
-                                     guide-key/guide-key-sequence))
-             (and guide-key/popup-if-super-key-sequence
-                  (guide-key/popup-guide-buffer-p (kui/vbutlast key-seq))))))
-
   (setq
    guide-key/guide-key-sequence '("M-t" "C-c" "C-x RET" "C-x C-h" "C-x r")
    guide-key/popup-window-position 'bottom
    guide-key/polling-time 0.5
    guide-key/popup-if-super-key-sequence t
+   guide-key/recursive-key-sequence-flag t
    )
 
   (guide-key-mode 1))
