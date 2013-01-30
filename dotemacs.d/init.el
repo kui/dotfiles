@@ -108,6 +108,14 @@
   "Return a copy of VECTOR with the last N elements removed."
   (vconcat (butlast (append vector nil) n)))
 
+(defun kui/reopen-with-sudo ()
+  "Reopen current buffer-file with sudo using tramp."
+  (interactive)
+  (let ((file-name (buffer-file-name)))
+    (if file-name
+        (find-alternate-file (concat "/sudo::" file-name))
+      (error "Cannot get a file name"))))
+
 ;; インストールされていないパッケージを require した時に、
 ;; 自動でインストールしたあとに require してくれる
 (defun kui/package-require (feature &optional filename packagename noerror)
