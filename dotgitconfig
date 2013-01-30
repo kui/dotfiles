@@ -6,3 +6,6 @@
 [core]
 	pager =
 	editor = vi
+[github]
+	user = kui
+	password = !ssh-askpass 'input Github password' | tr -d '\n'

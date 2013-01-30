@@ -343,7 +343,7 @@ create *scratch* if it did not exists"
   (when (not window-system)
 
     ;; タブの間に挟む文字
-    (setq tabbar-separator-value "|")
+    (setq tabbar-separator-value "/")
 
     ;; faces
     (set-face-attribute 'tabbar-default nil
@@ -668,21 +668,17 @@ create *scratch* if it did not exists"
 
 ;; -------------------------------------------------------------------------
 ;; 色とか
-(when (require 'color-theme nil t)
+(when (kui/package-require 'color-theme nil nil t)
   (color-theme-initialize)
 
-  (when (require 'color-theme-sanityinc-tomorrow)
+  (when (kui/package-require 'color-theme-sanityinc-tomorrow)
     (color-theme-sanityinc-tomorrow-night)
-    (unless window-system
-      (set-face-attribute 'mode-line nil
-                          :background "#444444"))
-    (when window-system
-      (set-face-attribute 'show-paren-match nil
-                          :inverse-video nil
-                          :bold t
-                          :foreground nil
-                          :background "#000000"
-                          :underline t))
+    (set-face-attribute 'show-paren-match nil
+                        :inverse-video nil
+                        :bold t
+                        :foreground nil
+                        :background "#000000"
+                        :underline t)
     (set-face-attribute 'anything-header nil
                         :inverse-video t
                         :bold t
@@ -692,8 +688,14 @@ create *scratch* if it did not exists"
                         :foreground "#81a2be"
                         :background "#1d1f21")
     (set-face-attribute 'hl-line nil
-                        :background "#112250"
-                        :inherit nil))
+                        :background "#113333"
+                        :inherit nil)
+    (unless window-system
+      (set-face-attribute 'mode-line nil
+                          :background "#444444")
+      (set-face-attribute 'hl-line nil
+                          :background "#262626"
+                          :inherit nil)))
 
   (when nil ;(locate-library "color-theme-twilight")
     (load-library "color-theme-twilight")

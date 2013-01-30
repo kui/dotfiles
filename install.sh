@@ -104,11 +104,6 @@ setup_emacs(){
         echo "WARN: cannot install rsense" 2>&1
         echo "WARN: rsense require ruby and java" 2>&1
     fi
-
-    if emacs --version > /dev/null
-    then
-        print_and_do "emacs --batch --file dotemacs.d/install.el"
-    fi
 }
 
 create_empty_zsh(){
