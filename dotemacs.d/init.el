@@ -276,8 +276,7 @@ uncomment the current line"
 ;; 実行可能なコマンドを返す
 (defun kui/find-if-executable (seq)
   "Find and Return first executable command in SEQ."
-  (find-if (lambda (cmd) (executable-find cmd))
-           seq))
+  (find-if (lambda (cmd) (executable-find cmd)) seq))
 
 ;; *scratch* バッファに切り替え（消してしまっていたら作成）
 (defun kui/switch-to-scratch-buffer ()
@@ -443,8 +442,8 @@ create *scratch* if it did not exists"
        (defun flymake-display-err-menu-for-current-line ()
          (interactive)
          (let* ((line-no (flymake-current-line-no))
-                (line-err-info-list (nth 0 (flymake-find-err-info flymake-err-info
-                                                                  line-no))))
+                (line-err-info-list
+                 (nth 0 (flymake-find-err-info flymake-err-info line-no))))
            (when (and (flymake-display-err-check-moved line-no (current-column))
                       line-err-info-list)
              (setq flymake-display-err-before-line-no line-no)
@@ -453,11 +452,14 @@ create *scratch* if it did not exists"
                (while (> count 0)
                  (setq menu-item-text
                        (flymake-ler-text (nth (1- count) line-err-info-list)))
-                 (let* ((file (flymake-ler-file (nth (1- count) line-err-info-list)))
-                        (line (flymake-ler-line (nth (1- count) line-err-info-list))))
+                 (let* ((file (flymake-ler-file (nth (1- count)
+                                                     line-err-info-list)))
+                        (line (flymake-ler-line (nth (1- count)
+                                                     line-err-info-list))))
                    (if file
                        (setq menu-item-text
-                             (concat menu-item-text " - " file "(" (format "%d" line) ")"))))
+                             (concat menu-item-text " - " file "("
+                                     (format "%d" line) ")"))))
                  (setq count (1- count))
                  (if (> count 0) (setq menu-item-text (concat menu-item-text "\n")))
                  )
@@ -475,40 +477,21 @@ create *scratch* if it did not exists"
        (global-set-key "\M-e"
                        '(lambda ()
                           (interactive)
-                          (let ()
-                            (message "next error")
-                            (flymake-goto-next-error)
-                          (flymake-display-err-menu-for-current-line))))
-     (global-set-key "\M-E"
-                     '(lambda ()
-                        (interactive)
-                        (let ()
+                          (message "next error")
+                          (flymake-goto-next-error)
+                          (flymake-display-err-menu-for-current-line)))
+       (global-set-key "\M-E"
+                       '(lambda ()
+                          (interactive)
                           (message "prev error")
                           (flymake-goto-prev-error)
-                          (flymake-display-err-menu-for-current-line))))
+                          (flymake-display-err-menu-for-current-line)))
 
-     (unless flymake-display-err-timer
-       (setq flymake-display-err-timer
-             (run-with-idle-timer flymake-display-err-delay
-                                  t
-                                  'flymake-display-err-menu-for-current-line)))
-
-     ;; (defvar flymake-display-err-delay 0.5
-     ;;  "delay to display flymake error message ")
-     ;; (defvar flymake-display-err-timer nil
-     ;;  "timer for flymake-display-err-menu-for-current-line")
-
-     ;; (defun flymake-display-err-set-timer ()
-     ;;  (unless flymake-display-err-timer
-     ;;  (setq flymake-display-err-timer
-     ;;        (run-with-idle-timer flymake-display-err-delay
-     ;;                          nil
-     ;;                          'flymake-display-err-menu-for-current-line))))
-
-     ;; (defun flymake-display-err-cancel-timer ()
-     ;;  (when (timerp flymake-display-err-timer)
-     ;;  (cancel-timer flymake-display-err-timer)
-     ;;  (setq flymake-display-err-timer nil)))
+       (unless flymake-display-err-timer
+         (setq flymake-display-err-timer
+               (run-with-idle-timer flymake-display-err-delay
+                                    t
+                                    'flymake-display-err-menu-for-current-line)))
      )))
 
 ;; anything
@@ -610,7 +593,7 @@ create *scratch* if it did not exists"
 
 ;; yaml-mode
 (when (kui/autoload-if-exist 'yaml-mode "yaml-mode"
-                         "Major mode for editing yaml files" t)
+                             "Major mode for editing yaml files" t)
 
   (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
   (eval-after-load "yaml-mode"
