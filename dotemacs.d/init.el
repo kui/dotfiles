@@ -278,13 +278,28 @@ uncomment the current line"
   "Find and Return first executable command in SEQ."
   (find-if (lambda (cmd) (executable-find cmd)) seq))
 
+(defun kui/find-buffer-if (func)
+  "Return buffer if FUNC return non-nil.
+Return nil if FUNC did not return non-nil with any buffer."
+  (find-if func (buffer-list)))
+
+;; bname って名前のバッファを返す。そんなバッファ無い時は nil。
+(defun kui/find-buffer-by-name (bname)
+  "Return buffer named BNAME.
+Return nil if not found BNAME buffer."
+  (kui/find-buffer-if
+   (lambda (b) (string-match-p bname (buffer-name b)))))
+;; (kui/find-buffer-by-name "*scratch*")
+
 ;; *scratch* バッファに切り替え（消してしまっていたら作成）
 (defun kui/switch-to-scratch-buffer ()
   "switch to *scratch*.
 create *scratch* if it did not exists"
   (interactive)
-  (switch-to-buffer "*scratch*")
-  (insert initial-scratch-message))
+  (if (kui/find-buffer-by-name "*scratch*")
+      (switch-to-buffer "*scratch*")
+    (switch-to-buffer "*scratch*")
+    (insert initial-scratch-message)))
 
 ;; -------------------------------------------------------------------------
 ;; 便利な感じのマイナーモード
@@ -360,16 +375,44 @@ create *scratch* if it did not exists"
   ;; see http://www.emacswiki.org/emacs/TabBarMode
   (setq tabbar-buffer-groups-function (lambda () (list "Buffers")))
 
-  ;; 表示するタブのフィルタリング
-  ;;   * で始まるバッファはタブに表示しない
+  (defcustom kui/tabbar-buffer-filter-list nil
+    "A function list to filter tabbar buffer list")
+
+  ;; kui/tabbar-buffer-filter-list を順に適応する
   (setq tabbar-buffer-list-function
-        (lambda ()
-          (remove-if
-           (lambda (b)
-             (and (string-match "^ ?\\*" (buffer-name b))
-                  (not (string-equal (buffer-name (current-buffer))
-                                     (buffer-name b)))))
-           (buffer-list))))
+        '(lambda ()
+           (reduce (lambda (result func) (funcall func result))
+                   (cons (buffer-list)
+                         kui/tabbar-buffer-filter-list))))
+  ;; (funcall tabbar-buffer-list-function)
+
+  ;; 処理を順番に書く
+  (setq
+   kui/tabbar-buffer-filter-list
+   '(;; * で始まるバッファは消す
+     (lambda (blist)
+       (remove-if (lambda (b)
+                    (string-match "^ ?\\*" (buffer-name b)))
+                  blist))
+
+     ;; 指定されたバッファが存在するなら、追加する
+     (lambda (blist)
+       (dolist (bname '("*scratch*" "*Package*" "*Help*")
+                      blist)
+         (let ((b (kui/find-buffer-by-name bname)))
+           (if b (push b blist)))))
+
+     ;; *scratch* が無かったら作る
+     (lambda (blist)
+       (if (not (kui/find-buffer-by-name "*scratch*"))
+           (save-excursion
+             (kui/switch-to-scratch-buffer)))
+       blist)
+
+     ;; 現在のバッファを追加
+     (lambda (blist)
+       (cons (current-buffer) blist))
+     ))
 
   ;; 左に表示されるボタンを消す
   (dolist (button '(tabbar-buffer-home-button
