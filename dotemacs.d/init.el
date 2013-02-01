@@ -304,6 +304,19 @@ create *scratch* if it did not exists"
 ;; -------------------------------------------------------------------------
 ;; 便利な感じのマイナーモード
 
+;; linum & hlinum
+;; (when (kui/autoload-if-exist 'linum-mode "linum")
+;;   ;; linum-mode が発動するフック一覧
+;;   (dolist (hook '(lisp-interaction-mode-hook ruby-mode-hook))
+;;     (add-hook hook (lambda () (linum-mode 1))))
+;;   (setq linum-delay t)
+;;   (eval-after-load "linum"
+;;     (lambda ()
+;;       ;; 遅延評価することで動作を軽快に
+;;       (defadvice linum-schedule (around my-linum-schedule () activate)
+;;         (run-with-idle-timer 0.2 nil #'linum-update-current))))
+;;   )
+
 ;; popup
 (when (kui/package-require 'popup nil nil t))
 
@@ -767,6 +780,9 @@ create *scratch* if it did not exists"
     (set-face-attribute 'hl-line nil
                         :background "#113333"
                         :inherit nil)
+    (eval-after-load "linum"
+      '(set-face-attribute 'linum nil
+                           :background "#000000"))
     (unless window-system
       (set-face-attribute 'mode-line nil
                           :background "#444444")
