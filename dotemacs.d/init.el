@@ -23,9 +23,12 @@
 
 ;; 自動保存機能
 (setq auto-save-default t
-      auto-save-list-file-name "~/.emacs-auto-save-list" ;; 自動保存に関する情報
-      auto-save-intrval 50  ;; 自動保存する打鍵回数
-      auto-save-timeout 10)  ;; 自動保存する時間
+      ;; 自動保存に関する情報
+      auto-save-list-file-name (concat user-emacs-directory "/auto-save-list")
+      ;; 自動保存する打鍵回数
+      auto-save-intrval 50
+      ;; 自動保存する時間
+      auto-save-timeout 10)
 
 ;; フォントロックモード (強調表示等) を有効にする
 ;; (global-font-lock-mode t)
@@ -144,6 +147,8 @@
 ;; インストール済みでアップデート可能なパッケージをリストアップ
 (defun kui/package-update-available-package-list ()
   "Return package list which have updates."
+  (unless package--initialized (package-initialize t))
+  (unless package-archive-contents (package-refresh-contents))
   (remove-if (lambda (pname) (not (kui/package-update-available-p pname)))
              package-activated-list))
 
@@ -155,7 +160,9 @@
   (unless package-archive-contents (package-refresh-contents))
   (let ((pkg-list (kui/package-update-available-package-list)))
     (if pkg-list
-        (dolist (pkg-name pkg-list) (package-install pkg-name))
+        (let ()
+          (dolist (pkg-name pkg-list) (package-install pkg-name))
+          (package-initialize))
       (message "No update available package"))))
 
 ;; インストールされていないパッケージを require した時に、
@@ -170,11 +177,12 @@ PACKAGENAME(or FEATURE) and then execute `require'.
 If NOERROR is non-nil, then return nil if PACKAGENAME(or FEATURE) is not
 available package."
   (unless package--initialized (package-initialize t))
-  (unless package-archive-contents (package-refresh-contents))
   (let ((pname (or packagename feature)))
     (if (assq pname package-archive-contents)
         (let nil
-          (unless (package-installed-p pname) (package-install pname))
+          (unless (package-installed-p pname)
+            (unless package-archive-contents (package-refresh-contents))
+            (package-install pname))
           (or (require feature filename t)
               (if noerror nil
                 (error "Package `%s' does not provide the feature `%s'"
@@ -586,6 +594,18 @@ create *scratch* if it did not exists"
 ;; -------------------------------------------------------------------------
 ;; メジャーモードの設定や読み込み
 
+;; lisp-interaction-mode の設定
+(let nil
+  (add-hook 'lisp-interaction-mode
+            (lambda nil
+              (define-key lisp-interaction-mode-map "\C-cff" 'find-function)
+              (define-key lisp-interaction-mode-map "\C-cfv" 'find-variable)
+              (define-key lisp-interaction-mode-map "\C-cfl" 'find-library)
+              (define-key lisp-interaction-mode-map "\C-cdf" 'describe-function)
+              (define-key lisp-interaction-mode-map "\C-cdf" 'describe-variable)
+              ))
+  )
+
 ;; markdown-mode
 ;; 読み込めたら *scratch* に使うから kui/autoload-if-exist じゃなくて require
 (when (kui/package-require 'markdown-mode nil nil t)
@@ -648,17 +668,18 @@ create *scratch* if it did not exists"
          (add-hook 'ruby-mode-hook 'flymake-ruby-load))
 
        (let ((rhome (expand-file-name "~/.settings/src/rsense-0.3")))
-         (when (file-directory-p rhome)
-           (setq rsense-home rhome)
-           (add-to-list 'load-path (concat rsense-home "/etc"))
-           (message "try to load rsense")
-           (when (require 'rsense nil t)
-             (message "done (rsense)")
-             (add-hook 'ruby-mode-hook
-                       (lambda ()
-                         (add-to-list 'ac-sources 'ac-source-rsense-method)
-                         (add-to-list 'ac-sources 'ac-source-rsense-constant))))))
-       (message "load ruby-mode")
+         (if (file-directory-p rhome)
+             (let nil
+               (message "try to load rsense")
+               (setq rsense-home rhome)
+               (add-to-list 'load-path (concat rsense-home "/etc"))
+               (when (require 'rsense nil t)
+                 (message "done (rsense)")
+                 (add-hook 'ruby-mode-hook
+                           (lambda ()
+                             (add-to-list 'ac-sources 'ac-source-rsense-method)
+                             (add-to-list 'ac-sources 'ac-source-rsense-constant)))))
+           (message "cant not load rsense")))
        ))
   )
 
