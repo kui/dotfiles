@@ -299,19 +299,46 @@ uncomment the current line"
 ;; 実行可能なコマンドを返す
 (defun kui/find-if-executable (seq)
   "Find and Return first executable command in SEQ."
-  (find-if (lambda (cmd) (executable-find cmd))
-           seq))
+  (find-if (lambda (cmd) (executable-find cmd)) seq))
+
+(defun kui/find-buffer-if (func)
+  "Return buffer if FUNC return non-nil.
+Return nil if FUNC did not return non-nil with any buffer."
+  (find-if func (buffer-list)))
+
+;; bname って名前のバッファを返す。そんなバッファ無い時は nil。
+(defun kui/find-buffer-by-name (bname)
+  "Return buffer named BNAME.
+Return nil if not found BNAME buffer."
+  (kui/find-buffer-if
+   (lambda (b) (string-match-p bname (buffer-name b)))))
+;; (kui/find-buffer-by-name "*scratch*")
 
 ;; *scratch* バッファに切り替え（消してしまっていたら作成）
 (defun kui/switch-to-scratch-buffer ()
   "switch to *scratch*.
 create *scratch* if it did not exists"
   (interactive)
-  (switch-to-buffer "*scratch*")
-  (insert initial-scratch-message))
+  (if (kui/find-buffer-by-name "*scratch*")
+      (switch-to-buffer "*scratch*")
+    (switch-to-buffer "*scratch*")
+    (insert initial-scratch-message)))
 
 ;; -------------------------------------------------------------------------
 ;; 便利な感じのマイナーモード
+
+;; linum & hlinum
+;; (when (kui/autoload-if-exist 'linum-mode "linum")
+;;   ;; linum-mode が発動するフック一覧
+;;   (dolist (hook '(lisp-interaction-mode-hook ruby-mode-hook))
+;;     (add-hook hook (lambda () (linum-mode 1))))
+;;   (setq linum-delay t)
+;;   (eval-after-load "linum"
+;;     (lambda ()
+;;       ;; 遅延評価することで動作を軽快に
+;;       (defadvice linum-schedule (around my-linum-schedule () activate)
+;;         (run-with-idle-timer 0.2 nil #'linum-update-current))))
+;;   )
 
 ;; popup
 (when (kui/package-require 'popup nil nil t))
@@ -384,16 +411,44 @@ create *scratch* if it did not exists"
   ;; see http://www.emacswiki.org/emacs/TabBarMode
   (setq tabbar-buffer-groups-function (lambda () (list "Buffers")))
 
-  ;; 表示するタブのフィルタリング
-  ;;   * で始まるバッファはタブに表示しない
+  (defcustom kui/tabbar-buffer-filter-list nil
+    "A function list to filter tabbar buffer list")
+
+  ;; kui/tabbar-buffer-filter-list を順に適応する
   (setq tabbar-buffer-list-function
-        (lambda ()
-          (remove-if
-           (lambda (b)
-             (and (string-match "^ ?\\*" (buffer-name b))
-                  (not (string-equal (buffer-name (current-buffer))
-                                     (buffer-name b)))))
-           (buffer-list))))
+        '(lambda ()
+           (reduce (lambda (result func) (funcall func result))
+                   (cons (buffer-list)
+                         kui/tabbar-buffer-filter-list))))
+  ;; (funcall tabbar-buffer-list-function)
+
+  ;; 処理を順番に書く
+  (setq
+   kui/tabbar-buffer-filter-list
+   '(;; * で始まるバッファは消す
+     (lambda (blist)
+       (remove-if (lambda (b)
+                    (string-match "^ ?\\*" (buffer-name b)))
+                  blist))
+
+     ;; 指定されたバッファが存在するなら、追加する
+     (lambda (blist)
+       (dolist (bname '("*scratch*" "*Package*" "*Help*")
+                      blist)
+         (let ((b (kui/find-buffer-by-name bname)))
+           (if b (push b blist)))))
+
+     ;; *scratch* が無かったら作る
+     (lambda (blist)
+       (if (not (kui/find-buffer-by-name "*scratch*"))
+           (save-excursion
+             (kui/switch-to-scratch-buffer)))
+       blist)
+
+     ;; 現在のバッファを追加
+     (lambda (blist)
+       (cons (current-buffer) blist))
+     ))
 
   ;; 左に表示されるボタンを消す
   (dolist (button '(tabbar-buffer-home-button
@@ -466,8 +521,8 @@ create *scratch* if it did not exists"
        (defun flymake-display-err-menu-for-current-line ()
          (interactive)
          (let* ((line-no (flymake-current-line-no))
-                (line-err-info-list (nth 0 (flymake-find-err-info flymake-err-info
-                                                                  line-no))))
+                (line-err-info-list
+                 (nth 0 (flymake-find-err-info flymake-err-info line-no))))
            (when (and (flymake-display-err-check-moved line-no (current-column))
                       line-err-info-list)
              (setq flymake-display-err-before-line-no line-no)
@@ -476,11 +531,14 @@ create *scratch* if it did not exists"
                (while (> count 0)
                  (setq menu-item-text
                        (flymake-ler-text (nth (1- count) line-err-info-list)))
-                 (let* ((file (flymake-ler-file (nth (1- count) line-err-info-list)))
-                        (line (flymake-ler-line (nth (1- count) line-err-info-list))))
+                 (let* ((file (flymake-ler-file (nth (1- count)
+                                                     line-err-info-list)))
+                        (line (flymake-ler-line (nth (1- count)
+                                                     line-err-info-list))))
                    (if file
                        (setq menu-item-text
-                             (concat menu-item-text " - " file "(" (format "%d" line) ")"))))
+                             (concat menu-item-text " - " file "("
+                                     (format "%d" line) ")"))))
                  (setq count (1- count))
                  (if (> count 0) (setq menu-item-text (concat menu-item-text "\n")))
                  )
@@ -498,40 +556,21 @@ create *scratch* if it did not exists"
        (global-set-key "\M-e"
                        '(lambda ()
                           (interactive)
-                          (let ()
-                            (message "next error")
-                            (flymake-goto-next-error)
-                          (flymake-display-err-menu-for-current-line))))
-     (global-set-key "\M-E"
-                     '(lambda ()
-                        (interactive)
-                        (let ()
+                          (message "next error")
+                          (flymake-goto-next-error)
+                          (flymake-display-err-menu-for-current-line)))
+       (global-set-key "\M-E"
+                       '(lambda ()
+                          (interactive)
                           (message "prev error")
                           (flymake-goto-prev-error)
-                          (flymake-display-err-menu-for-current-line))))
+                          (flymake-display-err-menu-for-current-line)))
 
-     (unless flymake-display-err-timer
-       (setq flymake-display-err-timer
-             (run-with-idle-timer flymake-display-err-delay
-                                  t
-                                  'flymake-display-err-menu-for-current-line)))
-
-     ;; (defvar flymake-display-err-delay 0.5
-     ;;  "delay to display flymake error message ")
-     ;; (defvar flymake-display-err-timer nil
-     ;;  "timer for flymake-display-err-menu-for-current-line")
-
-     ;; (defun flymake-display-err-set-timer ()
-     ;;  (unless flymake-display-err-timer
-     ;;  (setq flymake-display-err-timer
-     ;;        (run-with-idle-timer flymake-display-err-delay
-     ;;                          nil
-     ;;                          'flymake-display-err-menu-for-current-line))))
-
-     ;; (defun flymake-display-err-cancel-timer ()
-     ;;  (when (timerp flymake-display-err-timer)
-     ;;  (cancel-timer flymake-display-err-timer)
-     ;;  (setq flymake-display-err-timer nil)))
+       (unless flymake-display-err-timer
+         (setq flymake-display-err-timer
+               (run-with-idle-timer flymake-display-err-delay
+                                    t
+                                    'flymake-display-err-menu-for-current-line)))
      )))
 
 ;; anything
@@ -645,7 +684,7 @@ create *scratch* if it did not exists"
 
 ;; yaml-mode
 (when (kui/autoload-if-exist 'yaml-mode "yaml-mode"
-                         "Major mode for editing yaml files" t)
+                             "Major mode for editing yaml files" t)
 
   (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
   (eval-after-load "yaml-mode"
@@ -777,6 +816,9 @@ create *scratch* if it did not exists"
     (set-face-attribute 'hl-line nil
                         :background "#113333"
                         :inherit nil)
+    (eval-after-load "linum"
+      '(set-face-attribute 'linum nil
+                           :background "#000000"))
     (unless window-system
       (set-face-attribute 'mode-line nil
                           :background "#444444")
