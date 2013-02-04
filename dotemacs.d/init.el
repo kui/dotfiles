@@ -77,6 +77,21 @@
 ;; 保存前に末尾空白の削除
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
+;; サーバーモードの設定
+(when (and (require 'server nil t)
+           (getenv "EMACS_SERVER_NAME"))
+
+  (defadvice server-start (after server-set-confirm-kill-emacs activate compile)
+    "Remove server-state file when server is shutdowned."
+    (setq confirm-kill-emacs (if (server-running-p) 'yes-or-no-p)))
+
+  (setq server-name (getenv "EMACS_SERVER_NAME"))
+
+  (if (server-running-p)
+      (message "already running with server-mode")
+    (server-start))
+  )
+
 ;; -------------------------------------------------------------------------
 ;; グローバルキーバインド変更
 

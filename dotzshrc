@@ -159,31 +159,43 @@ function g(){
 }
 
 ## emacs server の設定
-EMACS_SERVER_NAME="$USER"
-[ $STY ] && EMACS_SERVER_NAME="$EMACS_SERVER_NAME-$STY"
-export EMACS_SERVER_NAME
+if emacs --version > /dev/null 2>&1 &&\
+   emacsclient --version > /dev/null 2>&1
+then
 
-alias emacsclient="emacsclient -n -s $EMACS_SERVER_NAME"
+    EMACS_SERVER_NAME="$USER-`basename $TTY`"
+    [ $STY ] && EMACS_SERVER_NAME="$STY"
+    export EMACS_SERVER_NAME
 
-function e(){
-    emacsclient "$@" || emacsserver "$@"
-}
+    function e(){
+        if emacsclient -n -s "$EMACS_SERVER_NAME" -e "server-name"
+        then
+            emacsclient -n -s "$EMACS_SERVER_NAME" "$@"
+        else
+            if screen --version > /dev/null 2>&1
+            then
+                screen emacs
+            else
+                emacs &
+            fi
+        fi
+    }
+    function e_wait(){
+        if emacsclient -s "$EMACS_SERVER_NAME" -e "server-name"
+        then
+            emacsclient -s "$EMACS_SERVER_NAME" "$@"
+        else
+            emacs
+        fi
+    }
+    export EDITOR="e_wait"
 
-function view(){
-    [ -f "$1" ] || (echo "ファイルが見つかりませんでした: $file"; exit 1)
-    emacsclient -e "(find-file-read-only \"$1\")"
-}
-alias r=v
-alias v=view
-
-function emacsserver(){
-    if ! emacsclient -s "$EMACS_SERVER_NAME" -e "server-name" > /dev/null 2>&1
-    then
-        screen emacs --eval "(let () (setq server-name \"$EMACS_SERVER_NAME\") (server-start) (setq confirm-kill-emacs 'yes-or-no-p))" "$@"
-    else
-        echo "already started (server name: $EMACS_SERVER_NAME)" >&2
-    fi
-}
+    function view(){
+        [ -f "$1" ] || (echo "ファイルが見つかりませんでした: $file"; exit 1)
+        emacsclient -n -s "$EMACS_SERVER_NAME" -e "(find-file-read-only \"$1\")"
+    }
+    alias r=view
+fi
 
 # 横長画面向きレイアウト
 function widescreen(){
