@@ -15,3 +15,5 @@ TAGS
 /dotemacs.d/anything-c-adaptive-history
 /dotrsense
 /src
+/dotemacs.d/auto-save-list
+/dotemacs.d/.mc-lists.el

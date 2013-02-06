@@ -1,7 +1,5 @@
 ;; -*- mode: lisp-interaction; syntax: elisp; coding: utf-8-unix -*-
 
-(require 'cl)
-
 (add-to-list 'load-path "~/.emacs.d")
 
 ;; パッケージ管理
@@ -82,13 +80,14 @@
 
 ;; サーバーモードの設定
 (when (and (require 'server nil t)
-           (getenv "EMACS_SERVER_NAME"))
+           (setq server-name (or (getenv "EMACS_SERVER_NAME_WS")
+                                 (getenv "EMACS_SERVER_NAME_STY")
+                                 (getenv "EMACS_SERVER_NAME"))))
 
+  ;; server-mode になった時に、終了しにくくする。
   (defadvice server-start (after server-set-confirm-kill-emacs activate compile)
-    "Remove server-state file when server is shutdowned."
+    "Switch `confirm-kill-emacs' when `server-start' is called"
     (setq confirm-kill-emacs (if (server-running-p) 'yes-or-no-p)))
-
-  (setq server-name (getenv "EMACS_SERVER_NAME"))
 
   (if (server-running-p)
       (message "already running with server-mode")
@@ -101,6 +100,7 @@
 ;; 不要なキーバインド削除
 (global-unset-key "\C-\\") ;; 入力モード切り替え
 (global-unset-key "\C-t")  ;; 文字入れ替え
+(global-unset-key "\M-m") ;; インデント先頭にジャンプ
 
 ;; C-h でカーソルの左にある文字を消す
 (global-set-key "\C-h" 'delete-backward-char)
@@ -359,10 +359,10 @@ create *scratch* if it did not exists"
         popwin:special-display-config))
   )
 
-;; guide-key
+;; gude-key
 (when (kui/package-require 'guide-key nil nil t)
   (setq
-   guide-key/guide-key-sequence '("M-t" "C-c" "C-x RET" "C-x C-h" "C-x r")
+   guide-key/guide-key-sequence '("M-t" "C-c" "C-x RET" "C-x C-h" "C-x r" "M-m")
    guide-key/popup-window-position 'bottom
    guide-key/polling-time 0.5
    guide-key/popup-if-super-key-sequence t
@@ -611,7 +611,7 @@ create *scratch* if it did not exists"
   (global-whitespace-mode 1))
 
 ;; gnu global (gtags)
-(when (require 'gtags nil t)
+(when (locate-library "gtags")
   (global-set-key "\M-tg" nil)
   (global-set-key "\M-tgt" 'gtags-find-tag)
   (global-set-key "\M-tgr" 'gtags-find-rtag)
@@ -630,20 +630,22 @@ create *scratch* if it did not exists"
                                  "ctags")))
   )
 
+(when (kui/package-require 'multiple-cursors)
+  (multiple-cursors-mode)
+  (global-set-key "\M-mn" 'mc/mark-next-like-this)
+  (global-set-key "\M-mp" 'mc/mark-previous-like-this)
+  (global-set-key "\M-ma" 'mc/mark-all-like-this)
+  (global-set-key "\M-mi" 'mc/mark-more-like-this-extended))
+
 ;; -------------------------------------------------------------------------
 ;; メジャーモードの設定や読み込み
 
 ;; lisp-interaction-mode の設定
-(let nil
-  (add-hook 'lisp-interaction-mode
-            (lambda nil
-              (define-key lisp-interaction-mode-map "\C-cff" 'find-function)
-              (define-key lisp-interaction-mode-map "\C-cfv" 'find-variable)
-              (define-key lisp-interaction-mode-map "\C-cfl" 'find-library)
-              (define-key lisp-interaction-mode-map "\C-cdf" 'describe-function)
-              (define-key lisp-interaction-mode-map "\C-cdf" 'describe-variable)
-              ))
-  )
+(define-key lisp-interaction-mode-map "\C-cff" 'find-function)
+(define-key lisp-interaction-mode-map "\C-cfv" 'find-variable)
+(define-key lisp-interaction-mode-map "\C-cfl" 'find-library)
+(define-key lisp-interaction-mode-map "\C-cdf" 'describe-function)
+(define-key lisp-interaction-mode-map "\C-cdv" 'describe-variable)
 
 ;; markdown-mode
 ;; 読み込めたら *scratch* に使うから kui/autoload-if-exist じゃなくて require

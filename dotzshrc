@@ -159,34 +159,47 @@ function g(){
 }
 
 ## emacs server の設定
-if emacs --version > /dev/null 2>&1 &&\
-   emacsclient --version > /dev/null 2>&1
+if (which emacs && which emacsclient) > /dev/null
 then
 
-    EMACS_SERVER_NAME="$USER-`basename $TTY`"
-    [ $STY ] && EMACS_SERVER_NAME="$STY"
-    export EMACS_SERVER_NAME
+    export EMACS_SERVER_NAME="$USER-`basename $TTY`"
+    [ $STY ] && export EMACS_SERVER_NAME_STY="$USER-$STY"
+    [ $DISPLAY ] && export EMACS_SERVER_NAME_WS="$USER-$DISPLAY"
 
     function e(){
-        if emacsclient -n -s "$EMACS_SERVER_NAME" -e "server-name"
-        then
-            emacsclient -n -s "$EMACS_SERVER_NAME" "$@"
-        else
-            if screen --version > /dev/null 2>&1
+        for sname in "$EMACS_SERVER_NAME_WS"\
+                     "$EMACS_SERVER_NAME_STY"\
+                     "$EMACS_SERVER_NAME"
+        do
+            if [ "$sname" ] &&\
+                emacsclient --socket-name "$sname" --eval "server-name" 2> /dev/null
             then
-                screen emacs
-            else
-                emacs &
+                emacsclient --no-wait --socket-name "$sname" "$@"
+                return $?
             fi
+        done
+
+        if which screen > /dev/null
+        then
+            screen emacs
+        else
+            emacs &
         fi
     }
     function e_wait(){
-        if emacsclient -s "$EMACS_SERVER_NAME" -e "server-name"
-        then
-            emacsclient -s "$EMACS_SERVER_NAME" "$@"
-        else
-            emacs
-        fi
+        for sname in "$EMACS_SERVER_NAME_WS"\
+                     "$EMACS_SERVER_NAME_STY"\
+                     "$EMACS_SERVER_NAME"
+        do
+            if [ "$sname" ] &&\
+                emacsclient --socket-name "$sname" --eval "server-name" 2> /dev/null
+            then
+                emacsclient --socket-name "$sname" "$@"
+                return $?
+            fi
+        done
+
+        emacs
     }
     export EDITOR="e_wait"
 
