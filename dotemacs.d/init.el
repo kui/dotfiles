@@ -141,8 +141,12 @@
 ;; pkg-name のアップデートがある時は t を返す
 (defun kui/package-update-available-p (pkg-name)
   "Return t if PKG-NAME's update is available."
-  (version-list-< (kui/package-get-activated-vers pkg-name)
-                  (kui/package-get-latest-vers pkg-name)))
+  (let ((installed-ver (kui/package-get-activated-vers pkg-name))
+        (latest-ver (kui/package-get-latest-vers pkg-name)))
+    (if latest-ver
+        (version-list-< installed-ver latest-ver)
+      (message "Cannot get latest version of package %s" pkg-name)
+      nil)))
 
 ;; インストール済みでアップデート可能なパッケージをリストアップ
 (defun kui/package-update-available-package-list ()
@@ -153,17 +157,20 @@
              package-activated-list))
 
 ;; アップデート可能なインストール済みパッケージ全てをアップデート
-(defun kui/package-update-all-package ()
-  "Update all package which is update-available"
+(defun kui/package-update-all-package (&optional non-interactive)
+  "Update all package which is update-available with y-or-n interaction.
+if NON-INTERACTIVE is non-nil, update all package without interaction."
   (interactive)
   (unless package--initialized (package-initialize t))
   (unless package-archive-contents (package-refresh-contents))
   (let ((pkg-list (kui/package-update-available-package-list)))
-    (if pkg-list
-        (let ()
-          (dolist (pkg-name pkg-list) (package-install pkg-name))
-          (package-initialize))
-      (message "No update available package"))))
+    (if (not pkg-list)
+        (message "No update available package")
+      (dolist (pkg-name pkg-list)
+        (if (or non-interactive
+                (y-or-n-p (format "update package?: %s" pkg-name)))
+            (package-install pkg-name)))
+      (package-initialize))))
 
 ;; インストールされていないパッケージを require した時に、
 ;; 自動でインストールしたあとに require してくれる
@@ -323,6 +330,17 @@ create *scratch* if it did not exists"
       (switch-to-buffer "*scratch*")
     (switch-to-buffer "*scratch*")
     (insert initial-scratch-message)))
+
+;; backindentation
+;; (defun kui/backindent ()
+;;   "Unindent"
+;;   (interactive)
+;;   (labels ((f (pos)
+;;               (previous-line)
+;;               (when (not (= pos (point)))
+
+;;   (save-excursion
+;;     ()))
 
 ;; -------------------------------------------------------------------------
 ;; 便利な感じのマイナーモード
