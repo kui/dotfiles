@@ -237,9 +237,6 @@ function widescreen(){
     screen -X focus
 }
 
-# カーソルの色設定（暗い緑）
-echo -ne '\e]12;#009900\a'
-
 # 色一覧
 function color_list(){
     for c in {016..255}
@@ -439,6 +436,9 @@ update_prompt(){
     # local left="${USER_COLOR}${USER}%f@${HOST_COLOR}${HOST}%f:%F{yellow}${current_path}%f"
     local left="$(construct_left $current_path)"
     PROMPT=$'\n'"${left}${bar}${right}"$'\n'"%f%(!.#.$) "
+
+    # カーソルの色設定（暗い緑）
+    echo -ne '\e]12;#009900\a'
 }
 precmd_functions=($precmd_functions update_prompt)
 PROMPT="${USER_COLOR}${USER}%f@${HOST_COLOR}${HOST}%f %F{yellow}%~%f "$'\n'"%(!.#.$) "
