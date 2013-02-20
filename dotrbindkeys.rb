@@ -151,7 +151,7 @@ end
 window(:through, :class => /^(?:gnome-terminal|roxterm|sakura|clusterssh|xterm)$/)
 
 # through all key inputs if emacs
-window(:through, :class => /^emacs$/)
+window(:through, :class => /^emacs\d*$/)
 
 # through all key inputs if emacs
 window(:through, :class => /^Redcar$/)
@@ -171,6 +171,8 @@ window(@default_bind_resolver, :class => /Eclipse/) do
     # select to end of line
     operator.press_key KEY_LEFTSHIFT
     operator.press_key KEY_END
+    operator.send_event EV_SYN, 0, 0 # flush the event buffer
+
     operator.release_key KEY_END
     operator.release_key KEY_LEFTSHIFT
     operator.send_event EV_SYN, 0, 0 # flush the event buffer
@@ -180,7 +182,9 @@ window(@default_bind_resolver, :class => /Eclipse/) do
     # cut
     operator.press_key KEY_LEFTCTRL
     operator.press_key KEY_X
+    operator.send_event EV_SYN, 0, 0 # flush the event buffer
     operator.release_key KEY_X
     operator.release_key KEY_LEFTCTRL
+    operator.send_event EV_SYN, 0, 0 # flush the event buffer
   end
 end
