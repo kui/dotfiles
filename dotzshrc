@@ -15,6 +15,9 @@ source_if_exist(){
 source_if_exist "/usr/local/rvm/scripts/rvm"
 source_if_exist "$HOME/.rvm/scripts/rvm"
 
+## nvm
+source_if_exist "$HOME/.nvm/nvm.sh"
+
 ############################################################
 # env
 EDITOR='vi'
