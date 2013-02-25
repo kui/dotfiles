@@ -1,9 +1,20 @@
-<!--
-    Ginn の設定ファイル。タッチパッドの挙動などを設定する。
--->
 <ginn>
   <global>
-<!-- Application control -->
+    <wish gesture="Drag" fingers="4">
+      <action name="action1" when="update">
+        <trigger prop="delta y" max="-700" min="-2000"/>
+        <key modifier1="Alt_L" modifier2="Control_L">Down</key>
+      </action>
+    </wish>
+    <wish gesture="Drag" fingers="4">
+      <action name="action1" when="update">
+        <trigger prop="delta y" min="700" max="2000"/>
+        <key modifier1="Super_L">D</key>
+      </action>
+    </wish>
+  </global>
+<!--
+  <global>
     <wish gesture="Drag" fingers="2">
       <action name="action5" when="update">
         <trigger prop="delta y" min="20" max="80"/>
@@ -17,7 +28,7 @@
       </action>
     </wish>
 
-<!-- Windows control -->
+
     <wish gesture="Pinch" fingers="3">
       <action name="action1" when="update">
         <trigger prop="radius delta" min="-200" max="-40"/>
@@ -31,7 +42,7 @@
       </action>
     </wish>
 
-<!-- System wide - control desktop  -->
+
     <wish gesture="Tap" fingers="4">
       <action name="action1" when="update">
         <trigger prop="tap time" min="20" max="400"/>
@@ -58,7 +69,7 @@
     </wish>
   </global>
 
-<!-- Applications specific gestures  -->
+
   <applications>
     <application name="inkscape">
     <wish gesture="Pinch" fingers="2">
@@ -261,4 +272,5 @@
     </application>
 
   </applications>
+ -->
 </ginn>
