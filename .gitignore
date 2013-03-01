@@ -13,6 +13,7 @@ TAGS
 /dotemacs.d/tramp
 /dotemacs.d/elpa
 /dotemacs.d/anything-c-adaptive-history
+/dotemacs.d/session.*
 /dotrsense
 /src
 /dotemacs.d/auto-save-list
