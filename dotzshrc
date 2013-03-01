@@ -48,7 +48,7 @@ typeset -U path
 ##               globがマッチしなかったり存在しないパスを無視する。
 ##            -: シンボリックリンク先のパスを評価。
 ##            /: ディレクトリのみ残す。
-path=($HOME/{.rvm,.rbenv,local}/bin(N-/)
+path=($HOME/{.rvm,.rbenv,local,.local}/bin(N-/)
         /usr{/local,/local/rvm,/usr,}/bin(N-/)
         /app/{script,mingw/tdm/bin,gs/bin,gs/lib}(N-/)
         /usr/local/rvm/bin(N-/)
@@ -148,7 +148,7 @@ then
     # Cygwin 環境でのコピー（要動作テスト）
     copy_cmd="putclip < /tmp/screen-exchange"
 fi
-[ $STY ] && [ $copy_cmd ] &&\
+[ $DISPLAY ] && [ $STY ] && [ $copy_cmd ] &&\
   screen -X bindkey -m ' ' eval "stuff ' '" writebuf "exec sh -c '$copy_cmd'"
 
 ## refe の文字コードをUTF-8に修正
