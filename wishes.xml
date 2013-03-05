@@ -1,5 +1,14 @@
 <ginn>
   <global>
+    <!-- 3 -->
+    <wish gesture="Tap" fingers="3">
+      <action name="action1" when="update">
+        <trigger prop="tap time" min="20" max="400"/>
+        <button>2</button>
+      </action>
+    </wish>
+
+    <!-- 4 -->
     <wish gesture="Drag" fingers="4">
       <action name="action1" when="update">
         <trigger prop="delta y" max="-700" min="-2000"/>
@@ -13,6 +22,42 @@
       </action>
     </wish>
   </global>
+
+  <applications>
+
+    <!-- Google Chrome -->
+    <application name="google-chrome">
+      <!-- 三本指右スワイプ -->
+      <wish gesture="Drag" fingers="3">
+        <action name="action1" when="update">
+          <trigger prop="delta x" min="700" max="2000"/>
+          <key modifier1="Alt_L">Right</key>
+        </action>
+      </wish>
+      <!-- 三本指左スワイプ -->
+      <wish gesture="Drag" fingers="3">
+        <action name="action1" when="update">
+          <trigger prop="delta x" max="-700" min="-2000"/>
+          <key modifier1="Alt_L">Left</key>
+        </action>
+      </wish>
+      <!-- 三本指上スワイプ -->
+      <wish gesture="Drag" fingers="3">
+        <action name="action1" when="update">
+          <trigger prop="delta y" max="-700" min="-2000"/>
+          <key modifier1="Control_L" modifier2="Shift_L">T</key>
+        </action>
+      </wish>
+      <!-- 三本指下スワイプ -->
+      <wish gesture="Drag" fingers="3">
+        <action name="action1" when="update">
+          <trigger prop="delta y" min="700" max="2000"/>
+          <key modifier1="Control_L">W</key>
+        </action>
+      </wish>
+    </application>
+  </applications>
+
 <!--
   <global>
     <wish gesture="Drag" fingers="2">
