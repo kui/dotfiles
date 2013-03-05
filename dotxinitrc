@@ -4,9 +4,10 @@ set -x
 # x が立ち上がる時に実行するスクリプト群
 
 INTELLI_MOUSE="Microsoft Microsoft 5-Button Mouse with IntelliEye(TM)"
-THINKPAD_TRACKPOINT="Lite-On Technology Corp. ThinkPad USB Keyboard with TrackPoint"
+THINKPAD_TRACKPOINT="pointer:Lite-On Technology Corp. ThinkPad USB Keyboard with TrackPoint"
 
 main(){
+    date +'=== %D %T ==================================='
     setup_xinput
 }
 
@@ -23,7 +24,7 @@ setup_intelli_mouse(){
 }
 
 xinput_intelli_mouse(){
-    xinput set-prop "$INTELLI_MOUSE" $1 $2
+    xinput set-prop "$INTELLI_MOUSE" "$1" "$2"
 }
 
 setup_thinkpad(){
@@ -34,7 +35,7 @@ setup_thinkpad(){
 }
 
 xinput_thinkpad_trackpoint(){
-    xinput set-prop "$THINKPAD_TRACKPOINT" $1 $2
+    xinput set-prop "$THINKPAD_TRACKPOINT" "$1" "$2"
 }
 
-main
+main >> ~/.xinput.log
