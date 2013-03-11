@@ -450,7 +450,7 @@ PROMPT="${USER_COLOR}${USER}%f@${HOST_COLOR}${HOST}%f %F{yellow}%~%f "$'\n'"%(!.
 ##  screen の window タイトルを設定
 update_screen_title() {
     local shell=`echo -n ${SHELL} | sed -e 's/^.*\///'`
-    local dir=`print -P '%~' | xargs basename`
+    local dir=`print -P '%~' | sed 's/ /_/g' | xargs -I '{}' basename "{}"`
     echo -n "\033k${shell}#${dir}\033\\" 2>/dev/null
 }
 [ "$STY" ] && precmd_functions=($precmd_functions update_screen_title)
