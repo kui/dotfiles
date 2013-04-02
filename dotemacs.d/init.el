@@ -814,6 +814,10 @@ create *scratch* if it did not exists"
   (eval-after-load "js"
     '(setq js-indent-level 2)))
 
+;; typescript-mode
+(when (kui/autoload-if-exist 'typescript-mode "TypeScript")
+  (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-mode)))
+
 ;; -------------------------------------------------------------------------
 ;; 色とか
 (when (kui/package-require 'color-theme nil nil t)
