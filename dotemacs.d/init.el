@@ -77,6 +77,7 @@
 
 ;; 保存前に末尾空白の削除
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
+;; (remove-hook 'before-save-hook 'delete-trailing-whitespace)
 
 ;; サーバーモードの設定
 (when (and (require 'server nil t)
