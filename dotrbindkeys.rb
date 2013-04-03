@@ -164,27 +164,30 @@ end
 
 # add new bind_key to default binds
 window(@default_bind_resolver, :class => /Eclipse/) do
-  bind_key [KEY_LEFTCTRL, KEY_TAB], [KEY_LEFTSHIFT, KEY_LEFTCTRL, KEY_E]
+  #bind_key [KEY_LEFTCTRL, KEY_TAB], [KEY_LEFTSHIFT, KEY_LEFTCTRL, KEY_E]
 
-  # kill line
-  bind_key [KEY_LEFTCTRL, KEY_K] do |event, operator|
-    # select to end of line
-    operator.press_key KEY_LEFTSHIFT
-    operator.press_key KEY_END
-    operator.send_event EV_SYN, 0, 0 # flush the event buffer
+  bind_key [KEY_LEFTCTRL, KEY_K], [KEY_LEFTCTRL, KEY_K]
+  bind_key [KEY_LEFTALT, KEY_X], [KEY_LEFTCTRL, KEY_3]
 
-    operator.release_key KEY_END
-    operator.release_key KEY_LEFTSHIFT
-    operator.send_event EV_SYN, 0, 0 # flush the event buffer
+  # # kill line
+  # bind_key [KEY_LEFTCTRL, KEY_K] do |event, operator|
+  #   # select to end of line
+  #   operator.press_key KEY_LEFTSHIFT
+  #   operator.press_key KEY_END
+  #   operator.send_event EV_SYN, 0, 0 # flush the event buffer
 
-    sleep 0.05
+  #   operator.release_key KEY_END
+  #   operator.release_key KEY_LEFTSHIFT
+  #   operator.send_event EV_SYN, 0, 0 # flush the event buffer
 
-    # cut
-    operator.press_key KEY_LEFTCTRL
-    operator.press_key KEY_X
-    operator.send_event EV_SYN, 0, 0 # flush the event buffer
-    operator.release_key KEY_X
-    operator.release_key KEY_LEFTCTRL
-    operator.send_event EV_SYN, 0, 0 # flush the event buffer
-  end
+  #   sleep 0.05
+
+  #   # cut
+  #   operator.press_key KEY_LEFTCTRL
+  #   operator.press_key KEY_X
+  #   operator.send_event EV_SYN, 0, 0 # flush the event buffer
+  #   operator.release_key KEY_X
+  #   operator.release_key KEY_LEFTCTRL
+  #   operator.send_event EV_SYN, 0, 0 # flush the event buffer
+  # end
 end
