@@ -721,6 +721,7 @@ create *scratch* if it did not exists"
   (add-to-list 'auto-mode-alist '("/Rakefile" . ruby-mode))
   (add-to-list 'auto-mode-alist '("\\.gemspec\\'" . ruby-mode))
   (add-to-list 'auto-mode-alist '("/config\\.ru\\'" . ruby-mode))
+  (add-to-list 'auto-mode-alist '("/Gemfile\\'" . ruby-mode))
 
   (eval-after-load "ruby-mode"
     '(let nil
@@ -746,6 +747,10 @@ create *scratch* if it did not exists"
                              (add-to-list 'ac-sources 'ac-source-rsense-method)
                              (add-to-list 'ac-sources 'ac-source-rsense-constant)))))
            (message "cant not load rsense")))
+
+       ;; (when (require 'robe nil t)
+       ;;   (add-hook 'ruby-mode-hook 'robe-mode)
+       ;;   (add-to-list 'ac-sources 'ac-source-robe))
        ))
   )
 
