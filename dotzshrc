@@ -564,6 +564,9 @@ zstyle ':completion:sudo:*' environ PATH="$SUDO_PATH:$PATH"
 ## 特定のコマンドの補完を無効化
 # compdef -d java
 
+## キーバインド
+bindkey "^O" zaw-cdr
+
 ## マシンごとの設定
 ! [ -f ~/.zshrc.local ] && touch ~/.zshrc.local
 source ~/.zshrc.local
