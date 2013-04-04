@@ -169,6 +169,16 @@ window(@default_bind_resolver, :class => /Eclipse/) do
   bind_key [KEY_LEFTCTRL, KEY_K], [KEY_LEFTCTRL, KEY_K]
   bind_key [KEY_LEFTALT, KEY_X], [KEY_LEFTCTRL, KEY_3]
 
+  bind_key [KEY_LEFTCTRL, KEY_G] do |ev, op|
+    if not @region_mode
+      :through
+    else
+      op.release_key KEY_LEFTSHIFT
+      @region_mode = false
+      :ignore
+    end
+  end
+
   # # kill line
   # bind_key [KEY_LEFTCTRL, KEY_K] do |event, operator|
   #   # select to end of line
