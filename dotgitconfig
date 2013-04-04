@@ -4,7 +4,7 @@
 [color]
 	ui = auto
 [core]
-	pager =
+	pager = less
 	editor = vi
 [github]
 	user = kui
