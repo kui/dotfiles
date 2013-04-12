@@ -913,7 +913,7 @@ create *scratch* if it did not exists"
   (set-scroll-bar-mode "right")
 
   ;; フォントの指定
-  (set-default-font "Inconsolata-12")
+  (set-default-font "Inconsolata-11")
 
   ;; ウィンドウサイズを画面に揃える（精度は微妙）
   (set-frame-size
