@@ -348,6 +348,12 @@ create *scratch* if it did not exists"
 ;; -------------------------------------------------------------------------
 ;; 便利な感じのマイナーモード
 
+;; git-gutter
+(when (kui/package-require 'git-gutter nil nil t)
+  (if (window-system)
+      (setq git-gutter:separator-sign "|"))
+  (global-git-gutter-mode t))
+
 ;; linum & hlinum
 ;; (when (kui/autoload-if-exist 'linum-mode "linum")
 ;;   ;; linum-mode が発動するフック一覧
