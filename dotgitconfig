@@ -9,3 +9,6 @@
 [github]
 	user = kui
 	password = !ssh-askpass 'input Github password' | tr -d '\n'
+[alias]
+	co = checkout
+	st = status
