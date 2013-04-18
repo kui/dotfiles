@@ -817,7 +817,7 @@ create *scratch* if it did not exists"
 (setq css-indent-offset 2)
 
 ;; scss-mode
-(when (kui/autoload-if-exist 'scss-mode "scss-mode" nil t)
+(when (kui/autoload-if-exist 'scss-mode "scss-mode")
   (add-to-list 'auto-mode-alist '("\\.scss\\'" . scss-mode))
   (eval-after-load "scss-mode"
     '(let nil
@@ -834,6 +834,7 @@ create *scratch* if it did not exists"
 (when (kui/autoload-if-exist 'typescript-mode "TypeScript")
   (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-mode)))
 
+;; multi-web-mode
 (when (kui/autoload-if-exist 'multi-web-mode "multi-web-mode")
   (add-to-list 'auto-mode-alist '("\\.html\\'" . multi-web-mode))
   (eval-after-load "multi-web-mode"
@@ -847,7 +848,9 @@ create *scratch* if it did not exists"
        (multi-web-global-mode 1)
        )))
 
-
+;; groovy-mode
+(when (kui/autoload-if-exist 'groovy-mode "groovy-mode")
+  (add-to-list 'auto-mode-alist '("\\.gradle\\'" . groovy-mode)))
 
 ;; -------------------------------------------------------------------------
 ;; 色とか
