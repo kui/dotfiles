@@ -580,6 +580,12 @@ create *scratch* if it did not exists"
                  flymake-display-err-before-colmun cur-col)
            (not is-not-moved)))
 
+       (unless flymake-display-err-timer
+         (setq flymake-display-err-timer
+               (run-with-idle-timer flymake-display-err-delay
+                                    t
+                                    'flymake-display-err-menu-for-current-line)))
+
        (global-set-key "\M-e"
                        '(lambda ()
                           (interactive)
@@ -592,12 +598,6 @@ create *scratch* if it did not exists"
                           (message "prev error")
                           (flymake-goto-prev-error)
                           (flymake-display-err-menu-for-current-line)))
-
-       (unless flymake-display-err-timer
-         (setq flymake-display-err-timer
-               (run-with-idle-timer flymake-display-err-delay
-                                    t
-                                    'flymake-display-err-menu-for-current-line)))
      )))
 
 ;; anything

@@ -6,7 +6,7 @@
 ##  外部設定ファイル
 
 source_if_exist(){
-    [ -f "$1" ] || return
+    [ -f "$1" ] || return 1
     echo load $1
     source "$1"
 }
@@ -569,9 +569,6 @@ zstyle ':completion:sudo:*' environ PATH="$SUDO_PATH:$PATH"
 ## 特定のコマンドの補完を無効化
 # compdef -d java
 
-## キーバインド
-bindkey "^O" zaw-cdr
-
 ## マシンごとの設定
 ! [ -f ~/.zshrc.local ] && touch ~/.zshrc.local
 source ~/.zshrc.local
@@ -585,7 +582,13 @@ then
 fi
 
 # zaw
-source_if_exist "$HOME/.zshrc.d/zaw/zaw.zsh"
+if source_if_exist "$HOME/.zshrc.d/zaw/zaw.zsh"
+then
+    bindkey "^o" zaw-cdr
+    bindkey "^[x" zaw-applications
+
+    zstyle ':filter-select' case-insensitive yes
+fi
 
 # syntax-highligting
 source_if_exist "$HOME/.zshrc.d/syntax-highlighting/zsh-syntax-highlighting.zsh"
