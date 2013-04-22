@@ -350,7 +350,7 @@ create *scratch* if it did not exists"
 
 ;; git-gutter
 (when (kui/package-require 'git-gutter nil nil t)
-  (if (window-system)
+  (if (not (window-system))
       (setq git-gutter:separator-sign "|"))
   (global-git-gutter-mode t))
 
@@ -736,7 +736,7 @@ create *scratch* if it did not exists"
        (when (require 'flymake-ruby nil t)
          (add-hook 'ruby-mode-hook 'flymake-ruby-load))
 
-       (when (and (executable-find "rbenv")
+       (when (and nil (executable-find "rbenv")
                   (kui/package-require 'rbenv nil nil t))
          (add-hook 'ruby-mode-hook 'global-rbenv-mode))
 
