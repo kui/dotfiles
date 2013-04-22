@@ -151,7 +151,10 @@ end
 window(:through, :class => /^(?:gnome-terminal|roxterm|sakura|clusterssh|xterm)$/)
 
 # through all key inputs if emacs
-window(:through, :class => /^emacs\d*$/)
+window(:through, :class => /^emacs\d*$/i)
+
+# through all key inputs if virtual box
+window(:through, :class => /^VirtualBox$/)
 
 # through all key inputs if emacs
 window(:through, :class => /^Redcar$/)
