@@ -740,6 +740,8 @@ create *scratch* if it did not exists"
                   (kui/package-require 'rbenv nil nil t))
          (add-hook 'ruby-mode-hook 'global-rbenv-mode))
 
+       (defun ruby-mode-set-encoding () ())
+
        (let ((rhome (expand-file-name "~/.settings/src/rsense-0.3")))
          (if (file-directory-p rhome)
              (let nil

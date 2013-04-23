@@ -48,11 +48,12 @@ fi
 ##            /: ディレクトリのみ残す。
 path=(
     $path
+    node_modules/.bin
     $HOME/{.rvm,.rbenv,local,.local}/bin(N-/)
-    /usr{/local,/local/rvm,/usr,}/bin(N-/)
-    /app/{script,mingw/tdm/bin,gs/bin,gs/lib}(N-/)
     /usr/local/rvm/bin(N-/)
     $GEM_HOME/bin(N-/)
+    /app/{script,mingw/tdm/bin,gs/bin,gs/lib}(N-/)
+    /usr{/local,/usr,}/bin(N-/)
 )
 ## 重複したパスを登録しない。
 typeset -U path
@@ -561,7 +562,7 @@ setopt auto_param_keys
 setopt auto_param_slash
 
 ## スペルチェック
-setopt correct
+#setopt correct
 
 ## sudo時にはsudo用のパスも使う。
 zstyle ':completion:sudo:*' environ PATH="$SUDO_PATH:$PATH"
