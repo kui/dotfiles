@@ -860,7 +860,8 @@ create *scratch* if it did not exists"
   (color-theme-initialize)
 
   (when (kui/package-require 'color-theme-sanityinc-tomorrow)
-    (color-theme-sanityinc-tomorrow-night)
+    (load-theme 'sanityinc-tomorrow-night t)
+    ;; (color-theme-sanityinc-tomorrow-night)
     (set-face-attribute 'show-paren-match nil
                         :inverse-video nil
                         :bold t
