@@ -54,6 +54,7 @@ path=(
     $GEM_HOME/bin(N-/)
     /app/{script,mingw/tdm/bin,gs/bin,gs/lib}(N-/)
     /usr{/local,/usr,}/bin(N-/)
+    $HOME/.settings/bin(N-/)
 )
 ## 重複したパスを登録しない。
 typeset -U path
@@ -167,43 +168,12 @@ then
         export EMACS_SERVER_NAME
     fi
 
-    emacsclient_or_emacs(){
-        if [ $# -eq 0 ]
-        then
-            echo "file name or argument required"
-            return 1
-        fi
-
-        if [ -z "$EMACS_SERVER_NAME" ]
-        then
-            echo "not defined a env variable: EMACS_SERVER_NAME" >&2
-            return 1
-        fi
-
-        if emacsclient --socket-name "$EMACS_SERVER_NAME" --eval "server-name" \
-            > /dev/null 2>&1
-        then
-            echo "Open $@ on $EMACS_SERVER_NAME"
-            emacsclient --socket-name "$EMACS_SERVER_NAME" --no-wait "$@"
-            return $?
-        fi
-
-        echo "Do not found a socket: $EMACS_SERVER_NAME"
-        echo "Create a new emacs server"
-
-        local init_script="--eval '(setq server-name \"$EMACS_SERVER_NAME\")'"
-        init_script=$init_script" --eval '(server-start)'"
-
-        if [ -n "$DISPLAY" ]
-        then (eval emacs $init_script "$@" & disown) > /dev/null 2>&1
-        elif [ -n "$STY" ]
-        then eval screen emacs $init_script "$@"
-        else emacs "$@"
-        fi
-    }
-
-    alias e=emacsclient_or_emacs
+    which start_emacsclient > /dev/null 2>&1 && \
+      alias e="start_emacsclient --no-wait"
     alias emacsclient="emacsclient --socket-name \"$EMACS_SERVER_NAME\""
+
+    which start_emacsclient > /dev/null 2>&1 && \
+      export EDITOR=start_emacsclient
 fi
 
 ## 色一覧
