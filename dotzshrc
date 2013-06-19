@@ -22,11 +22,11 @@ source_if_exist "$HOME/.rvm/scripts/rvm"
 ## nvm
 source_if_exist "$HOME/.nvm/nvm.sh"
 
-############################################################
-# env
+# editor
 EDITOR='vi'
+which vim > /dev/null 2>&1 && EDITOR='vim'
+export EDITOR
 
-############################################################
 # java
 JAVA=`which java 2>/dev/null`
 if [ $? -eq 0 ]
@@ -142,7 +142,6 @@ function j(){
     fi
 }
 
-
 # screen のコピー機能と、X Window System のクリップボードの同期
 if which xsel > /dev/null 2>&1
 then
@@ -161,97 +160,57 @@ fi
 [ $DISPLAY ] && [ $STY ] && [ $copy_cmd ] &&\
   screen -X bindkey -m ' ' eval "stuff ' '" writebuf "exec sh -c '$copy_cmd'"
 
-## refe の文字コードをUTF-8に修正
-function refe(){
-    refe "$@" | nkf -Ew
-}
-
-## ぐぐる
-function g(){
-    w3m "google.com/search?q=$@"
-}
-
 ## emacs server の設定
 if (which emacs && which emacsclient) > /dev/null
 then
+    if [ -z "$EMACS_SERVER_NAME" ]
+    then
+        EMACS_SERVER_NAME="${USER}-tty-`basename ${TTY}`"
+        # [ $STY ] && EMACS_SERVER_NAME="${USER}-sty-${STY}"
+        [ $DISPLAY ] && EMACS_SERVER_NAME="${USER}-wm-${DISPLAY}"
+        export EMACS_SERVER_NAME
+    fi
 
-    export EMACS_SERVER_NAME="$USER-`basename $TTY`"
-    [ $STY ] && export EMACS_SERVER_NAME_STY="$USER-$STY"
-    [ $DISPLAY ] && export EMACS_SERVER_NAME_WS="$USER-$DISPLAY"
-
-    function e(){
-        for sname in "$EMACS_SERVER_NAME_WS"\
-                     "$EMACS_SERVER_NAME_STY"\
-                     "$EMACS_SERVER_NAME"
-        do
-            if [ "$sname" ] &&\
-                emacsclient --socket-name "$sname" --eval "server-name" 2> /dev/null
-            then
-                emacsclient --no-wait --socket-name "$sname" "$@"
-                return $?
-            fi
-        done
-
-        if which screen > /dev/null
+    emacsclient_or_emacs(){
+        if [ $# -eq 0 ]
         then
-            screen emacs
-        else
-            emacs &
+            echo "file name or argument required"
+            return 1
+        fi
+
+        if [ -z "$EMACS_SERVER_NAME" ]
+        then
+            echo "not defined a env variable: EMACS_SERVER_NAME" >&2
+            return 1
+        fi
+
+        if emacsclient --socket-name "$EMACS_SERVER_NAME" --eval "server-name" \
+            > /dev/null 2>&1
+        then
+            echo "Open $@ on $EMACS_SERVER_NAME"
+            emacsclient --socket-name "$EMACS_SERVER_NAME" --no-wait "$@"
+            return $?
+        fi
+
+        echo "Do not found a socket: $EMACS_SERVER_NAME"
+        echo "Create a new emacs server"
+
+        local init_script="--eval '(setq server-name \"abc\")' --eval '(server-start)'"
+
+        if [ -n "$DISPLAY" ]
+        then (emacs $init_script "$@" & disown) > /dev/null 2>&1
+        elif [ -n "$STY" ]
+        then screen $init_script emacs "$@"
+        else emacs "$@"
         fi
     }
-    function e_wait(){
-        for sname in "$EMACS_SERVER_NAME_WS"\
-                     "$EMACS_SERVER_NAME_STY"\
-                     "$EMACS_SERVER_NAME"
-        do
-            if [ "$sname" ] &&\
-                emacsclient --socket-name "$sname" --eval "server-name" 2> /dev/null
-            then
-                emacsclient --socket-name "$sname" "$@"
-                return $?
-            fi
-        done
 
-        emacs
-    }
-    export EDITOR="e_wait"
-
-    function view(){
-        [ -f "$1" ] || (echo "ファイルが見つかりませんでした: $file"; exit 1)
-        emacsclient -n -s "$EMACS_SERVER_NAME" -e "(find-file-read-only \"$1\")"
-    }
-    alias r=view
+    alias e=emacsclient_or_emacs
+    alias emacsclient="emacsclient --socket-name \"$EMACS_SERVER_NAME\""
 fi
 
-# 横長画面向きレイアウト
-function widescreen(){
-    local columns=160
-    if ! [ $STY ]
-    then
-        echo 'run `screen`'
-        return
-    elif [ $COLUMNS -lt $columns ]
-    then
-        echo "less than $columns columns"
-        return
-    fi
-
-    screen -X layout new
-    screen -X split -v
-
-    if ! emacsclient -s "$EMACS_SERVER_NAME" -e "server-name" > /dev/null 2>&1
-    then
-        screen emacs --eval "(let () (setq server-name \"$EMACS_SERVER_NAME\") (server-start) (setq confirm-kill-emacs 'yes-or-no-p))"
-    fi
-
-    screen -X next
-    screen -X focus
-    screen -X select 1
-    screen -X focus
-}
-
-# 色一覧
-function color_list(){
+## 色一覧
+color_list(){
     for c in {016..255}
     do
         echo -n "\e[38;5;${c}m $c"
@@ -270,8 +229,7 @@ fi
 ### red: 0-5
 ### green: 0-5
 ### blue: 0-5
-color256()
-{
+color256(){
     echo -n $(($1 * 36 + $2 * 6 + $3 + 16))
 }
 
