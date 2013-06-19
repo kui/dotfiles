@@ -23,10 +23,6 @@ source_if_exist "$HOME/.rvm/scripts/rvm"
 source_if_exist "$HOME/.nvm/nvm.sh"
 
 ############################################################
-# editor
-export EDITOR='vi'
-
-############################################################
 # java
 JAVA=`which java 2>/dev/null`
 if [ $? -eq 0 ]
@@ -195,12 +191,13 @@ then
         echo "Do not found a socket: $EMACS_SERVER_NAME"
         echo "Create a new emacs server"
 
-        local init_script="--eval '(setq server-name \"abc\")' --eval '(server-start)'"
+        local init_script="--eval '(setq server-name \"$EMACS_SERVER_NAME\")'"
+        init_script=$init_script" --eval '(server-start)'"
 
         if [ -n "$DISPLAY" ]
-        then (emacs $init_script "$@" & disown) > /dev/null 2>&1
+        then (eval emacs $init_script "$@" & disown) > /dev/null 2>&1
         elif [ -n "$STY" ]
-        then screen $init_script emacs "$@"
+        then eval screen emacs $init_script "$@"
         else emacs "$@"
         fi
     }
