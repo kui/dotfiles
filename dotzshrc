@@ -22,11 +22,11 @@ source_if_exist "$HOME/.rvm/scripts/rvm"
 ## nvm
 source_if_exist "$HOME/.nvm/nvm.sh"
 
+############################################################
 # editor
-EDITOR='vi'
-which vim > /dev/null 2>&1 && EDITOR='vim'
-export EDITOR
+export EDITOR='vi'
 
+############################################################
 # java
 JAVA=`which java 2>/dev/null`
 if [ $? -eq 0 ]
