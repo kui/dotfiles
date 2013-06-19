@@ -80,22 +80,16 @@
 ;; (remove-hook 'before-save-hook 'delete-trailing-whitespace)
 
 ;; サーバーモードの設定
-(when (and (require 'server nil t)
-           (setq server-name (or (if (window-system)
-                                     (concat (getenv "USER") "-" (getenv "DISPLAY")))
-                                 (getenv "EMACS_SERVER_NAME_WS")
-                                 (getenv "EMACS_SERVER_NAME_STY")
-                                 (getenv "EMACS_SERVER_NAME"))))
+;; (when (and (require 'server nil t)
+;;            (not (server-running-p)))
 
-  ;; server-mode になった時に、終了しにくくする。
-  ;; (defadvice server-start (after server-set-confirm-kill-emacs activate compile)
-  ;;   "Switch `confirm-kill-emacs' when `server-start' is called"
-  ;;   (setq confirm-kill-emacs (if (server-running-p) 'yes-or-no-p)))
+;;   server-mode になった時に、終了しにくくする。
+;;   (defadvice server-start (after server-set-confirm-kill-emacs activate compile)
+;;     "Switch `confirm-kill-emacs' when `server-start' is called"
+;;     (setq confirm-kill-emacs (if (server-running-p) 'yes-or-no-p)))
 
-  (if (server-running-p)
-      (message "already running with server-mode")
-    (server-start))
-  )
+;;   (server-start)
+;;   )
 
 ;; -------------------------------------------------------------------------
 ;; グローバルキーバインド変更
