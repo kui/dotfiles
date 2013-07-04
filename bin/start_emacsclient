@@ -1,11 +1,11 @@
-#!/bin/bash -eu
+#!/bin/bash -e
 
 # usage: $0 [ FILE [ ... ] ]
 #
 # Run emacsclient, or run emacs if env variable "EMACS_SERVER_NAME" was not found.
 # Command options is delegated to emacsclient. see `man emacsclient`.
 
-if [ -z "$EMACS_SERVER_NAME" ]
+if [ -z "${EMACS_SERVER_NAME-}" ]
 then
     echo "Not defined a env variable: EMACS_SERVER_NAME" >&2
     return 1
@@ -16,7 +16,7 @@ if ! emacsclient --socket-name "$EMACS_SERVER_NAME" --eval "server-name" \
 then
     echo "Do not found a socket: $EMACS_SERVER_NAME"
 
-    if [ -z "$DISPLAY" ] && [ -z "$STY" ]
+    if [ -z "${DISPLAY-}" ] && [ -z "${STY-}" ]
     then
         emacs "$@"
         exit $?
