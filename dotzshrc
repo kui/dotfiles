@@ -562,11 +562,13 @@ do_enter() {
     else ls
     fi
 
-    if [[ "git" = "$VCS_NAME" ]]
+    if [[ -n "$VCS_NAME" ]]
     then
         echo
-        echo -e "\e[0;33m########## git status ##########\e[0m"
-        git status
+        echo -e "\e[0;33m### $VCS_NAME status #################\e[0m"
+        case "$VCS_NAME" in
+            git | svn ) which "$VCS_NAME" > /dev/null 2>&1 && "$VCS_NAME" status ;;
+        esac
     fi
 
     echo -e "\n\n"
