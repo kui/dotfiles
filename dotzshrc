@@ -371,7 +371,7 @@ construct_left(){
     if [[ -n "$extra_info" ]]
     then
         for info in $extra_info
-        do echo -n "$d $info"
+        do echo -n "$d :$info"
         done
         echo -n "$d"
     fi
@@ -544,8 +544,40 @@ zstyle ':completion:sudo:*' environ PATH="$SUDO_PATH:$PATH"
 ## 特定のコマンドの補完を無効化
 # compdef -d java
 
+# エンターキー入力時の挙動
+do_enter() {
+    if [[ -n "$BUFFER" ]]
+    then
+        zle accept-line
+        return 0
+    fi
+
+    echo
+
+    local threshold=20
+    if [[ $(ls -A1 | wc -l) -lt $threshold ]]
+    then ls -Ahl
+    elif [[ $(ls -1 | wc -l) -lt $threshold ]]
+    then ls -hl
+    else ls
+    fi
+
+    if [[ "git" = "$VCS_NAME" ]]
+    then
+        echo
+        echo -e "\e[0;33m########## git status ##########\e[0m"
+        git status
+    fi
+
+    echo -e "\n\n"
+    zle reset-prompt
+    return 0
+}
+zle -N do_enter
+bindkey '^m' do_enter
+
 ## マシンごとの設定
-! [ -f ~/.zshrc.local ] && touch ~/.zshrc.local
+! [[ -f ~/.zshrc.local ]] && touch ~/.zshrc.local
 source ~/.zshrc.local
 
 ## rbenv
