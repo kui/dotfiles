@@ -581,6 +581,13 @@ do_enter() {
         esac
     fi
 
+    if [[ $( jobs | wc -l ) -gt 0 ]]
+    then
+        echo
+        echo -e "\e[0;33m### jobs #############################\e[0m"
+        jobs
+    fi
+
     echo -e "\n\n"
     zle reset-prompt
     return 0
