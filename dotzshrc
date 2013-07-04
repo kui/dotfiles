@@ -341,6 +341,15 @@ echo_rbenv_info(){
     [[ -n "$_RBENV_RUBY_VERSION" ]] &&  echo -n "rb$_RBENV_RUBY_VERSION"
 }
 
+echo_jobs_num(){
+    local c= d=
+    if [[ -z "$1" ]]
+    then c="%F{green}" d="%f"
+    fi
+    nums=$( jobs | wc -l )
+    [[ "$nums" -ne 0 ]] && echo -n "jobs($c$nums$d)"
+}
+
 construct_left(){
     local no_color=
     while getopts n opt
@@ -362,7 +371,8 @@ construct_left(){
     fi
 
     local extra_info= info=
-    for info in "$( echo_vcs_info $no_color )" "$( echo_rbenv_info $no_color )"
+    for info in "$( echo_vcs_info $no_color )" "$( echo_rbenv_info $no_color )" \
+        "$( echo_jobs_num $no_color )"
     do [[ -n "$info" ]] && extra_info=($extra_info $info)
     done
 
