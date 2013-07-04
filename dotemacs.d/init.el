@@ -931,7 +931,7 @@ create *scratch* if it did not exists"
   (tool-bar-mode -1)
 
   ;; スクロールバーを消す(nil:消える,right:右側)
-  (set-scroll-bar-mode "right")
+  (set-scroll-bar-mode 'right)
 
   ;; フォントの指定
   (set-default-font "Inconsolata-11")

@@ -90,6 +90,7 @@ _cake (){
     fi
 }
 
+
 ############################################################
 ## alias, funcction の設定
 if which screen > /dev/null 2>&1
@@ -300,36 +301,90 @@ then
     export TIME_COLOR=$'\e[38;5;245m'
 fi
 
+echo_vcs_info(){
+    local v=
+    if [[ -z "$1" ]]
+    then v=$(
+        if [ "$vcs_info_msg_3_" = %c ]
+        then echo -n '%f'
+        elif [ $VCS_IS_ADDED ] && [ $VCS_IS_COMMITED ]
+        then echo -n '%F{green}'
+        else echo -n '%F{red}'
+        fi
+    )
+    fi
+    [ $VCS_NAME ] && echo -n "$v$VCS_NAME:$VCS_BRANCH_NAME"
+    [ $VCS_ACTION ] && echo -n "[$VCS_ACTION]"
+}
+
+export _RBENV_RUBY_VERSION=
+update_rbenv_info(){
+    local version_file=$( traverse_ruby_version )
+    _RBENV_RUBY_VERSION=$(
+        [[ -f "$version_file" ]] && head -1 "$version_file"
+    )
+}
+precmd_functions=($precmd_functions update_rbenv_info)
+
+traverse_ruby_version(){
+    local basepath=$PWD
+
+    while [[ "/" != "$basepath" ]]
+    do
+        [[ -f "$basepath/.ruby-version" ]] && \
+          echo "$basepath/.ruby-version" && break
+        basepath=$( dirname "$basepath" )
+    done
+}
+
+echo_rbenv_info(){
+    [[ -n "$_RBENV_RUBY_VERSION" ]] &&  echo -n "rb$_RBENV_RUBY_VERSION"
+}
+
+echo_jobs_num(){
+    local c= d=
+    if [[ -z "$1" ]]
+    then c="%F{green}" d="%f"
+    fi
+    nums=$( jobs | wc -l )
+    [[ "$nums" -ne 0 ]] && echo -n "jobs($c$nums$d)"
+}
+
 construct_left(){
-    local non_color=
+    local no_color=
     while getopts n opt
     do
         case $opt in
-            n) local no_color=true;;
+            n) no_color=true;;
         esac
     done
     shift `expr $OPTIND - 1`
     local current_path=$1
 
-    local u= h= p= v= d=
-    if [ ! $no_color ]
+    local u= h= p= d=
+    if [[ -z $no_color ]]
     then
-        local u=$USER_COLOR h=$HOST_COLOR p='%F{yellow}' d='%f'
-        local v=$(
-            if [ "$vcs_info_msg_3_" = %c ]
-            then echo -n '%f'
-            elif [ $VCS_IS_ADDED ] && [ $VCS_IS_COMMITED ]
-            then echo -n '%F{green}'
-            else echo -n '%F{red}'
-            fi
-        )
+        u=$USER_COLOR
+        h=$HOST_COLOR
+        p='%F{yellow}'
+        d='%f'
     fi
+
+    local extra_info= info=
+    for info in "$( echo_vcs_info $no_color )" "$( echo_rbenv_info $no_color )" \
+        "$( echo_jobs_num $no_color )"
+    do [[ -n "$info" ]] && extra_info=($extra_info $info)
+    done
 
     # プロンプトのフォーマット
     echo -n "$u${USER}$d@$h${HOST}$d:$p${current_path}"
-    [ $VCS_NAME ] && echo -n " $v($VCS_NAME/$VCS_BRANCH_NAME)"
-    [ $VCS_ACTION ] && echo -n "[$VCS_ACTION]"
-    echo -n "$d"
+    if [[ -n "$extra_info" ]]
+    then
+        for info in $extra_info
+        do echo -n "$d :$info"
+        done
+        echo -n "$d"
+    fi
 }
 
 update_prompt(){
@@ -499,8 +554,49 @@ zstyle ':completion:sudo:*' environ PATH="$SUDO_PATH:$PATH"
 ## 特定のコマンドの補完を無効化
 # compdef -d java
 
+# エンターキー入力時の挙動
+do_enter() {
+    if [[ -n "$BUFFER" ]]
+    then
+        zle accept-line
+        return 0
+    fi
+
+    echo
+
+    local threshold=20
+    if [[ $(ls -A1 | wc -l) -lt $threshold ]]
+    then ls -Ahl
+    elif [[ $(ls -1 | wc -l) -lt $threshold ]]
+    then ls -hl
+    else ls
+    fi
+
+    if [[ -n "$VCS_NAME" ]]
+    then
+        echo
+        echo -e "\e[0;33m### $VCS_NAME status #################\e[0m"
+        case "$VCS_NAME" in
+            git | svn ) which "$VCS_NAME" > /dev/null 2>&1 && "$VCS_NAME" status ;;
+        esac
+    fi
+
+    if [[ $( jobs | wc -l ) -gt 0 ]]
+    then
+        echo
+        echo -e "\e[0;33m### jobs #############################\e[0m"
+        jobs
+    fi
+
+    echo -e "\n\n"
+    zle reset-prompt
+    return 0
+}
+zle -N do_enter
+bindkey '^m' do_enter
+
 ## マシンごとの設定
-! [ -f ~/.zshrc.local ] && touch ~/.zshrc.local
+! [[ -f ~/.zshrc.local ]] && touch ~/.zshrc.local
 source ~/.zshrc.local
 
 ## rbenv
