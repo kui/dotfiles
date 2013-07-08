@@ -83,11 +83,16 @@ fpath=({$HOME/.rvm,/usr/local/rvm}/scripts/zsh/Completion(N-/)
     $HOME/.zshrc.d/zsh-completions/src(N-/)
     $fpath)
 
-_cake (){
-    if [ -f Cakefile ]
+_cake(){
+    if [[ -f Cakefile ]]
     then
-        compadd `cake | grep '^cake ' | sed -e "s/cake \([^ ]*\) .*/\1/" | grep -v '^$'`
+        compadd $(cake | grep '^cake ' | sed -e "s/cake \([^ ]*\) .*/\1/" | grep -v '^$')
     fi
+}
+
+# reffer https://github.com/RiotGames/berkshelf/blob/master/berkshelf-complete.sh
+_berks(){
+    compadd $(berks help | grep -E '^ +berks' | cut -d' ' -f4)
 }
 
 
@@ -469,6 +474,7 @@ SAVEHIST=100000
 autoload -U compinit
 compinit -u
 compdef _cake cake
+compdef _berks berks
 
 ## コアダンプサイズを制限
 limit coredumpsize 102400
