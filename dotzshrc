@@ -83,13 +83,28 @@ fpath=({$HOME/.rvm,/usr/local/rvm}/scripts/zsh/Completion(N-/)
     $HOME/.zshrc.d/zsh-completions/src(N-/)
     $fpath)
 
-_cake (){
-    if [ -f Cakefile ]
+## 補完機能の強化
+autoload -U compinit
+compinit -u
+
+_cake(){
+    if [[ -f Cakefile ]]
     then
-        compadd `cake | grep '^cake ' | sed -e "s/cake \([^ ]*\) .*/\1/" | grep -v '^$'`
+        compadd $(cake | grep '^cake ' | sed -e "s/cake \([^ ]*\) .*/\1/" | grep -v '^$')
     fi
 }
+compdef _cake cake
 
+# reffer https://github.com/RiotGames/berkshelf/blob/master/berkshelf-complete.sh
+_berks(){
+    compadd $(berks help | grep -E '^ +berks' | cut -d' ' -f4)
+}
+compdef _berks berks
+
+_kitchen(){
+    compadd $(kitchen help | grep -E '^ +kitchen' | cut -d' ' -f4)
+}
+compdef _kitchen kitchen
 
 ############################################################
 ## alias, funcction の設定
@@ -464,11 +479,6 @@ zstyle ':completion:*' recent-dirs-insert both
 HISTFILE=$HOME/.zsh-history
 HISTSIZE=100000
 SAVEHIST=100000
-
-## 補完機能の強化
-autoload -U compinit
-compinit -u
-compdef _cake cake
 
 ## コアダンプサイズを制限
 limit coredumpsize 102400
