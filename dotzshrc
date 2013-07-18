@@ -50,6 +50,7 @@ path=(
     $path
     node_modules/.bin
     $HOME/{.rvm,.rbenv,local,.local}/bin(N-/)
+    $HOME/.nodebrew/current/bin(N-/)
     /usr/local/rvm/bin(N-/)
     $GEM_HOME/bin(N-/)
     /app/{script,mingw/tdm/bin,gs/bin,gs/lib}(N-/)
