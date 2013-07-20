@@ -315,8 +315,14 @@ Return nil if FUNC did not return non-nil with any buffer."
   "Return buffer named BNAME.
 Return nil if not found BNAME buffer."
   (kui/find-buffer-if
-   (lambda (b) (string-match-p bname (buffer-name b)))))
+   (lambda (b) (string-equal bname (buffer-name b)))))
 ;; (kui/find-buffer-by-name "*scratch*")
+
+(defun kui/find-buffer-by-name-regexp (bname-regexp)
+  "Return buffer named a name matched BNAME-REGEXP.
+Return nil if not found BNAME buffer."
+  (kui/find-buffer-if
+   (lambda (b) (string-match-p bname-regexp (buffer-name b)))))
 
 ;; *scratch* バッファに切り替え（消してしまっていたら作成）
 (defun kui/switch-to-scratch-buffer ()
@@ -454,10 +460,12 @@ create *scratch* if it did not exists"
 
      ;; 指定されたバッファが存在するなら、追加する
      (lambda (blist)
-       (dolist (bname '("*scratch*" "*Package*" "*Help*")
-                      blist)
-         (let ((b (kui/find-buffer-by-name bname)))
-           (if b (push b blist)))))
+       (let ((target-bname-list (list "*scratch*" "*Package*" "*Help*"
+                                      (buffer-name (current-buffer)))))
+         (append blist
+                 (remove-if 'not
+                            (mapcar 'kui/find-buffer-by-name
+                                    target-bname-list))))
 
      ;; *scratch* が無かったら作る
      (lambda (blist)
@@ -465,10 +473,6 @@ create *scratch* if it did not exists"
            (save-excursion
              (kui/switch-to-scratch-buffer)))
        blist)
-
-     ;; 現在のバッファを追加
-     (lambda (blist)
-       (cons (current-buffer) blist))
      ))
 
   ;; 左に表示されるボタンを消す
