@@ -594,18 +594,24 @@ create *scratch* if it did not exists"
                           (flymake-display-err-menu-for-current-line)))
      )))
 
-;; anything
-(when (and (kui/package-require 'anything nil nil t)
-           (kui/package-require 'anything-obsolete nil nil t)
-           (kui/package-require 'anything-config nil nil t)
-           (kui/package-require 'anything-match-plugin nil nil t)
-           (kui/package-require 'anything-complete nil nil t))
-  (global-set-key "\C-xa" 'anything-apropos)
-  (global-set-key "\C-x\C-f" 'anything-find-file)
-  (global-set-key "\C-xb" 'anything-buffers+)
-  (global-set-key "\C-o" 'anything-occur)
-  (global-set-key "\M-i" 'anything-imenu)
-  (global-set-key "\M-x" 'anything-M-x)
+(when (kui/package-require 'helm nil nil t)
+  (global-set-key "\C-xa" 'helm-apropos)
+  (global-set-key "\C-x\C-f" 'helm-find-files)
+  (global-set-key "\C-xb" 'helm-buffers-list)
+  (global-set-key "\C-o" 'helm-occur)
+  (global-set-key "\M-i" 'helm-imenu)
+  (global-set-key "\M-x" 'helm-M-x)
+
+  (eval-after-load 'helm
+  '(progn
+     (define-key helm-map "\C-h" 'delete-backward-char)
+     (define-key helm-map "TAB" 'helm-execute-persistent-action)
+     ))
+  (eval-after-load 'helm-files
+  '(progn
+     (define-key helm-find-files-map "\C-h" 'delete-backward-char)
+     (define-key helm-find-files-map "TAB" 'helm-execute-persistent-action)
+     ))
   )
 
 ;; whitespace-mode
@@ -861,10 +867,11 @@ create *scratch* if it did not exists"
                         :foreground nil
                         :background "#000000"
                         :underline t)
-    (set-face-attribute 'anything-header nil
-                        :inverse-video t
-                        :bold t
-                        :height 1.2)
+    (when (require 'anything nil t)
+      (set-face-attribute 'anything-header nil
+                          :inverse-video t
+                          :bold t
+                          :height 1.2))
     (set-face-attribute 'highlight nil
                         :inverse-video t
                         :foreground "#81a2be"
