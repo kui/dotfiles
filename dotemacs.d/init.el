@@ -454,8 +454,7 @@ create *scratch* if it did not exists"
    kui/tabbar-buffer-filter-list
    '(;; * で始まるバッファは消す
      (lambda (blist)
-       (remove-if (lambda (b)
-                    (string-match "^ ?\\*" (buffer-name b)))
+       (remove-if (lambda (b) (string-match "^ ?\\*" (buffer-name b)))
                   blist))
 
      ;; 指定されたバッファが存在するなら、追加する
@@ -465,7 +464,7 @@ create *scratch* if it did not exists"
          (append blist
                  (remove-if 'not
                             (mapcar 'kui/find-buffer-by-name
-                                    target-bname-list))))
+                                    target-bname-list)))))
 
      ;; *scratch* が無かったら作る
      (lambda (blist)
