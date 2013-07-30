@@ -105,6 +105,8 @@ setup_emacs(){
         echo "WARN: cannot install rsense" 2>&1
         echo "WARN: rsense require ruby and java" 2>&1
     fi
+
+    print_and_do "emacs --batch --eval '(setq kui/install-mode-p t)' --load '~/.emacs.d/init.el'"
 }
 
 create_empty_zsh(){

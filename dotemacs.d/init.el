@@ -10,6 +10,13 @@
              '("marmalade" . "http://marmalade-repo.org/packages/"))
 (package-initialize)
 
+;; emacs のパッケージを一番初めにインストールするためのフラグ
+;; コマンド: emacs -q --batch --eval '(setq kui/install-mode-p t)' --load ~/.emacs.d/init.el
+;; でインストールできる
+(defvar kui/install-mode-p nil)
+(if kui/install-mode-p
+    (package-refresh-contents))
+
 ;; 言語設定は環境変数に依存
 (set-language-environment nil)
 
