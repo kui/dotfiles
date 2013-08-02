@@ -7,3 +7,6 @@
 [submodule "dotzshrc.d/zsh-completions"]
 	path = dotzshrc.d/zsh-completions
 	url = https://github.com/zsh-users/zsh-completions.git
+[submodule "dotemacs.d/auto-complete-ts"]
+	path = dotemacs.d/auto-complete-ts
+	url = https://github.com/kui/auto-complete-ts.git
