@@ -10,6 +10,13 @@
              '("marmalade" . "http://marmalade-repo.org/packages/"))
 (package-initialize)
 
+;; emacs のパッケージを一番初めにインストールするためのフラグ
+;; コマンド: emacs -q --batch --eval '(setq kui/install-mode-p t)' --load ~/.emacs.d/init.el
+;; でインストールできる
+(defvar kui/install-mode-p nil)
+(if kui/install-mode-p
+    (package-refresh-contents))
+
 ;; 言語設定は環境変数に依存
 (set-language-environment nil)
 
@@ -315,8 +322,14 @@ Return nil if FUNC did not return non-nil with any buffer."
   "Return buffer named BNAME.
 Return nil if not found BNAME buffer."
   (kui/find-buffer-if
-   (lambda (b) (string-match-p bname (buffer-name b)))))
+   (lambda (b) (string-equal bname (buffer-name b)))))
 ;; (kui/find-buffer-by-name "*scratch*")
+
+(defun kui/find-buffer-by-name-regexp (bname-regexp)
+  "Return buffer named a name matched BNAME-REGEXP.
+Return nil if not found BNAME buffer."
+  (kui/find-buffer-if
+   (lambda (b) (string-match-p bname-regexp (buffer-name b)))))
 
 ;; *scratch* バッファに切り替え（消してしまっていたら作成）
 (defun kui/switch-to-scratch-buffer ()
@@ -448,16 +461,17 @@ create *scratch* if it did not exists"
    kui/tabbar-buffer-filter-list
    '(;; * で始まるバッファは消す
      (lambda (blist)
-       (remove-if (lambda (b)
-                    (string-match "^ ?\\*" (buffer-name b)))
+       (remove-if (lambda (b) (string-match "^ ?\\*" (buffer-name b)))
                   blist))
 
      ;; 指定されたバッファが存在するなら、追加する
      (lambda (blist)
-       (dolist (bname '("*scratch*" "*Package*" "*Help*")
-                      blist)
-         (let ((b (kui/find-buffer-by-name bname)))
-           (if b (push b blist)))))
+       (let ((target-bname-list (list "*scratch*" "*Package*" "*Help*"
+                                      (buffer-name (current-buffer)))))
+         (append blist
+                 (remove-if 'not
+                            (mapcar 'kui/find-buffer-by-name
+                                    target-bname-list)))))
 
      ;; *scratch* が無かったら作る
      (lambda (blist)
@@ -465,10 +479,6 @@ create *scratch* if it did not exists"
            (save-excursion
              (kui/switch-to-scratch-buffer)))
        blist)
-
-     ;; 現在のバッファを追加
-     (lambda (blist)
-       (cons (current-buffer) blist))
      ))
 
   ;; 左に表示されるボタンを消す
@@ -594,18 +604,24 @@ create *scratch* if it did not exists"
                           (flymake-display-err-menu-for-current-line)))
      )))
 
-;; anything
-(when (and (kui/package-require 'anything nil nil t)
-           (kui/package-require 'anything-obsolete nil nil t)
-           (kui/package-require 'anything-config nil nil t)
-           (kui/package-require 'anything-match-plugin nil nil t)
-           (kui/package-require 'anything-complete nil nil t))
-  (global-set-key "\C-xa" 'anything-apropos)
-  (global-set-key "\C-x\C-f" 'anything-find-file)
-  (global-set-key "\C-xb" 'anything-buffers+)
-  (global-set-key "\C-o" 'anything-occur)
-  (global-set-key "\M-i" 'anything-imenu)
-  (global-set-key "\M-x" 'anything-M-x)
+(when (kui/package-require 'helm nil nil t)
+  (global-set-key "\C-xa" 'helm-apropos)
+  (global-set-key "\C-x\C-f" 'helm-find-files)
+  (global-set-key "\C-xb" 'helm-buffers-list)
+  (global-set-key "\C-o" 'helm-occur)
+  (global-set-key "\M-i" 'helm-imenu)
+  (global-set-key "\M-x" 'helm-M-x)
+
+  (eval-after-load 'helm
+  '(progn
+     (define-key helm-map "\C-h" 'delete-backward-char)
+     (define-key helm-map "TAB" 'helm-execute-persistent-action)
+     ))
+  (eval-after-load 'helm-files
+  '(progn
+     (define-key helm-find-files-map "\C-h" 'delete-backward-char)
+     (define-key helm-find-files-map "TAB" 'helm-execute-persistent-action)
+     ))
   )
 
 ;; whitespace-mode
@@ -861,10 +877,11 @@ create *scratch* if it did not exists"
                         :foreground nil
                         :background "#000000"
                         :underline t)
-    (set-face-attribute 'anything-header nil
-                        :inverse-video t
-                        :bold t
-                        :height 1.2)
+    (when (require 'anything nil t)
+      (set-face-attribute 'anything-header nil
+                          :inverse-video t
+                          :bold t
+                          :height 1.2))
     (set-face-attribute 'highlight nil
                         :inverse-video t
                         :foreground "#81a2be"
