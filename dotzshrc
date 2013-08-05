@@ -47,7 +47,7 @@ fi
 ##            -: シンボリックリンク先のパスを評価。
 ##            /: ディレクトリのみ残す。
 path=(
-    $HOME/.settings/bin(N-/)
+    $HOME/.{setting,dotfile}s/bin(N-/)
     $HOME/{.rvm,.rbenv,local,.local}/bin(N-/)
     $HOME/.nodebrew/current/bin(N-/)
     node_modules/.bin
