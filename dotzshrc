@@ -47,15 +47,15 @@ fi
 ##            -: シンボリックリンク先のパスを評価。
 ##            /: ディレクトリのみ残す。
 path=(
-    $path
-    node_modules/.bin
+    $HOME/.settings/bin(N-/)
     $HOME/{.rvm,.rbenv,local,.local}/bin(N-/)
     $HOME/.nodebrew/current/bin(N-/)
-    /usr/local/rvm/bin(N-/)
+    node_modules/.bin
     $GEM_HOME/bin(N-/)
+    $path
+    /usr/local/rvm/bin(N-/)
     /app/{script,mingw/tdm/bin,gs/bin,gs/lib}(N-/)
     /usr{/local,/usr,}/bin(N-/)
-    $HOME/.settings/bin(N-/)
 )
 ## 重複したパスを登録しない。
 typeset -U path
