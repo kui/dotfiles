@@ -155,6 +155,7 @@ window(:through, :class => /^emacs\d*$/i)
 
 # through all key inputs if virtual box
 window(:through, :class => /^VirtualBox$/)
+window(:through, :name  => / - Oracle VM VirtualBox$/)
 
 # through all key inputs if emacs
 window(:through, :class => /^Redcar$/)

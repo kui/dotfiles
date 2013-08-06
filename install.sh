@@ -14,6 +14,7 @@ link_file_list=(
     dotrbindkeys.rb
     dotirssi
     dotxinitrc
+    dotdir_colors
 )
 
 if [ $OSTYPE = "cygwin" ]

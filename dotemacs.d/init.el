@@ -355,6 +355,10 @@ create *scratch* if it did not exists"
 ;; -------------------------------------------------------------------------
 ;; 便利な感じのマイナーモード
 
+;; 環境変数をシェルからインポート
+(when (kui/package-require 'exec-path-from-shell nil nil t)
+  (exec-path-from-shell-initialize))
+
 ;; git-gutter
 (when (kui/package-require 'git-gutter nil nil t)
   (if (not (window-system))
@@ -842,8 +846,24 @@ create *scratch* if it did not exists"
     '(setq js-indent-level 2)))
 
 ;; typescript-mode
+(add-to-list 'load-path "~/.emacs.d/auto-complete-ts")
 (when (kui/autoload-if-exist 'typescript-mode "TypeScript")
-  (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-mode)))
+  (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-mode))
+  (eval-after-load "TypeScript"
+    '(let nil
+
+       (require 'typescript-tss)
+       (require 'auto-complete-ts)
+       (load "flymake-typescript")
+
+       (setq ac-ts-auto-save nil)
+       (add-to-list 'ac-modes 'typescript-mode)
+       (add-hook 'typescript-mode-hook
+                 (let ()
+                   (local-set-key "\C-c\C-t" 'typescript-tss-show-type)
+                   (local-set-key "\C-c\C-d" 'typescript-tss-goto-definition)
+                   (add-to-list 'ac-source-ts 'ac-sources)))
+    )))
 
 ;; multi-web-mode
 (when (kui/autoload-if-exist 'multi-web-mode "multi-web-mode")
