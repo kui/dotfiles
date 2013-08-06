@@ -863,6 +863,11 @@ create *scratch* if it did not exists"
 (when (kui/autoload-if-exist 'groovy-mode "groovy-mode")
   (add-to-list 'auto-mode-alist '("\\.gradle\\'" . groovy-mode)))
 
+;; haml-mode
+(when (kui/autoload-if-exist 'groovy-mode "haml-mode")
+  (add-to-list 'auto-mode-alist '("\\.haml\\'" . haml-mode))
+  (add-to-list 'ac-modes 'haml-mode))
+
 ;; -------------------------------------------------------------------------
 ;; 色とか
 (when (kui/package-require 'color-theme nil nil t)
