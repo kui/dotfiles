@@ -392,7 +392,8 @@ create *scratch* if it did not exists"
    )
   (set 'popwin:special-display-config
        (append
-        '(("*anything imenu*" :position :right)
+        '(("*helm imenu*" :position :right)
+          ("*Buffer List*" :position :bottom :height 20 :dedicated t :tail t)
           )
         popwin:special-display-config))
   )
@@ -400,7 +401,7 @@ create *scratch* if it did not exists"
 ;; gude-key
 (when (kui/package-require 'guide-key nil nil t)
   (setq
-   guide-key/guide-key-sequence '("M-t" "C-c" "C-x RET" "C-x C-h" "C-x r" "M-m")
+   guide-key/guide-key-sequence '("M-t" "C-c" "C-x RET" "C-x C-h" "C-x r" "M-m" "Esc m")
    guide-key/popup-window-position 'bottom
    guide-key/polling-time 0.5
    guide-key/popup-if-super-key-sequence t
@@ -609,6 +610,11 @@ create *scratch* if it did not exists"
      )))
 
 (when (kui/package-require 'helm nil nil t)
+
+  (setq
+   helm-ff-transformer-show-only-basename nil
+   helm-buffer-max-length 20)
+
   (global-set-key "\C-xa" 'helm-apropos)
   (global-set-key "\C-x\C-f" 'helm-find-files)
   (global-set-key "\C-xb" 'helm-buffers-list)
@@ -740,7 +746,8 @@ create *scratch* if it did not exists"
 
   (add-to-list 'auto-mode-alist '("\\.gemspec\\'" . ruby-mode))
   (add-to-list 'auto-mode-alist '("/config\\.ru\\'" . ruby-mode))
-  (add-to-list 'auto-mode-alist '("\\(Gem\\|Thor\\|Berks\\|Vagrant\\)file\\'" . ruby-mode))
+  (add-to-list 'auto-mode-alist '("\\(Rake\\|Gem\\|Thor\\|Berks\\|Vagrant\\)file\\'" . ruby-mode))
+  (add-to-list 'auto-mode-alist '("\\.builder\\'" . ruby-mode))
 
   (eval-after-load "ruby-mode"
     '(let nil
