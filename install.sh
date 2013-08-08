@@ -10,12 +10,13 @@ link_file_list=(
     dotzshrc.d
     dotzlogin
     dotbashrc
-    dotrsense
     dotrbindkeys.rb
     dotirssi
     dotxinitrc
     dotdir_colors
 )
+
+rsense_dir="$HOME/.rsense.d"
 
 if [ $OSTYPE = "cygwin" ]
 then
@@ -89,19 +90,20 @@ main(){
 }
 
 setup_emacs(){
-    mkdir -p src
+    mkdir -p "$rsense_dir"
 
-    if [ ! -d src/rsense-0.3 ]
+    if [ ! -f "$rsense_dir/rsense-0.3" ]
     then
-        cd src
+        local old_loc="$(pwd)"
+        cd "$rsense_dir"
         print_and_do "wget http://cx4a.org/pub/rsense/rsense-0.3.tar.bz2"
         print_and_do "tar xjf rsense-0.3.tar.bz2"
-        cd ..
+        cd "$old_loc"
     fi
 
     if which ruby >/dev/null && which java >/dev/null
     then
-        print_and_do "ruby src/rsense-0.3/etc/config.rb > $curr_dir/dotrsense"
+        print_and_do "ruby ${rsense_dir}/rsense-0.3/etc/config.rb > $curr_dir/dotrsense"
     else
         echo "WARN: cannot install rsense" 2>&1
         echo "WARN: rsense require ruby and java" 2>&1
