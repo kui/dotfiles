@@ -762,7 +762,7 @@ create *scratch* if it did not exists"
 
        (defun ruby-mode-set-encoding () ())
 
-       (let ((rhome (expand-file-name "~/.settings/src/rsense-0.3")))
+       (let ((rhome (expand-file-name "~/.rsense.d/rsense-0.3")))
          (if (file-directory-p rhome)
              (let nil
                (message "try to load rsense")
@@ -774,7 +774,7 @@ create *scratch* if it did not exists"
                            (lambda ()
                              (add-to-list 'ac-sources 'ac-source-rsense-method)
                              (add-to-list 'ac-sources 'ac-source-rsense-constant)))))
-           (message "cant not load rsense")))
+           (message "cant not found rsense")))
 
        ;; (when (require 'robe nil t)
        ;;   (add-hook 'ruby-mode-hook 'robe-mode)
