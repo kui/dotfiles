@@ -634,3 +634,6 @@ source_if_exist "$HOME/.zshrc.d/syntax-highlighting/zsh-syntax-highlighting.zsh"
 
 # golang utillityes which be installed by dpkg (apt)
 source_if_exist "/usr/lib/go/misc/zsh/go"
+
+# npm
+which npm > /dev/null 2>&1 && . <(npm completion)
