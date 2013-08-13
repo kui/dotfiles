@@ -392,7 +392,8 @@ create *scratch* if it did not exists"
    )
   (set 'popwin:special-display-config
        (append
-        '(("*anything imenu*" :position :right)
+        '(("*helm imenu*" :position :right)
+          ("*Buffer List*" :position :bottom :height 20 :dedicated t :tail t)
           )
         popwin:special-display-config))
   )
@@ -400,7 +401,7 @@ create *scratch* if it did not exists"
 ;; gude-key
 (when (kui/package-require 'guide-key nil nil t)
   (setq
-   guide-key/guide-key-sequence '("M-t" "C-c" "C-x RET" "C-x C-h" "C-x r" "M-m")
+   guide-key/guide-key-sequence '("M-t" "C-c" "C-x RET" "C-x C-h" "C-x r" "M-m" "Esc m")
    guide-key/popup-window-position 'bottom
    guide-key/polling-time 0.5
    guide-key/popup-if-super-key-sequence t
@@ -609,6 +610,11 @@ create *scratch* if it did not exists"
      )))
 
 (when (kui/package-require 'helm nil nil t)
+
+  (setq
+   helm-ff-transformer-show-only-basename nil
+   helm-buffer-max-length 20)
+
   (global-set-key "\C-xa" 'helm-apropos)
   (global-set-key "\C-x\C-f" 'helm-find-files)
   (global-set-key "\C-xb" 'helm-buffers-list)
@@ -740,7 +746,8 @@ create *scratch* if it did not exists"
 
   (add-to-list 'auto-mode-alist '("\\.gemspec\\'" . ruby-mode))
   (add-to-list 'auto-mode-alist '("/config\\.ru\\'" . ruby-mode))
-  (add-to-list 'auto-mode-alist '("\\(Gem\\|Thor\\|Berks\\|Vagrant\\)file\\'" . ruby-mode))
+  (add-to-list 'auto-mode-alist '("\\(Rake\\|Gem\\|Thor\\|Berks\\|Vagrant\\)file\\'" . ruby-mode))
+  (add-to-list 'auto-mode-alist '("\\.builder\\'" . ruby-mode))
 
   (eval-after-load "ruby-mode"
     '(let nil
@@ -755,7 +762,7 @@ create *scratch* if it did not exists"
 
        (defun ruby-mode-set-encoding () ())
 
-       (let ((rhome (expand-file-name "~/.settings/src/rsense-0.3")))
+       (let ((rhome (expand-file-name "~/.rsense.d/rsense-0.3")))
          (if (file-directory-p rhome)
              (let nil
                (message "try to load rsense")
@@ -767,7 +774,7 @@ create *scratch* if it did not exists"
                            (lambda ()
                              (add-to-list 'ac-sources 'ac-source-rsense-method)
                              (add-to-list 'ac-sources 'ac-source-rsense-constant)))))
-           (message "cant not load rsense")))
+           (message "cant not found rsense")))
 
        ;; (when (require 'robe nil t)
        ;;   (add-hook 'ruby-mode-hook 'robe-mode)
@@ -882,6 +889,11 @@ create *scratch* if it did not exists"
 ;; groovy-mode
 (when (kui/autoload-if-exist 'groovy-mode "groovy-mode")
   (add-to-list 'auto-mode-alist '("\\.gradle\\'" . groovy-mode)))
+
+;; haml-mode
+(when (kui/autoload-if-exist 'groovy-mode "haml-mode")
+  (add-to-list 'auto-mode-alist '("\\.haml\\'" . haml-mode))
+  (add-to-list 'ac-modes 'haml-mode))
 
 ;; -------------------------------------------------------------------------
 ;; 色とか
