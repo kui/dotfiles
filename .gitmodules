@@ -7,3 +7,6 @@
 [submodule "dotzshrc.d/zsh-completions"]
 	path = dotzshrc.d/zsh-completions
 	url = https://github.com/zsh-users/zsh-completions.git
+[submodule "dotzshrc.d/grunt-zsh-completion"]
+	path = dotzshrc.d/grunt-zsh-completion
+	url = https://github.com/yonchu/grunt-zsh-completion.git
