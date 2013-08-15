@@ -618,6 +618,7 @@ create *scratch* if it did not exists"
   (global-set-key "\C-xa" 'helm-apropos)
   (global-set-key "\C-x\C-f" 'helm-find-files)
   (global-set-key "\C-xb" 'helm-buffers-list)
+  (global-set-key "\M-o" 'helm-buffers-list)
   (global-set-key "\C-o" 'helm-occur)
   (global-set-key "\M-i" 'helm-imenu)
   (global-set-key "\M-x" 'helm-M-x)
@@ -852,7 +853,15 @@ create *scratch* if it did not exists"
   (add-to-list 'auto-mode-alist '("\\.js\\'" . js-mode))
   (add-to-list 'auto-mode-alist '("\\.json\\'" . js-mode))
   (eval-after-load "js"
-    '(setq js-indent-level 2)))
+    '(let nil
+       (setq js-indent-level 2)
+       (if (and (executable-find "jshint")
+                (require 'flymake-jshint nil t))
+           (add-hook 'js-mode-hook 'flymake-jshint-load))
+       ;; (if (and (executable-find "jslint")
+       ;;          (require 'flymake-jslint nil t))
+       ;;     (add-hook 'js-mode-hook 'flymake-jslint-load))
+       )))
 
 ;; typescript-mode
 (add-to-list 'load-path "~/.emacs.d/auto-complete-ts")
