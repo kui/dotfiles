@@ -837,6 +837,8 @@ create *scratch* if it did not exists"
 
 ;; css-mode
 (setq css-indent-offset 2)
+(add-to-list 'ac-modes 'css-mode)
+
 
 ;; scss-mode
 (when (kui/autoload-if-exist 'scss-mode "scss-mode")
@@ -872,6 +874,9 @@ create *scratch* if it did not exists"
                    (add-to-list 'ac-source-ts 'ac-sources)))
     )))
 
+;; html-mode
+(add-to-list 'ac-modes 'html-mode)
+
 ;; multi-web-mode
 (when (kui/autoload-if-exist 'multi-web-mode "multi-web-mode")
   (add-to-list 'auto-mode-alist '("\\.html\\'" . multi-web-mode))
@@ -879,12 +884,19 @@ create *scratch* if it did not exists"
     '(let nil
        (setq mweb-default-major-mode 'html-mode)
        (setq mweb-tags '((php-mode "<\\?php\\|<\\? \\|<\\?=" "\\?>")
-                         (js-mode "<script +\\(type=\"text/javascript\"\\|language=\"javascript\"\\)[^>]*>"
+                         (js-mode "<script>" "</script>")
+                         (js-mode "<script +\\(type=\"text/javascript\"\\|language=\"javascript\"\\)>"
                                   "</script>")
                          (css-mode "<style +type=\"text/css\"[^>]*>" "</style>")))
        (setq mweb-filename-extensions '("php" "htm" "html" "ctp" "phtml" "php4" "php5"))
        (multi-web-global-mode 1)
        )))
+
+;; web-mode
+;; (when (kui/autoload-if-exist 'web-mode "web-mode")
+;;   (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+;;   (add-to-list 'ac-modes 'web-mode)
+;;   )
 
 ;; groovy-mode
 (when (kui/autoload-if-exist 'groovy-mode "groovy-mode")
