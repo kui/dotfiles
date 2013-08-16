@@ -92,17 +92,17 @@ main(){
 setup_emacs(){
     mkdir -p "$rsense_dir"
 
-    if [ ! -f "$rsense_dir/rsense-0.3" ]
-    then
-        local old_loc="$(pwd)"
-        cd "$rsense_dir"
-        print_and_do "wget http://cx4a.org/pub/rsense/rsense-0.3.tar.bz2"
-        print_and_do "tar xjf rsense-0.3.tar.bz2"
-        cd "$old_loc"
-    fi
-
     if which ruby >/dev/null && which java >/dev/null
     then
+	if [ ! -f "$rsense_dir/rsense-0.3" ]
+	then
+            local old_loc="$(pwd)"
+            cd "$rsense_dir"
+            print_and_do "wget http://cx4a.org/pub/rsense/rsense-0.3.tar.bz2"
+            print_and_do "tar xjf rsense-0.3.tar.bz2"
+            cd "$old_loc"
+	fi
+
         print_and_do "ruby ${rsense_dir}/rsense-0.3/etc/config.rb > $curr_dir/dotrsense"
     else
         echo "WARN: cannot install rsense" 2>&1
