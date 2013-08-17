@@ -364,7 +364,7 @@ echo_jobs_num(){
     if [[ -z "$1" ]]
     then c="%F{green}" d="%f"
     fi
-    nums=$( jobs | wc -l )
+    nums=$( jobs | grep -E '^\[[0-9]*\] ' | wc -l )
     [[ "$nums" -ne 0 ]] && echo -n "jobs($c$nums$d)"
 }
 
