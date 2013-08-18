@@ -24,7 +24,7 @@
 (setq default-file-name-coding-system 'utf-8-unix)
 
 ;; meadow 向けの設定
-; (if (string-equal system-type "windows-nt") (let () ))
+(if (string-equal system-type "windows-nt") (let () ))
 
 ;; 自動保存機能
 (setq auto-save-default t
@@ -341,6 +341,19 @@ create *scratch* if it did not exists"
     (switch-to-buffer "*scratch*")
     (insert initial-scratch-message)))
 
+(defun kui/current-minor-modes ()
+  "Return minor modes on the current buffer"
+  (remove-if
+   (lambda (mode)
+     (not (and (boundp mode) (symbol-value mode)
+               (fboundp (or (get mode :minor-mode-function) mode)))))
+   minor-mode-list))
+
+(defun kui/active-minor-modep (mode)
+  "Return MODE if MODE was activate on the current buffer,
+but if not, return nil."
+  (find-if (lambda (m) (eq m mode)) (kui/current-minor-modes)))
+
 ;; backindentation
 ;; (defun kui/backindent ()
 ;;   "Unindent"
@@ -637,7 +650,7 @@ create *scratch* if it did not exists"
                           (message "prev error")
                           (flymake-goto-prev-error)
                           (flymake-display-err-menu-for-current-line)))
-     )))
+       )))
 
 (when (kui/package-require 'helm nil nil t)
 
@@ -654,15 +667,15 @@ create *scratch* if it did not exists"
   (global-set-key "\M-x" 'helm-M-x)
 
   (eval-after-load 'helm
-  '(progn
-     (define-key helm-map "\C-h" 'delete-backward-char)
-     (define-key helm-map "TAB" 'helm-execute-persistent-action)
-     ))
+    '(progn
+       (define-key helm-map "\C-h" 'delete-backward-char)
+       (define-key helm-map "TAB" 'helm-execute-persistent-action)
+       ))
   (eval-after-load 'helm-files
-  '(progn
-     (define-key helm-find-files-map "\C-h" 'delete-backward-char)
-     (define-key helm-find-files-map "TAB" 'helm-execute-persistent-action)
-     ))
+    '(progn
+       (define-key helm-find-files-map "\C-h" 'delete-backward-char)
+       (define-key helm-find-files-map "TAB" 'helm-execute-persistent-action)
+       ))
   )
 
 ;; whitespace-mode
@@ -769,8 +782,8 @@ create *scratch* if it did not exists"
   (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
   (eval-after-load "yaml-mode"
     '(let ()
-      ;; yaml-mode 読み込まれた時に評価される
-      )))
+       ;; yaml-mode 読み込まれた時に評価される
+       )))
 
 ;; ruby-mode
 (when (kui/autoload-if-exist 'ruby-mode "ruby-mode")
@@ -911,7 +924,7 @@ create *scratch* if it did not exists"
                    (local-set-key "\C-c\C-t" 'typescript-tss-show-type)
                    (local-set-key "\C-c\C-d" 'typescript-tss-goto-definition)
                    (add-to-list 'ac-source-ts 'ac-sources)))
-    )))
+       )))
 
 ;; html-mode
 (add-to-list 'ac-modes 'html-mode)
@@ -929,6 +942,15 @@ create *scratch* if it did not exists"
                          (css-mode "<style +type=\"text/css\"[^>]*>" "</style>")))
        (setq mweb-filename-extensions '("php" "htm" "html" "ctp" "phtml" "php4" "php5"))
        (multi-web-global-mode 1)
+
+       ;; multi-web-mode での js-mode では flymake-jshint を使わない
+       (remove-hook 'js-mode-hook 'flymake-jshint-load)
+       (add-hook 'js-mode-hook
+                 (lambda nil (unless (kui/active-minor-modep 'multi-web-mode)
+                               (flymake-jshint-load))))
+       (eval-after-load "js"
+         '(progn
+            (remove-hook 'js-mode-hook 'flymake-jshint-load)))
        )))
 
 ;; web-mode
