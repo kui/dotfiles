@@ -423,6 +423,9 @@ create *scratch* if it did not exists"
   (global-set-key (kbd "M-j") 'kui/jump-to-project-directory-other-window-if-in-project)
   )
 
+;; editorconfig
+(when (kui/package-require 'editorconfig nil nil t))
+
 ;; gude-key
 (when (kui/package-require 'guide-key nil nil t)
   (setq
