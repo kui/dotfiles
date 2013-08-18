@@ -422,7 +422,7 @@ but if not, return nil."
 ;; direx
 (when (and (kui/package-require 'direx nil nil t)
            (kui/package-require 'popwin nil nil t))
-  (push '(direx:direx-mode :position :left :width 25 :dedicated t)
+  (push '(direx:direx-mode :position :left :width 40 :dedicated t)
         popwin:special-display-config)
 
   (require 'direx-project)
