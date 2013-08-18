@@ -411,8 +411,6 @@ create *scratch* if it did not exists"
            (kui/package-require 'popwin nil nil t))
   (push '(direx:direx-mode :position :left :width 25 :dedicated t)
         popwin:special-display-config)
-  (setq direx:open-icon   "-"
-        direx:closed-icon "+")
 
   (require 'direx-project)
   (defun kui/jump-to-project-directory-other-window-if-in-project ()
