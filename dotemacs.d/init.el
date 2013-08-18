@@ -366,6 +366,11 @@ create *scratch* if it did not exists"
     (set-face-background 'git-gutter:unchanged "brightblack")
     (dolist (f '(git-gutter:modified git-gutter:added git-gutter:deleted))
       (set-face-attribute f nil :inherit 'git-gutter:unchanged)))
+
+  (global-set-key "\C-cgn" 'git-gutter:next-diff)
+  (global-set-key "\C-cgp" 'git-gutter:previous-diff)
+  (global-set-key "\C-cgo" 'git-gutter:popup-diff)
+
   (global-git-gutter-mode t))
 
 ;; linum & hlinum
@@ -401,18 +406,22 @@ create *scratch* if it did not exists"
         popwin:special-display-config))
   )
 
-;; dirx
-(when (kui/package-require 'direx nil nil t)
-  (when (kui/package-require 'popwin nil nil t)
-    (push '(direx:direx-mode :position :left :width 25 :dedicated t)
-          popwin:special-display-config)
-    (defun kui/jump-to-project-directory-other-window-if-in-project ()
-      (interactive)
-      (if (direx-project:find-project-root-noselect (or buffer-file-name default-directory))
-          (direx-project:jump-to-project-root-other-window)
-        (direx:jump-to-directory-other-window)))
-    (global-set-key (kbd "M-j") 'kui/jump-to-project-directory-other-window-if-in-project)
-    ))
+;; direx
+(when (and (kui/package-require 'direx nil nil t)
+           (kui/package-require 'popwin nil nil t))
+  (push '(direx:direx-mode :position :left :width 25 :dedicated t)
+        popwin:special-display-config)
+  (setq direx:open-icon   "-"
+        direx:closed-icon "+")
+
+  (require 'direx-project)
+  (defun kui/jump-to-project-directory-other-window-if-in-project ()
+    (interactive)
+    (if (direx-project:find-project-root-noselect (or buffer-file-name default-directory))
+        (direx-project:jump-to-project-root-other-window)
+      (direx:jump-to-directory-other-window)))
+  (global-set-key (kbd "M-j") 'kui/jump-to-project-directory-other-window-if-in-project)
+  )
 
 ;; gude-key
 (when (kui/package-require 'guide-key nil nil t)
@@ -481,6 +490,10 @@ create *scratch* if it did not exists"
   (setq
    kui/tabbar-buffer-filter-list
    '(;; * で始まるバッファは消す
+     (lambda (blist)
+       (remove-if (lambda (b) (string-match "^ ?\\*" (buffer-name b)))
+                  blist))
+
      (lambda (blist)
        (remove-if (lambda (b) (string-match "^ ?\\*" (buffer-name b)))
                   blist))
@@ -634,8 +647,8 @@ create *scratch* if it did not exists"
   (global-set-key "\C-xa" 'helm-apropos)
   (global-set-key "\C-x\C-f" 'helm-find-files)
   (global-set-key "\C-xb" 'helm-buffers-list)
-  (global-set-key "\M-o" 'helm-buffers-list)
-  (global-set-key "\C-o" 'helm-occur)
+  (global-set-key "\C-o" 'helm-buffers-list)
+  (global-set-key "\M-o" 'helm-occur)
   (global-set-key "\M-i" 'helm-imenu)
   (global-set-key "\M-x" 'helm-M-x)
 
