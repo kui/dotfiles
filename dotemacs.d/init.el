@@ -361,8 +361,11 @@ create *scratch* if it did not exists"
 
 ;; git-gutter
 (when (kui/package-require 'git-gutter nil nil t)
-  (if (not (window-system))
-      (setq git-gutter:separator-sign "|"))
+  (setq git-gutter:unchanged-sign " ")
+  (when (not (window-system))
+    (set-face-background 'git-gutter:unchanged "brightblack")
+    (dolist (f '(git-gutter:modified git-gutter:added git-gutter:deleted))
+      (set-face-attribute f nil :inherit 'git-gutter:unchanged)))
   (global-git-gutter-mode t))
 
 ;; linum & hlinum
@@ -397,6 +400,19 @@ create *scratch* if it did not exists"
           )
         popwin:special-display-config))
   )
+
+;; dirx
+(when (kui/package-require 'direx nil nil t)
+  (when (kui/package-require 'popwin nil nil t)
+    (push '(direx:direx-mode :position :left :width 25 :dedicated t)
+          popwin:special-display-config)
+    (defun kui/jump-to-project-directory-other-window-if-in-project ()
+      (interactive)
+      (if (direx-project:find-project-root-noselect (or buffer-file-name default-directory))
+          (direx-project:jump-to-project-root-other-window)
+        (direx:jump-to-directory-other-window)))
+    (global-set-key (kbd "M-j") 'kui/jump-to-project-directory-other-window-if-in-project)
+    ))
 
 ;; gude-key
 (when (kui/package-require 'guide-key nil nil t)
