@@ -847,6 +847,7 @@ but if not, return nil."
 
        ;; タブ幅
        (setq coffee-tab-width 2)
+       (add-to-list 'ac-modes 'coffee-mode)
 
        ;; flymake
        (when (and (require 'flymake nil t)
