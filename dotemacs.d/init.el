@@ -24,7 +24,7 @@
 (setq default-file-name-coding-system 'utf-8-unix)
 
 ;; meadow 向けの設定
-; (if (string-equal system-type "windows-nt") (let () ))
+(if (string-equal system-type "windows-nt") (let () ))
 
 ;; 自動保存機能
 (setq auto-save-default t
@@ -341,6 +341,19 @@ create *scratch* if it did not exists"
     (switch-to-buffer "*scratch*")
     (insert initial-scratch-message)))
 
+(defun kui/current-minor-modes ()
+  "Return minor modes on the current buffer"
+  (remove-if
+   (lambda (mode)
+     (not (and (boundp mode) (symbol-value mode)
+               (fboundp (or (get mode :minor-mode-function) mode)))))
+   minor-mode-list))
+
+(defun kui/active-minor-modep (mode)
+  "Return MODE if MODE was activate on the current buffer,
+but if not, return nil."
+  (find-if (lambda (m) (eq m mode)) (kui/current-minor-modes)))
+
 ;; backindentation
 ;; (defun kui/backindent ()
 ;;   "Unindent"
@@ -361,8 +374,16 @@ create *scratch* if it did not exists"
 
 ;; git-gutter
 (when (kui/package-require 'git-gutter nil nil t)
-  (if (not (window-system))
-      (setq git-gutter:separator-sign "|"))
+  (setq git-gutter:unchanged-sign " ")
+  (when (not (window-system))
+    (set-face-background 'git-gutter:unchanged "brightblack")
+    (dolist (f '(git-gutter:modified git-gutter:added git-gutter:deleted))
+      (set-face-attribute f nil :inherit 'git-gutter:unchanged)))
+
+  (global-set-key "\C-cgn" 'git-gutter:next-diff)
+  (global-set-key "\C-cgp" 'git-gutter:previous-diff)
+  (global-set-key "\C-cgo" 'git-gutter:popup-diff)
+
   (global-git-gutter-mode t))
 
 ;; linum & hlinum
@@ -397,6 +418,24 @@ create *scratch* if it did not exists"
           )
         popwin:special-display-config))
   )
+
+;; direx
+(when (and (kui/package-require 'direx nil nil t)
+           (kui/package-require 'popwin nil nil t))
+  (push '(direx:direx-mode :position :left :width 40 :dedicated t)
+        popwin:special-display-config)
+
+  (require 'direx-project)
+  (defun kui/jump-to-project-directory-other-window-if-in-project ()
+    (interactive)
+    (if (direx-project:find-project-root-noselect (or buffer-file-name default-directory))
+        (direx-project:jump-to-project-root-other-window)
+      (direx:jump-to-directory-other-window)))
+  (global-set-key (kbd "M-j") 'kui/jump-to-project-directory-other-window-if-in-project)
+  )
+
+;; editorconfig
+(when (kui/package-require 'editorconfig nil nil t))
 
 ;; gude-key
 (when (kui/package-require 'guide-key nil nil t)
@@ -465,6 +504,10 @@ create *scratch* if it did not exists"
   (setq
    kui/tabbar-buffer-filter-list
    '(;; * で始まるバッファは消す
+     (lambda (blist)
+       (remove-if (lambda (b) (string-match "^ ?\\*" (buffer-name b)))
+                  blist))
+
      (lambda (blist)
        (remove-if (lambda (b) (string-match "^ ?\\*" (buffer-name b)))
                   blist))
@@ -607,7 +650,7 @@ create *scratch* if it did not exists"
                           (message "prev error")
                           (flymake-goto-prev-error)
                           (flymake-display-err-menu-for-current-line)))
-     )))
+       )))
 
 (when (kui/package-require 'helm nil nil t)
 
@@ -618,20 +661,21 @@ create *scratch* if it did not exists"
   (global-set-key "\C-xa" 'helm-apropos)
   (global-set-key "\C-x\C-f" 'helm-find-files)
   (global-set-key "\C-xb" 'helm-buffers-list)
-  (global-set-key "\C-o" 'helm-occur)
+  (global-set-key "\C-o" 'helm-buffers-list)
+  (global-set-key "\M-o" 'helm-occur)
   (global-set-key "\M-i" 'helm-imenu)
   (global-set-key "\M-x" 'helm-M-x)
 
   (eval-after-load 'helm
-  '(progn
-     (define-key helm-map "\C-h" 'delete-backward-char)
-     (define-key helm-map "TAB" 'helm-execute-persistent-action)
-     ))
+    '(progn
+       (define-key helm-map "\C-h" 'delete-backward-char)
+       (define-key helm-map "TAB" 'helm-execute-persistent-action)
+       ))
   (eval-after-load 'helm-files
-  '(progn
-     (define-key helm-find-files-map "\C-h" 'delete-backward-char)
-     (define-key helm-find-files-map "TAB" 'helm-execute-persistent-action)
-     ))
+    '(progn
+       (define-key helm-find-files-map "\C-h" 'delete-backward-char)
+       (define-key helm-find-files-map "TAB" 'helm-execute-persistent-action)
+       ))
   )
 
 ;; whitespace-mode
@@ -738,8 +782,8 @@ create *scratch* if it did not exists"
   (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
   (eval-after-load "yaml-mode"
     '(let ()
-      ;; yaml-mode 読み込まれた時に評価される
-      )))
+       ;; yaml-mode 読み込まれた時に評価される
+       )))
 
 ;; ruby-mode
 (when (kui/autoload-if-exist 'ruby-mode "ruby-mode")
@@ -803,6 +847,7 @@ create *scratch* if it did not exists"
 
        ;; タブ幅
        (setq coffee-tab-width 2)
+       (add-to-list 'ac-modes 'coffee-mode)
 
        ;; flymake
        (when (and (require 'flymake nil t)
@@ -837,6 +882,8 @@ create *scratch* if it did not exists"
 
 ;; css-mode
 (setq css-indent-offset 2)
+(add-to-list 'ac-modes 'css-mode)
+
 
 ;; scss-mode
 (when (kui/autoload-if-exist 'scss-mode "scss-mode")
@@ -850,7 +897,15 @@ create *scratch* if it did not exists"
   (add-to-list 'auto-mode-alist '("\\.js\\'" . js-mode))
   (add-to-list 'auto-mode-alist '("\\.json\\'" . js-mode))
   (eval-after-load "js"
-    '(setq js-indent-level 2)))
+    '(let nil
+       (setq js-indent-level 2)
+       (if (and (executable-find "jshint")
+                (require 'flymake-jshint nil t))
+           (add-hook 'js-mode-hook 'flymake-jshint-load))
+       ;; (if (and (executable-find "jslint")
+       ;;          (require 'flymake-jslint nil t))
+       ;;     (add-hook 'js-mode-hook 'flymake-jslint-load))
+       )))
 
 ;; typescript-mode
 (add-to-list 'load-path "~/.emacs.d/auto-complete-ts")
@@ -870,7 +925,10 @@ create *scratch* if it did not exists"
                    (local-set-key "\C-c\C-t" 'typescript-tss-show-type)
                    (local-set-key "\C-c\C-d" 'typescript-tss-goto-definition)
                    (add-to-list 'ac-source-ts 'ac-sources)))
-    )))
+       )))
+
+;; html-mode
+(add-to-list 'ac-modes 'html-mode)
 
 ;; multi-web-mode
 (when (kui/autoload-if-exist 'multi-web-mode "multi-web-mode")
@@ -879,12 +937,28 @@ create *scratch* if it did not exists"
     '(let nil
        (setq mweb-default-major-mode 'html-mode)
        (setq mweb-tags '((php-mode "<\\?php\\|<\\? \\|<\\?=" "\\?>")
-                         (js-mode "<script +\\(type=\"text/javascript\"\\|language=\"javascript\"\\)[^>]*>"
+                         (js-mode "<script>" "</script>")
+                         (js-mode "<script +\\(type=\"text/javascript\"\\|language=\"javascript\"\\)>"
                                   "</script>")
                          (css-mode "<style +type=\"text/css\"[^>]*>" "</style>")))
        (setq mweb-filename-extensions '("php" "htm" "html" "ctp" "phtml" "php4" "php5"))
        (multi-web-global-mode 1)
+
+       ;; multi-web-mode での js-mode では flymake-jshint を使わない
+       (remove-hook 'js-mode-hook 'flymake-jshint-load)
+       (add-hook 'js-mode-hook
+                 (lambda nil (unless (kui/active-minor-modep 'multi-web-mode)
+                               (flymake-jshint-load))))
+       (eval-after-load "js"
+         '(progn
+            (remove-hook 'js-mode-hook 'flymake-jshint-load)))
        )))
+
+;; web-mode
+;; (when (kui/autoload-if-exist 'web-mode "web-mode")
+;;   (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+;;   (add-to-list 'ac-modes 'web-mode)
+;;   )
 
 ;; groovy-mode
 (when (kui/autoload-if-exist 'groovy-mode "groovy-mode")

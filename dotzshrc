@@ -79,7 +79,9 @@ fi
 export LANG=ja_JP.UTF-8
 
 # 補完スクリプトのパス
-fpath=({$HOME/.rvm,/usr/local/rvm}/scripts/zsh/Completion(N-/)
+fpath=(
+    {$HOME/.rvm,/usr/local/rvm}/scripts/zsh/Completion(N-/)
+    $HOME/.zshrc.d/grunt-zsh-completion(N-/)
     $HOME/.zshrc.d/completion(N-/)
     $HOME/.zshrc.d/zsh-completions/src(N-/)
     $fpath)
@@ -362,7 +364,7 @@ echo_jobs_num(){
     if [[ -z "$1" ]]
     then c="%F{green}" d="%f"
     fi
-    nums=$( jobs | wc -l )
+    nums=$( jobs | grep -E '^\[[0-9]*\] ' | wc -l )
     [[ "$nums" -ne 0 ]] && echo -n "jobs($c$nums$d)"
 }
 
@@ -632,3 +634,6 @@ source_if_exist "$HOME/.zshrc.d/syntax-highlighting/zsh-syntax-highlighting.zsh"
 
 # golang utillityes which be installed by dpkg (apt)
 source_if_exist "/usr/lib/go/misc/zsh/go"
+
+# npm
+which npm > /dev/null 2>&1 && . <(npm completion)
