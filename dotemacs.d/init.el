@@ -374,17 +374,20 @@ but if not, return nil."
 
 ;; git-gutter
 (when (kui/package-require 'git-gutter nil nil t)
+  (global-git-gutter-mode t)
+
   (setq git-gutter:unchanged-sign " ")
-  (when (not (window-system))
-    (set-face-background 'git-gutter:unchanged "brightblack")
-    (dolist (f '(git-gutter:modified git-gutter:added git-gutter:deleted))
-      (set-face-attribute f nil :inherit 'git-gutter:unchanged)))
+  (set-face-attribute 'git-gutter:unchanged nil
+                      :background "brightblack"
+                      :underline nil)
+  (set-face-background 'git-gutter:unchanged "brightblack")
+  (dolist (f '(git-gutter:modified git-gutter:added git-gutter:deleted))
+    (set-face-attribute f nil :inherit 'git-gutter:unchanged))
 
   (global-set-key "\C-cgn" 'git-gutter:next-diff)
   (global-set-key "\C-cgp" 'git-gutter:previous-diff)
   (global-set-key "\C-cgo" 'git-gutter:popup-diff)
-
-  (global-git-gutter-mode t))
+  )
 
 ;; linum & hlinum
 ;; (when (kui/autoload-if-exist 'linum-mode "linum")
