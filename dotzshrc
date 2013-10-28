@@ -614,14 +614,14 @@ bindkey '^m' do_enter
 
 timetrack_threshold=10 # seconds
 read -r -d '' timetrack_ignore_progs <<EOF
-less
-emacs vi vim
-ssh mosh telnet nc netcat
-gdb
+less man emacs vi vim ssh mosh telnet nc netcat vagrant gdb
 EOF
 
 export timetrack_threshold
 export timetrack_ignore_progs
+
+unset timetrack_start
+unset timetrack_command
 
 function preexec_start_timetrack() {
     local command=$1
@@ -668,7 +668,6 @@ COMMAND: $command"
 
     if [ "$exec_time" -ge "$timetrack_threshold" ]
     then
-        echo "notify"
         case $notify_method in
 
             "growlnotify" )
