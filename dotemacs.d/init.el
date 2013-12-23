@@ -377,12 +377,7 @@ but if not, return nil."
   (global-git-gutter-mode t)
 
   (setq git-gutter:unchanged-sign " ")
-  (set-face-attribute 'git-gutter:unchanged nil
-                      :background "brightblack"
-                      :underline nil)
-  (set-face-background 'git-gutter:unchanged "brightblack")
-  (dolist (f '(git-gutter:modified git-gutter:added git-gutter:deleted))
-    (set-face-attribute f nil :inherit 'git-gutter:unchanged))
+  (message "git-gutter: loaded")
 
   (global-set-key "\C-cgn" 'git-gutter:next-diff)
   (global-set-key "\C-cgp" 'git-gutter:previous-diff)
@@ -1006,7 +1001,15 @@ but if not, return nil."
                           :background "#444444")
       (set-face-attribute 'hl-line nil
                           :background "#262626"
-                          :inherit nil)))
+                          :inherit nil))
+
+    (when (require 'git-gutter)
+      (set-face-attribute 'git-gutter:unchanged nil
+                          :background "brightblack"
+                          :underline  nil)
+      (dolist (ggface '(git-gutter:modified git-gutter:added git-gutter:deleted))
+        (set-face-attribute ggface nil :inherit 'git-gutter:unchanged)))
+    )
 
   (when nil ;(locate-library "color-theme-twilight")
     (load-library "color-theme-twilight")

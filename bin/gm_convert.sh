@@ -1,15 +1,17 @@
 #!/bin/bash
 
-USAGE="$0 interval size colors img [img [ ... ] ]
+set -eu
+set -x
+
+USAGE="$0 interval size img [img [ ... ] ]
 
 interval: <integer>
 size:     <integer>x<integer>
-colors:   <integer>
 "
 
-DELAY_FACTOR=3
+DELAY_FACTOR=8
 
-if [[ $# -lt 4 ]]
+if [[ $# -lt 3 ]]
 then
     echo -e "$USAGE"
     exit
@@ -17,12 +19,9 @@ fi
 
 interval=$1
 size=$2
-colors=$3
 delay=$((interval * DELAY_FACTOR))
 
-shift 3
-
-
+shift 2
 
 main(){
     files=
@@ -34,7 +33,9 @@ main(){
     done
 
     set -x
-    gm convert -delay $delay -resize $size -colors $colors +dither $files t.gif
+    # gm convert -delay $delay -resize $size -colors $colors +dither $files t.gif
+    gifsicle -O3 --delay "$delay" --loop --resize "$size" $files > ~/tmp/t.gif
+    echo see ~/tmp/t.gif
 }
 
 main "$@"
