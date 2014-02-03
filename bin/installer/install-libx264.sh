@@ -16,9 +16,16 @@ fi
 main() {
     local workspace="$BASE_DIR/libx264"
 
-    rm -fr "$workspace"
-    git clone --depth=1 --branch=master "git://git.videolan.org/x264.git" "$workspace"
-    cd "$workspace"
+    if [[ -e "$workspace/.git" ]]
+    then
+        cd "$workspace"
+        git pull
+    else
+        rm -fr "$workspace"
+        git clone --depth=1 --branch=master \
+            "git://git.videolan.org/x264.git" "$workspace"
+        cd "$workspace"
+    fi
 
     ./configure \
         --enable-shared \

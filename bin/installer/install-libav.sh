@@ -16,10 +16,16 @@ fi
 main() {
     local workspace=$BASE_DIR/libav
 
-    rm -fr "$workspace"
-    git clone --depth=1 --branch=master
-        "git://git.libav.org/libav.git" "$workspace"
-    cd "$workspace"
+    if [[ -e "$workspace/.git" ]]
+    then
+        cd "$workspace"
+        git pull
+    else
+        rm -fr "$workspace"
+        git clone --depth=1 --branch=master \
+            "git://git.libav.org/libav.git" "$workspace"
+        cd "$workspace"
+    fi
 
     ./configure \
         --enable-shared \

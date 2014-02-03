@@ -16,10 +16,16 @@ fi
 main() {
     local workspace=$BASE_DIR/libfdk-aac
 
-    rm -fr "$workspace"
-    git clone --depth=1 --branch=master \
-        "git://git.code.sf.net/p/opencore-amr/fdk-aac" "$workspace"
-    cd "$workspace"
+    if [[ -e "$workspace/.git" ]]
+    then
+        cd "$workspace"
+        git pull
+    else
+        rm -fr "$workspace"
+        git clone --depth=1 --branch=master \
+            "git://git.code.sf.net/p/opencore-amr/fdk-aac" "$workspace"
+        cd "$workspace"
+    fi
 
     autoreconf -fiv
     ./configure --enable-shared
