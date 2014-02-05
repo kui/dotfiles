@@ -2,7 +2,7 @@
 
 set -x
 
-BASE="$(dirname $0)"
+BASE="$(dirname "$(readlink -f "$0")")"
 
 TSSPLITTER="${BASE}/wine/TsSplitter.exe"
 env WINEARCH=win32 WINEPREFIX=~/.wine32 \
