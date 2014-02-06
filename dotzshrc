@@ -158,6 +158,13 @@ function j(){
     fi
 }
 
+# 現在のディレクトリをルートディレクトリとしたHTTPサーバを立ち上げる
+function http_server(){
+    local port=8888
+    python -m SimpleHTTPServer $port &
+    [ -f /usr/bin/xdg-open ] && /usr/bin/xdg-open http://localhost:$port/
+}
+
 # screen のコピー機能と、X Window System のクリップボードの同期
 if which xsel > /dev/null 2>&1
 then
