@@ -266,16 +266,14 @@ update_vcs_info(){
     export VCS_BRANCH_NAME=$vcs_info_msg_1_
     export VCS_REVISION=$vcs_info_msg_2_
     export VCS_ACTION=$vcs_info_msg_5_
-    export VCS_IS_COMMITED=t
-    export VCS_IS_ADDED=t
 
-    if [[ -n "$VCS_NAME" ]]
-    then
-        [[ -n "$vcs_info_msg_3_" || ! "$vcs_info_msg_3_" = %c ]] && \
-            export VCS_IS_COMMITED=
-        [[ -n "$vcs_info_msg_4_" || ! "$vcs_info_msg_4_" = %u ]] && \
-            export VCS_IS_ADDED=
-    fi
+    VCS_IS_COMMITED=t
+    [[ -n "$vcs_info_msg_3_" ]] && VCS_IS_COMMITED=
+    export VCS_IS_COMMITED
+
+    VCS_IS_ADDED=t
+    [[ -n "$vcs_info_msg_4_" ]] && VCS_IS_ADDED=
+    export VCS_IS_ADDED
 }
 precmd_functions=($precmd_functions update_vcs_info)
 
