@@ -53,7 +53,7 @@ path=(
     node_modules/.bin
     $GEM_HOME/bin(N-/)
     $path
-    /usr/local/rvm/bin(N-/)
+    /usr/local/{rvm,rbenv}/bin(N-/)
     /app/{script,mingw/tdm/bin,gs/bin,gs/lib}(N-/)
     /usr{/local,/usr,}/bin(N-/)
 )
@@ -685,11 +685,14 @@ fi
 source ~/.zshrc.local
 
 ## rbenv
+if [[ -e "$(which rbenv)" ]]
+then export RBENV_ROOT="$(cd "$(dirname "$(which rbenv)")/.."; pwd)"
+fi
 if which rbenv > /dev/null 2>&1 &&
     ! which rvm > /dev/null 2>&1
 then
     echo load rbenv
-    eval "$(rbenv init -)"
+    eval "$(rbenv init - zsh)"
 fi
 
 # zaw
