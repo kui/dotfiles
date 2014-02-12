@@ -59,22 +59,19 @@ main(){
     for file in ${link_file_list[@]}
     do
         local target_file="${curr_dir}/${file}"
-        local dest_file=`echo "$file" | sed -e 's/^dot/./'`
-        local dest_file="${HOME}/${dest_file}"
+        local dest_file="$(echo "$file" | sed -e 's/^dot/./')"
+        dest_file="${HOME}/${dest_file}"
 
-        if [ ! -e "$target_file" ] && (! echo "$target_file"| grep "dotrsense$" >/dev/null)
+        if [ ! -e "$target_file" ]
         then
             echo "error: cannot find $target_file" >&2
             exit 1
         fi
 
-        # skip if $dest_file exist and the link is no change
-        [ -h "$dest_file" -a\
-          "$target_file" = "`readlink "$dest_file"`" ] && continue
-
-        print_and_do "ln $ln_opt \"$target_file\" \"$dest_file\""
+        myln "$target_file" "$dest_file"
     done
 
+    echo_to ~/.rbindkeys.local.rb '# -*- mode: ruby; coding: utf-8 -*-'
     create_empty_zsh ~/.zshrc.local
     create_empty_zsh ~/.zlogin.local
 
@@ -89,12 +86,25 @@ main(){
     cd "$prev_dir"
 }
 
+ln_opt="-sbT"
+grep -q "^darwin" <<< "$OSTYPE" \
+  && ln_opt="-sf"
+
+myln(){
+    if [ -h "$dest_file" -a \
+      "$target_file" = "$(readlink "$dest_file")" ]
+    then return
+    fi
+
+    print_and_do "ln $ln_opt '$1' '$2'"
+}
+
 setup_emacs(){
     mkdir -p "$rsense_dir"
 
     if which ruby >/dev/null && which java >/dev/null
     then
-	if [ ! -f "$rsense_dir/rsense-0.3" ]
+	if [ ! -e "$rsense_dir/rsense-0.3" ]
 	then
             local old_loc="$(pwd)"
             cd "$rsense_dir"
@@ -103,7 +113,8 @@ setup_emacs(){
             cd "$old_loc"
 	fi
 
-        print_and_do "ruby ${rsense_dir}/rsense-0.3/etc/config.rb > $curr_dir/dotrsense"
+        [ ! -e "$HOME/.rsense" ] \
+          && print_and_do "ruby ${rsense_dir}/rsense-0.3/etc/config.rb > $HOME/.rsense"
     else
         echo "WARN: cannot install rsense" 2>&1
         echo "WARN: rsense require ruby and java" 2>&1
@@ -112,11 +123,13 @@ setup_emacs(){
     print_and_do "emacs --batch --eval '(setq kui/install-mode-p t)' --load '~/.emacs.d/init.el'"
 }
 
+echo_to(){
+    [ ! -e $1 ] \
+        && print_and_do "echo '$2' > $1"
+}
+
 create_empty_zsh(){
-    if ! [ -e $1 ]
-    then
-        print_and_do "echo \"# -*- mode: sh; coding: utf-8 -*-\" > $1"
-    fi
+    echo_to "$1" '# -*- mode: sh; coding: utf-8 -*-'
 }
 
 print_and_do(){
