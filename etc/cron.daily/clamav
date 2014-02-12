@@ -37,8 +37,6 @@ main(){
         clamscan $CLAMSCAN_OPTS "${DAILY_SCAN_DIR[@]}" | tee "$tmp"
     fi
 
-    echo hoge > "$tmp"
-
     if [[ $(wc -l "$tmp"|cut -d' ' -f1) -gt 0 ]]
     then cp "$tmp" "/home/kui/WARNING-FROM-CLAMAV.txt"
     fi

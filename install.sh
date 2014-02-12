@@ -26,15 +26,12 @@ then
     )
 fi
 
-run_flag=1
 counter=0
 
-main(){
-    local prev_dir=`pwd`
-    local curr_dir=`dirname $0`
-    cd "$curr_dir"
-    local curr_dir=`pwd`
+cd "$(dirname "$0")"
+curr_dir=`pwd`
 
+main(){
     run_flag=1
     while getopts r opt
     do
@@ -77,13 +74,14 @@ main(){
 
     setup_emacs
 
+    setup_user_dir
+
     # all task done?
 
     if [ $counter -eq 0 ]
     then
         echo "# do nothing"
     fi
-    cd "$prev_dir"
 }
 
 ln_opt="-sbT"
@@ -91,12 +89,19 @@ grep -q "^darwin" <<< "$OSTYPE" \
   && ln_opt="-sf"
 
 myln(){
+    local target_file="$1"
+    local dest_file="$2"
+    if [ ! -e "$target_file" ]
+    then
+        echo "Not found: $target_file"
+        return 1
+    fi
     if [ -h "$dest_file" -a \
       "$target_file" = "$(readlink "$dest_file")" ]
     then return
     fi
 
-    print_and_do "ln $ln_opt '$1' '$2'"
+    print_and_do "ln $ln_opt '$target_file' '$dest_file'"
 }
 
 setup_emacs(){
@@ -104,14 +109,14 @@ setup_emacs(){
 
     if which ruby >/dev/null && which java >/dev/null
     then
-	if [ ! -e "$rsense_dir/rsense-0.3" ]
-	then
+        if [ ! -e "$rsense_dir/rsense-0.3" ]
+        then
             local old_loc="$(pwd)"
             cd "$rsense_dir"
             print_and_do "wget http://cx4a.org/pub/rsense/rsense-0.3.tar.bz2"
             print_and_do "tar xjf rsense-0.3.tar.bz2"
             cd "$old_loc"
-	fi
+        fi
 
         [ ! -e "$HOME/.rsense" ] \
           && print_and_do "ruby ${rsense_dir}/rsense-0.3/etc/config.rb > $HOME/.rsense"
@@ -130,6 +135,18 @@ echo_to(){
 
 create_empty_zsh(){
     echo_to "$1" '# -*- mode: sh; coding: utf-8 -*-'
+}
+
+setup_user_dir(){
+    mkdir -p "${HOME}/.config"
+    myln "${curr_dir}/user-dirs.dirs" "${HOME}/.config/user-dirs.dirs"
+    local dir
+    for dir in $(grep '^XDG_' user-dirs.dirs | cut -d'=' -f2)
+    do
+        dir="$(eval echo -e "$dir")"
+        [ ! -e "$dir" ] && \
+            print_and_do "env mkdir -pv $dir"
+    done
 }
 
 print_and_do(){
