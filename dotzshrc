@@ -53,7 +53,7 @@ path=(
     node_modules/.bin
     $GEM_HOME/bin(N-/)
     $path
-    /usr/local/rvm/bin(N-/)
+    /usr/local/{rvm,rbenv}/bin(N-/)
     /app/{script,mingw/tdm/bin,gs/bin,gs/lib}(N-/)
     /usr{/local,/usr,}/bin(N-/)
 )
@@ -158,6 +158,13 @@ function j(){
     fi
 }
 
+# 現在のディレクトリをルートディレクトリとしたHTTPサーバを立ち上げる
+function http_server(){
+    local port=8888
+    python -m SimpleHTTPServer $port &
+    [ -f /usr/bin/xdg-open ] && /usr/bin/xdg-open http://localhost:$port/
+}
+
 # screen のコピー機能と、X Window System のクリップボードの同期
 if which xsel > /dev/null 2>&1
 then
@@ -252,22 +259,23 @@ zstyle ':vcs_info:*' actionformats '%s' '%b' '%i' '%c' '%u' '%a'
 # bzr のとき、vcs_info でネットワーク使わせない
 zstyle ':vcs_info:bzr:*' use-simple true
 
-update_rprompt(){
+update_vcs_info(){
     LANG=en_US.UTF-8 vcs_info
+
     export VCS_NAME=$vcs_info_msg_0_
     export VCS_BRANCH_NAME=$vcs_info_msg_1_
     export VCS_REVISION=$vcs_info_msg_2_
     export VCS_ACTION=$vcs_info_msg_5_
-    export VCS_IS_COMMITED=t
-    export VCS_IS_ADDED=t
-    if [ $VCS_NAME ]
-    then
-        [ -n "$vcs_info_msg_3_" -a ! $vcs_info_msg_3_ = %c ]&&export VCS_IS_COMMITED=
-        [ -n "$vcs_info_msg_4_" -a ! $vcs_info_msg_4_ = %u ]&&export VCS_IS_ADDED=
-    fi
-    # echo $vcs_info_msg_3_$vcs_info_msg_4_$VCS_IS_COMMITED$VCS_IS_ADDED
+
+    VCS_IS_COMMITED=t
+    [[ -n "$vcs_info_msg_3_" ]] && VCS_IS_COMMITED=
+    export VCS_IS_COMMITED
+
+    VCS_IS_ADDED=t
+    [[ -n "$vcs_info_msg_4_" ]] && VCS_IS_ADDED=
+    export VCS_IS_ADDED
 }
-precmd_functions=($precmd_functions update_rprompt)
+precmd_functions=($precmd_functions update_vcs_info)
 
 #########################################################################
 ##    プロンプト を生成
@@ -320,52 +328,52 @@ then
 fi
 
 echo_vcs_info(){
-    local v=
+    local color=
     if [[ -z "$1" ]]
-    then v=$(
-        if [ "$vcs_info_msg_3_" = %c ]
-        then echo -n '%f'
-        elif [ $VCS_IS_ADDED ] && [ $VCS_IS_COMMITED ]
-        then echo -n '%F{green}'
-        else echo -n '%F{red}'
+    then
+        if [[ -n "$VCS_IS_ADDED" && -n "$VCS_IS_COMMITED" ]]
+        then color='%F{green}'
+        else color='%F{red}'
         fi
-    )
     fi
-    [ $VCS_NAME ] && echo -n "$v$VCS_NAME:$VCS_BRANCH_NAME"
-    [ $VCS_ACTION ] && echo -n "[$VCS_ACTION]"
+    [[ -n "$VCS_NAME" ]] && echo -n "$color$VCS_NAME:$VCS_BRANCH_NAME"
+    [[ -n "$VCS_ACTION" ]] && echo -n "[$VCS_ACTION]"
 }
 
 export _RBENV_RUBY_VERSION=
 update_rbenv_info(){
-    local version_file=$( traverse_ruby_version )
-    _RBENV_RUBY_VERSION=$(
-        [[ -f "$version_file" ]] && head -1 "$version_file"
-    )
-}
-precmd_functions=($precmd_functions update_rbenv_info)
-
-traverse_ruby_version(){
     local basepath=$PWD
+    local version_file=
 
     while [[ "/" != "$basepath" ]]
     do
-        [[ -f "$basepath/.ruby-version" ]] && \
-          echo "$basepath/.ruby-version" && break
+        version_file="$basepath/.ruby-version"
+        [[ -f "$version_file" ]] && break
         basepath=$( dirname "$basepath" )
     done
+
+    export _RBENV_RUBY_VERSION="$(
+        [[ -f "$version_file" ]] && head -1 "$version_file"
+    )"
 }
+precmd_functions=($precmd_functions update_rbenv_info)
 
 echo_rbenv_info(){
     [[ -n "$_RBENV_RUBY_VERSION" ]] &&  echo -n "rb$_RBENV_RUBY_VERSION"
 }
+
+export JOBS=0
+update_jobs_num(){
+    export JOBS=$( jobs | grep -E '^\[[0-9]*\] ' | wc -l )
+}
+precmd_functions=($precmd_functions update_jobs_num)
 
 echo_jobs_num(){
     local c= d=
     if [[ -z "$1" ]]
     then c="%F{green}" d="%f"
     fi
-    nums=$( jobs | grep -E '^\[[0-9]*\] ' | wc -l )
-    [[ "$nums" -ne 0 ]] && echo -n "jobs($c$nums$d)"
+    [[ "$JOBS" -ne 0 ]] && echo -n "jobs:$c${JOBS}$d"
 }
 
 construct_left(){
@@ -380,7 +388,7 @@ construct_left(){
     local current_path=$1
 
     local u= h= p= d=
-    if [[ -z $no_color ]]
+    if [[ -z "$no_color" ]]
     then
         u=$USER_COLOR
         h=$HOST_COLOR
@@ -406,59 +414,56 @@ construct_left(){
 }
 
 update_prompt(){
-    local datetime="`date +'%Y/%m/%d %H:%M:%S'`"
+    local columns=$((COLUMNS - 2))
     local escaped_home="`echo ${HOME}|sed -e 's/\//\\\\\//g'`"
     local current_path="`pwd|sed -e \"s/^${escaped_home}/~/\"`"
-
-    # local left="$USER@$HOST:$current_path"
     local left="$(construct_left -n $current_path)"
-    local right=" ${datetime} "
-    local num_bar=$((${COLUMNS}-${#left}-${#right}))
 
-    if [ $num_bar -lt 0 ]
+    # build right
+    local right=" $(date +'%Y/%m/%d %H:%M:%S') "
+    local num_bar=$((${columns}-${#left}-${#right}))
+    if [[ $num_bar -lt 0 ]]
     then
-        local datetime="`date +'%H:%M:%S'`"
-        local right=" ${datetime} "
-        local num_bar=$((${COLUMNS}-${#left}-${#right}))
+        right=" $(date +'%H:%M:%S') "
+        num_bar=$((${columns}-${#left}-${#right}))
+        if [[ $num_bar -lt 0 ]]
+        then
+            right=''
+            num_bar=$((${columns}-${#left}-${#right}))
+        fi
     fi
 
-    if [ $num_bar -lt 0 ]
-    then
-        local right=''
-        local num_bar=$((${COLUMNS}-${#left}-${#right}))
-    fi
-
-    local sep='-'
-    local bar=''
-    local i=0
-    while [ $num_bar -gt $((${#bar}+${#sep})) ]
-    do
-        local bar="$sep$bar"
-        local i=$((i+1))
-        # [ 0 -eq $((i%10)) ] && local bar="-$bar"
+    # build bar
+    local bar= sep=' -'
+    while [[ $num_bar -gt $((${#bar}+${#sep})) ]]
+    do bar="$sep$bar"
     done
-    while [ $num_bar -gt ${#bar} ]
-    do
-        local bar=" $bar"
+    while [[ $num_bar -gt ${#bar} ]]
+    do bar="$bar "
     done
 
-    local bar="$BAR_COLOR$bar"
-    local right="$TIME_COLOR$right"
-    # local left="${USER_COLOR}${USER}%f@${HOST_COLOR}${HOST}%f:%F{yellow}${current_path}%f"
-    local left="$(construct_left $current_path)"
+    bar="$BAR_COLOR$bar"
+    right="$TIME_COLOR$right"
+    left="$(construct_left $current_path)"
     PROMPT=$'\n'"${left}${bar}${right}"$'\n'"%f%(!.#.$) "
 
     # カーソルの色設定（暗い緑）
-    echo -ne '\e]12;#009900\a'
+    if [[ -n "$ORIGIN_TTY" ]]
+    then echo -ne '\e]12;#009900\a' > /dev/pts/${ORIGIN_TTY}
+    else echo -ne '\e]12;#009900\a'
+    fi
 }
 precmd_functions=($precmd_functions update_prompt)
 PROMPT="${USER_COLOR}${USER}%f@${HOST_COLOR}${HOST}%f %F{yellow}%~%f "$'\n'"%(!.#.$) "
+ORIGIN_TTY=$(echo $STY | sed --silent -e 's/.*\.pts-\([0-9]*\)\..*/\1/p')
 
 ############################################################
 ##  screen の window タイトルを設定
 update_screen_title() {
-    local shell=`echo -n ${SHELL} | sed -e 's/^.*\///'`
-    local dir=`print -P '%~' | sed 's/ /_/g' | xargs -I '{}' basename "{}"`
+    [[ -z "$STY" ]] && return
+
+    local shell=$(echo -n ${SHELL} | sed -e 's/^.*\///')
+    local dir=$(print -P '%~' | sed 's/ /_/g' | xargs -I '{}' basename "{}")
     echo -n "\033k${shell}#${dir}\033\\" 2>/dev/null
 }
 [ "$STY" ] && precmd_functions=($precmd_functions update_screen_title)
@@ -613,68 +618,51 @@ bindkey '^m' do_enter
 # 参考: http://qiita.com/hayamiz/items/d64730b61b7918fbb970
 
 timetrack_threshold=10 # seconds
-read -r -d '' timetrack_ignore_progs <<EOF
-less
-emacs vi vim
-ssh mosh telnet nc netcat
-gdb
-EOF
+
+if which growlnotify >/dev/null 2>&1
+then notify_method="growlnotify"
+elif which notify-send >/dev/null 2>&1
+then notify_method="notify-send"
+fi
 
 export timetrack_threshold
 export timetrack_ignore_progs
 
-function preexec_start_timetrack() {
-    local command=$1
+unset timetrack_start
+unset timetrack_command
 
-    export timetrack_start=`date +%s`
-    export timetrack_command="$command"
+function preexec_start_timetrack() {
+    export timetrack_command="$1"
+    export timetrack_start="`date +%s`"
 }
 
 function preexec_end_timetrack() {
+    local command="$timetrack_command"
     local exec_time
-    local command=$timetrack_command
-    local prog=$(echo $command|awk '{print $1}')
-    local notify_method
     local message
 
-    if [ -z "$DISPLAY" ]
+    if [[ -z "$DISPLAY" || \
+          -z "$notify-send" || \
+          -z "$timetrack_start" || \
+          -z "$timetrack_threshold" ]]
     then return
     fi
 
-    if [ -z "$timetrack_start" ] || [ -z "$timetrack_threshold" ]
-    then return
-    fi
-
-    if which growlnotify >/dev/null 2>&1
-    then notify_method="growlnotify"
-    elif which notify-send >/dev/null 2>&1
-    then notify_method="notify-send"
-    else return
-    fi
-
-    for ignore_prog in $(echo $timetrack_ignore_progs)
-    do [ "$prog" = "$ignore_prog" ] && return
-    done
-
-    export timetrack_end=`date +%s`
-
-    exec_time=$(( timetrack_end - timetrack_start ))
-    if [ -z "$command" ]
+    if [[ -z "$command" ]]
     then command="<UNKNOWN>"
     fi
 
-    message="Time: $exec_time seconds
-COMMAND: $command"
+    export timetrack_end=`date +%s`
 
-    if [ "$exec_time" -ge "$timetrack_threshold" ]
+    exec_time="$(( timetrack_end - timetrack_start ))"
+
+    if [[ "$exec_time" -ge "$timetrack_threshold" ]]
     then
-        echo "notify"
-        case $notify_method in
-
+        message="Time: $exec_time seconds\nCOMMAND: $command"
+        case "$notify_method" in
             "growlnotify" )
                 echo "$message" | growlnotify -n "ZSH timetracker" --appIcon Terminal
                 ;;
-
             "notify-send" )
                 notify-send "Command finished" "$message"
                 ;;
@@ -697,11 +685,14 @@ fi
 source ~/.zshrc.local
 
 ## rbenv
+if [[ -e "$(which rbenv)" ]]
+then export RBENV_ROOT="$(cd "$(dirname "$(which rbenv)")/.."; pwd)"
+fi
 if which rbenv > /dev/null 2>&1 &&
     ! which rvm > /dev/null 2>&1
 then
     echo load rbenv
-    eval "$(rbenv init -)"
+    eval "$(rbenv init - zsh)"
 fi
 
 # zaw
