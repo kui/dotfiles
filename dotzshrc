@@ -446,12 +446,6 @@ update_prompt(){
     right="$TIME_COLOR$right"
     left="$(construct_left $current_path)"
     PROMPT=$'\n'"${left}${bar}${right}"$'\n'"%f%(!.#.$) "
-
-    # カーソルの色設定（暗い緑）
-    if [[ -n "$ORIGIN_TTY" ]]
-    then echo -ne '\e]12;#009900\a' > /dev/pts/${ORIGIN_TTY}
-    else echo -ne '\e]12;#009900\a'
-    fi
 }
 precmd_functions=($precmd_functions update_prompt)
 PROMPT="${USER_COLOR}${USER}%f@${HOST_COLOR}${HOST}%f %F{yellow}%~%f "$'\n'"%(!.#.$) "

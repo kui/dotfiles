@@ -6,6 +6,7 @@ set -ue
 BASE="$(cd $(dirname "$0"); pwd)"
 IGNORED_HOSTS_FILE="$BASE/ignored_hosts.txt"
 HOSTS_FILE='/etc/hosts'
+MESSAGE="added by $BASE/$0"
 
 is_dryrun=true
 main(){
@@ -33,15 +34,25 @@ main(){
     then
         mv --force --verbose --backup "$tmpfile" "$HOSTS_FILE"
     else
-        diff /etc/hosts "$tmpfile"
+        if type git &>/dev/null
+        then git diff --word-diff /etc/hosts "$tmpfile"
+        else diff /etc/hosts "$tmpfile"
+        fi
+        rm "$tmpfile"
     fi
 }
 
 print_new_hosts(){
-    grep -vP '^0\.0\.0\.0[^0-9]' /etc/hosts
+    cat /etc/hosts \
+        | grep -vP '^0\.0\.0\.0[^0-9]' \
+        | grep -vF "## $MESSAGE ##" \
+        | grep -vF "##/$MESSAGE ##"
+
+    echo "## $MESSAGE ##"
     echo -n '0.0.0.0 '
     grep -v '^#' "$IGNORED_HOSTS_FILE" | tr '\n' ' '
     echo
+    echo "##/$MESSAGE ##"
 }
 
 main "$@"

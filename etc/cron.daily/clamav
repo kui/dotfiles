@@ -7,17 +7,17 @@ set -eu
 PID_FILE=/var/run/clamav/scan-daily.pid
 RUNLOG_FILE=/var/run/clamav/scan-weekly.date
 LOG_FILE=/var/log/clamav/scan-daily.log
-TMP_DIR=/tmp/clamav
 DAILY_SCAN_DIR=(/home/kui)
 
-CLAMSCAN_OPTS='--no-summary --recursiv --infected --bell'
+CLAMSCAN_OPTS='--no-summary --recursiv --infected --bell\
+--exclude=^/dev --exclude=^/proc --exclude=^/sys'
 AWEEK=$((7 * 24 * 60 * 60))
 
 main(){
     echo "### start	$(env LANG= date)"
 
     local file
-    for file in "$PID_FILE" "$RUNLOG_FILE" "$LOG_FILE" "$TMP_DIR"
+    for file in "$PID_FILE" "$RUNLOG_FILE" "$LOG_FILE"
     do mkdir -pv "$(dirname "$file")"
     done
 
@@ -27,7 +27,7 @@ main(){
     fi
     lock
 
-    tmp="$(tempfile -d "$TMP_DIR")"
+    local tmp="$(tempfile --mode 0644)"
     if is_fullscan; then
         date +%s > "$RUNLOG_FILE"
         echo "# weekly scan"

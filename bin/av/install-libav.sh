@@ -191,8 +191,7 @@ install_libav() {
         --enable-filter=setpts \
         --enable-filter=settb \
         --enable-filter=yadif \
-        --enable-filter=trim \
-        > /dev/null
+        --enable-filter=trim #> /dev/null
     make clean > /dev/null
     make > /dev/null
     make install > /dev/null
