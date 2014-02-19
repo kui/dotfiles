@@ -6,7 +6,7 @@
 [core]
 	pager = less
 	editor = vi
-	autocrlf = false
+	autocrlf = input
 [github]
 	user = kui
 	password = !ssh-askpass 'input Github password' | tr -d '\n'
