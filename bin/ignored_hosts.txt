@@ -3,8 +3,10 @@ ad.yieldmanager.com
 adn.dmm.com
 ads.pubmatic.com
 ads.yahoo.com
+cdn.adnxs.com
 d.href.asia
 googleads.g.doubleclick.net
+ib.adnxs.com
 otapict.com
 pagead2.googlesyndication.com
 spad.i-mobile.co.jp
