@@ -3,12 +3,13 @@ ad.yieldmanager.com
 adn.dmm.com
 ads.pubmatic.com
 ads.yahoo.com
+cdn.adnxs.com
 d.href.asia
 googleads.g.doubleclick.net
+img.ak.impact-ad.jp
+imp.asahi.com
 otapict.com
 pagead2.googlesyndication.com
 spad.i-mobile.co.jp
 spdeliver.i-mobile.co.jp
 spnet5.i-mobile.co.jp
-img.ak.impact-ad.jp
-imp.asahi.com
