@@ -9,7 +9,7 @@ RUNLOG_FILE=/var/run/clamav/scan-weekly.date
 LOG_FILE=/var/log/clamav/scan-daily.log
 DAILY_SCAN_DIR=(/home/kui)
 
-CLAMSCAN_OPTS='--no-summary --recursiv --infected --bell\
+CLAMSCAN_OPTS='--no-summary --recursiv --infected --bell \
 --exclude=^/dev --exclude=^/proc --exclude=^/sys'
 AWEEK=$((7 * 24 * 60 * 60))
 
@@ -60,7 +60,7 @@ unlock(){
 is_fullscan(){
     local curr=$(date +%s)
     local past=$(cat "$RUNLOG_FILE")
-    [[ -z "$past" ]] || [[ $((curr - past)) -gt $AWEEK ]]
+    [[ -f "$RUNLOG_FILE" ]] && [[ $((curr - past)) -gt $AWEEK ]]
 }
 
 main >> "$LOG_FILE" 2>&1
