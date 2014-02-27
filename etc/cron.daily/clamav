@@ -9,8 +9,8 @@ RUNLOG_FILE=/var/run/clamav/scan-weekly.date
 LOG_FILE=/var/log/clamav/scan-daily.log
 DAILY_SCAN_DIR=(/home/kui)
 
-CLAMSCAN_OPTS='--no-summary --recursiv --infected --bell \
---exclude=^/dev --exclude=^/proc --exclude=^/sys'
+CLAMSCAN_OPTS='--no-summary --recursiv --infected --bell'
+CLAMSCAN_OPTS+=' --exclude=^/dev --exclude=^/proc --exclude=^/sys'
 AWEEK=$((7 * 24 * 60 * 60))
 
 main(){
@@ -31,9 +31,11 @@ main(){
     if is_fullscan; then
         date +%s > "$RUNLOG_FILE"
         echo "# weekly scan"
+        echo clamscan $CLAMSCAN_OPTS /
         clamscan $CLAMSCAN_OPTS / | tee "$tmp"
     else
         echo "# daily scan"
+        echo clamscan $CLAMSCAN_OPTS "${DAILY_SCAN_DIR[@]}"
         clamscan $CLAMSCAN_OPTS "${DAILY_SCAN_DIR[@]}" | tee "$tmp"
     fi
 
