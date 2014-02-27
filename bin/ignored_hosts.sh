@@ -6,7 +6,7 @@ set -ue
 BASE="$(cd $(dirname "$0"); pwd)"
 IGNORED_HOSTS_FILE="$BASE/ignored_hosts.txt"
 HOSTS_FILE='/etc/hosts'
-MESSAGE="added by $BASE/$0"
+MESSAGE="added by $BASE/$(basename "$0")"
 
 is_dryrun=true
 main(){

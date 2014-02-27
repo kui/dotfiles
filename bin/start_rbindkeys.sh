@@ -2,7 +2,8 @@
 
 set -eu
 
-DEV_NAME=ThinkPad
+# DEV_NAME=ThinkPad
+DEV_NAME='AT Translated Set 2 keyboard'
 LOG=~/.local/log/rbindkeys.log
 
 ##
