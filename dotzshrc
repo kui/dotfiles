@@ -679,9 +679,6 @@ fi
 source ~/.zshrc.local
 
 ## rbenv
-if [[ -e "$(which rbenv)" ]]
-then export RBENV_ROOT="$(cd "$(dirname "$(which rbenv)")/.."; pwd)"
-fi
 if which rbenv > /dev/null 2>&1 &&
     ! which rvm > /dev/null 2>&1
 then
