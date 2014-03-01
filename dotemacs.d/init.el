@@ -479,107 +479,107 @@ but if not, return nil."
   ;; (ac-show-menu-immediately-on-auto-complete t)
   )
 
-;; tabbar-mode
-(when (kui/package-require 'tabbar nil nil t)
+;; ;; tabbar-mode
+;; (when (kui/package-require 'tabbar nil nil t)
 
-  ;; tabbar のタブのグループの仕方
-  ;;   デフォルト: 一部を除き major-mode ごとにタブをグループ化
-  ;; see http://www.emacswiki.org/emacs/TabBarMode
-  (setq tabbar-buffer-groups-function (lambda () (list "Buffers")))
+;;   ;; tabbar のタブのグループの仕方
+;;   ;;   デフォルト: 一部を除き major-mode ごとにタブをグループ化
+;;   ;; see http://www.emacswiki.org/emacs/TabBarMode
+;;   (setq tabbar-buffer-groups-function (lambda () (list "Buffers")))
 
-  (defcustom kui/tabbar-buffer-filter-list nil
-    "A function list to filter tabbar buffer list")
+;;   (defcustom kui/tabbar-buffer-filter-list nil
+;;     "A function list to filter tabbar buffer list")
 
-  ;; kui/tabbar-buffer-filter-list を順に適応する
-  (setq tabbar-buffer-list-function
-        '(lambda ()
-           (reduce (lambda (result func) (funcall func result))
-                   (cons (buffer-list)
-                         kui/tabbar-buffer-filter-list))))
-  ;; (funcall tabbar-buffer-list-function)
+;;   ;; kui/tabbar-buffer-filter-list を順に適応する
+;;   (setq tabbar-buffer-list-function
+;;         '(lambda ()
+;;            (reduce (lambda (result func) (funcall func result))
+;;                    (cons (buffer-list)
+;;                          kui/tabbar-buffer-filter-list))))
+;;   ;; (funcall tabbar-buffer-list-function)
 
-  ;; 処理を順番に書く
-  (setq
-   kui/tabbar-buffer-filter-list
-   '(;; * で始まるバッファは消す
-     (lambda (blist)
-       (remove-if (lambda (b) (string-match "^ ?\\*" (buffer-name b)))
-                  blist))
+;;   ;; 処理を順番に書く
+;;   (setq
+;;    kui/tabbar-buffer-filter-list
+;;    '(;; * で始まるバッファは消す
+;;      (lambda (blist)
+;;        (remove-if (lambda (b) (string-match "^ ?\\*" (buffer-name b)))
+;;                   blist))
 
-     (lambda (blist)
-       (remove-if (lambda (b) (string-match "^ ?\\*" (buffer-name b)))
-                  blist))
+;;      (lambda (blist)
+;;        (remove-if (lambda (b) (string-match "^ ?\\*" (buffer-name b)))
+;;                   blist))
 
-     ;; 指定されたバッファが存在するなら、追加する
-     (lambda (blist)
-       (let ((target-bname-list (list "*scratch*" "*Package*" "*Help*"
-                                      (buffer-name (current-buffer)))))
-         (append blist
-                 (remove-if 'not
-                            (mapcar 'kui/find-buffer-by-name
-                                    target-bname-list)))))
+;;      ;; 指定されたバッファが存在するなら、追加する
+;;      (lambda (blist)
+;;        (let ((target-bname-list (list "*scratch*" "*Package*" "*Help*"
+;;                                       (buffer-name (current-buffer)))))
+;;          (append blist
+;;                  (remove-if 'not
+;;                             (mapcar 'kui/find-buffer-by-name
+;;                                     target-bname-list)))))
 
-     ;; *scratch* が無かったら作る
-     (lambda (blist)
-       (if (not (kui/find-buffer-by-name "*scratch*"))
-           (save-excursion
-             (kui/switch-to-scratch-buffer)))
-       blist)
-     ))
+;;      ;; *scratch* が無かったら作る
+;;      (lambda (blist)
+;;        (if (not (kui/find-buffer-by-name "*scratch*"))
+;;            (save-excursion
+;;              (kui/switch-to-scratch-buffer)))
+;;        blist)
+;;      ))
 
-  ;; 左に表示されるボタンを消す
-  (dolist (button '(tabbar-buffer-home-button
-                    tabbar-scroll-left-button
-                    tabbar-scroll-right-button))
-    (set button (cons (cons "" nil) (cons "" nil))))
+;;   ;; 左に表示されるボタンを消す
+;;   (dolist (button '(tabbar-buffer-home-button
+;;                     tabbar-scroll-left-button
+;;                     tabbar-scroll-right-button))
+;;     (set button (cons (cons "" nil) (cons "" nil))))
 
-  ;; 色とか
-  (set-face-attribute 'tabbar-selected nil
-                      :foreground "white"
-                      :background nil
-                      :box nil
-                      :inherit nil
-                      :height 1.0
-                      )
-  (set-face-attribute 'tabbar-unselected nil
-                      :height 1.0
-                      :foreground "#dedede")
+;;   ;; 色とか
+;;   (set-face-attribute 'tabbar-selected nil
+;;                       :foreground "white"
+;;                       :background nil
+;;                       :box nil
+;;                       :inherit nil
+;;                       :height 1.0
+;;                       )
+;;   (set-face-attribute 'tabbar-unselected nil
+;;                       :height 1.0
+;;                       :foreground "#dedede")
 
-  ;; ウィンドウシステムを使っていないとき
-  (when (not window-system)
+;;   ;; ウィンドウシステムを使っていないとき
+;;   (when (not window-system)
 
-    ;; タブの間に挟む文字
-    (setq tabbar-separator-value "/")
+;;     ;; タブの間に挟む文字
+;;     (setq tabbar-separator-value "/")
 
-    ;; faces
-    (set-face-attribute 'tabbar-default nil
-                        :background "#333333"
-                        :foreground "black"
-                        :underline t
-                        :box nil)
-    (set-face-attribute 'tabbar-selected nil
-                        :background "black"
-                        :foreground "white"
-                        :underline nil
-                        :box nil)
-    (set-face-attribute 'tabbar-unselected nil
-                        :background "white"
-                        :foreground "black"
-                        :underline t
-                        :box nil)
-    )
+;;     ;; faces
+;;     (set-face-attribute 'tabbar-default nil
+;;                         :background "#333333"
+;;                         :foreground "black"
+;;                         :underline t
+;;                         :box nil)
+;;     (set-face-attribute 'tabbar-selected nil
+;;                         :background "black"
+;;                         :foreground "white"
+;;                         :underline nil
+;;                         :box nil)
+;;     (set-face-attribute 'tabbar-unselected nil
+;;                         :background "white"
+;;                         :foreground "black"
+;;                         :underline t
+;;                         :box nil)
+;;     )
 
-  ;; Ctrl+Tab でタブ切り替え
-  (global-set-key "\M-[1;5i" 'tabbar-forward)  ;; for mintty
-  (global-set-key "\M-[1;6i" 'tabbar-backward) ;; for mintty
-  (global-set-key [(control tab)] 'tabbar-forward)
-  (global-set-key [(control shift tab)] 'tabbar-backward)
-  (global-set-key [(control shift iso-lefttab)] 'tabbar-backward) ;; for x window system
-  (global-set-key "\C-xn" 'tabbar-forward)
-  (global-set-key "\C-xp" 'tabbar-backward)
+;;   ;; Ctrl+Tab でタブ切り替え
+;;   (global-set-key "\M-[1;5i" 'tabbar-forward)  ;; for mintty
+;;   (global-set-key "\M-[1;6i" 'tabbar-backward) ;; for mintty
+;;   (global-set-key [(control tab)] 'tabbar-forward)
+;;   (global-set-key [(control shift tab)] 'tabbar-backward)
+;;   (global-set-key [(control shift iso-lefttab)] 'tabbar-backward) ;; for x window system
+;;   (global-set-key "\C-xn" 'tabbar-forward)
+;;   (global-set-key "\C-xp" 'tabbar-backward)
 
-  (tabbar-mode)
-  )
+;;   (tabbar-mode)
+;;   )
 
 ;; flymake 使うとき
 (eval-after-load "flymake"
@@ -1059,7 +1059,7 @@ but if not, return nil."
   (tool-bar-mode -1)
 
   ;; スクロールバーを消す(nil:消える,right:右側)
-  (set-scroll-bar-mode 'right)
+  (set-scroll-bar-mode nil)
 
   ;; フォントの指定
   (set-default-font "Inconsolata-11")
