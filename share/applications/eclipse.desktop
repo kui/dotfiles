@@ -1,0 +1,12 @@
+# Eclipse Shortcut
+# https://gist.github.com/2922285
+[Desktop Entry]
+Type=Application
+Name=Eclipse
+Comment=Eclipse Integrated Development Environment
+Icon=/home/kui/.local/eclipse/default/icon.xpm
+Exec=env UBUNTU_MENUPROXY=0 /home/kui/.local/eclipse/default/eclipse
+Terminal=false
+Categories=Development;IDE;Java;
+StartupWMClass=Eclipse
+

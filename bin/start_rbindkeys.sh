@@ -2,8 +2,8 @@
 
 set -eu
 
-DEV_NAME=ThinkPad
-LOG=~/.local/log/rbindkeys.log
+LOG=$HOME/.local/log/rbindkeys.log
+DEV_NAME='ThinkPad USB Keyboard|AT Translated Set 2 keyboard'
 
 ##
 
@@ -16,18 +16,12 @@ then
     exit 1
 fi
 
-export RBENV_ROOT="/usr/local/rbenv"
-export PATH="/usr/local/rbenv/bin:$PATH"
-
 main(){
     echo '##############################################'
     date
     echo "Display: $DISPLAY"
 
-    eval "$(rbenv init -)"
-    rbenv shell 1.9.3-p484
-
-    dev="$(rbindkeys -l | grep -F "$DEV_NAME" | cut -d: -f1 | head -n 1)"
+    dev="$(rbindkeys -l | grep -E "$DEV_NAME" | cut -d: -f1 | head -n 1)"
     echo "Device: $dev"
 
     if lsof "$dev" | cut -d' ' -f1 | grep -qP '^rbindkeys'
@@ -40,4 +34,4 @@ main(){
 }
 
 mkdir -p "$(dirname "$LOG")"
-main | tee -a "$LOG"
+main 2>&1 | tee -a "$LOG"

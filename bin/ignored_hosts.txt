@@ -7,6 +7,8 @@ cdn.adnxs.com
 d.href.asia
 googleads.g.doubleclick.net
 ib.adnxs.com
+img.ak.impact-ad.jp
+imp.asahi.com
 otapict.com
 pagead2.googlesyndication.com
 spad.i-mobile.co.jp

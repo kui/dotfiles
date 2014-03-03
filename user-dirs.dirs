@@ -1,0 +1,8 @@
+XDG_DESKTOP_DIR="$HOME/Desktop"
+XDG_DOWNLOAD_DIR="$HOME/tmp"
+XDG_TEMPLATES_DIR="$HOME/Media/Templates"
+XDG_PUBLICSHARE_DIR="$HOME/Media/PublicShare"
+XDG_DOCUMENTS_DIR="$HOME/Media/Documents"
+XDG_MUSIC_DIR="$HOME/Media/Music"
+XDG_PICTURES_DIR="$HOME/Media/Pictures"
+XDG_VIDEOS_DIR="$HOME/Media/Videos"

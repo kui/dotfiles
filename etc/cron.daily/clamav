@@ -1,0 +1,68 @@
+#!/bin/bash
+#
+# clamav cron daily
+
+set -eu
+
+PID_FILE=/var/run/clamav/scan-daily.pid
+RUNLOG_FILE=/var/run/clamav/scan-weekly.date
+LOG_FILE=/var/log/clamav/scan-daily.log
+DAILY_SCAN_DIR=(/home/kui)
+
+CLAMSCAN_OPTS='--no-summary --recursiv --infected --bell'
+CLAMSCAN_OPTS+=' --exclude=^/dev --exclude=^/proc --exclude=^/sys'
+AWEEK=$((7 * 24 * 60 * 60))
+
+main(){
+    echo "### start	$(env LANG= date)"
+
+    local file
+    for file in "$PID_FILE" "$RUNLOG_FILE" "$LOG_FILE"
+    do mkdir -pv "$(dirname "$file")"
+    done
+
+    if is_locked; then
+        echo 'ERROR: running on a other process'
+        exit 1
+    fi
+    lock
+
+    local tmp="$(tempfile --mode 0644)"
+    if is_fullscan; then
+        date +%s > "$RUNLOG_FILE"
+        echo "# weekly scan"
+        echo clamscan $CLAMSCAN_OPTS /
+        clamscan $CLAMSCAN_OPTS / | tee "$tmp"
+    else
+        echo "# daily scan"
+        echo clamscan $CLAMSCAN_OPTS "${DAILY_SCAN_DIR[@]}"
+        clamscan $CLAMSCAN_OPTS "${DAILY_SCAN_DIR[@]}" | tee "$tmp"
+    fi
+
+    if [[ $(wc -l "$tmp"|cut -d' ' -f1) -gt 0 ]]
+    then cp "$tmp" "/home/kui/WARNING-FROM-CLAMAV.txt"
+    fi
+
+    echo "### done	$(env LANG= date)"
+
+    unlock
+}
+
+SELF_NAME="$(basename "$0")"
+is_locked(){
+    [[ -e "$PID_FILE" ]] && \
+        [[ "$(ps -p $(cat $PID_FILE) -o comm=)" = "$SELF_NAME" ]]
+}
+lock(){
+    echo $$ > "$PID_FILE"
+}
+unlock(){
+    rm "$PID_FILE"
+}
+is_fullscan(){
+    local curr=$(date +%s)
+    local past=$(cat "$RUNLOG_FILE")
+    [[ -f "$RUNLOG_FILE" ]] && [[ $((curr - past)) -gt $AWEEK ]]
+}
+
+main >> "$LOG_FILE" 2>&1
