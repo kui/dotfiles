@@ -5,8 +5,8 @@
 	ui = auto
 [core]
 	pager = less
-	editor = vi
-	autocrlf = false
+	editor = start_emacsclient
+	autocrlf = input
 [github]
 	user = kui
 	password = !ssh-askpass 'input Github password' | tr -d '\n'
