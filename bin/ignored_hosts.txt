@@ -4,6 +4,7 @@ ad.yieldmanager.com
 adn.dmm.com
 ads.pubmatic.com
 ads.yahoo.com
+anz.rd.rakuten.co.jp
 b.scorecardresearch.com
 b.voicefive.com
 cdn.adnxs.com
@@ -11,12 +12,19 @@ cdn.vidible.tv
 d.href.asia
 googleads.g.doubleclick.net
 ib.adnxs.com
+image.ias.rakuten.co.jp
 img.ak.impact-ad.jp
 imp.asahi.com
 js.moatads.com
+kauli.socdm.com
 otapict.com
 pagead2.googlesyndication.com
+pixel.mathtag.com
+rs.adapf.com
 spad.i-mobile.co.jp
 spdeliver.i-mobile.co.jp
 spnet5.i-mobile.co.jp
+sync.fout.jp
+sync.mathtag.com
+tags.mathtag.com
 vsc.send.microad.jp
