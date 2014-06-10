@@ -5,6 +5,7 @@ adn.dmm.com
 ads.pubmatic.com
 ads.yahoo.com
 anz.rd.rakuten.co.jp
+as.dc.impact-ad.jp
 b.scorecardresearch.com
 b.voicefive.com
 cdn.adnxs.com
@@ -28,3 +29,4 @@ sync.fout.jp
 sync.mathtag.com
 tags.mathtag.com
 vsc.send.microad.jp
+y.one.impact-ad.jp
