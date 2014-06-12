@@ -2,6 +2,7 @@ a.scorecardresearch.com
 ad.adlantis.jp
 ad.yieldmanager.com
 adn.dmm.com
+ads.adjust-net.jp
 ads.pubmatic.com
 ads.yahoo.com
 anz.rd.rakuten.co.jp
@@ -10,8 +11,10 @@ b.scorecardresearch.com
 b.voicefive.com
 cdn.adnxs.com
 cdn.vidible.tv
+cloud.lokaplatform.com
 d.href.asia
 googleads.g.doubleclick.net
+i.ad-v.jp
 ib.adnxs.com
 image.ias.rakuten.co.jp
 img.ak.impact-ad.jp
