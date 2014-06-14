@@ -5,6 +5,7 @@ adn.dmm.com
 ads.adjust-net.jp
 ads.pubmatic.com
 ads.yahoo.com
+adsvids.com
 anz.rd.rakuten.co.jp
 as.dc.impact-ad.jp
 b.scorecardresearch.com
@@ -24,10 +25,12 @@ kauli.socdm.com
 otapict.com
 pagead2.googlesyndication.com
 pixel.mathtag.com
+redir.adap.tv
 rs.adapf.com
 spad.i-mobile.co.jp
 spdeliver.i-mobile.co.jp
 spnet5.i-mobile.co.jp
+stat.vidcore.tv
 sync.fout.jp
 sync.mathtag.com
 tags.mathtag.com
