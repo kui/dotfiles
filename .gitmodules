@@ -10,6 +10,3 @@
 [submodule "dotzshrc.d/grunt-zsh-completion"]
 	path = dotzshrc.d/grunt-zsh-completion
 	url = https://github.com/yonchu/grunt-zsh-completion.git
-[submodule "dotzshrc.d/autosuggestions"]
-	path = dotzshrc.d/autosuggestions
-	url = git://github.com/tarruda/zsh-autosuggestions
