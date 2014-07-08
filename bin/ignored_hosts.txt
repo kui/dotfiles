@@ -10,6 +10,7 @@ anz.rd.rakuten.co.jp
 as.dc.impact-ad.jp
 b.scorecardresearch.com
 b.voicefive.com
+cas.criteo.com
 cdn.adnxs.com
 cdn.vidible.tv
 cloud.lokaplatform.com
@@ -31,8 +32,10 @@ spad.i-mobile.co.jp
 spdeliver.i-mobile.co.jp
 spnet5.i-mobile.co.jp
 stat.vidcore.tv
+static.jp.as.criteo.net
 sync.fout.jp
 sync.mathtag.com
 tags.mathtag.com
 vsc.send.microad.jp
 y.one.impact-ad.jp
+yads.yahoo.co.jp
