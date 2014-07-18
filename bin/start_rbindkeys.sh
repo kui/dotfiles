@@ -3,7 +3,7 @@
 set -eu
 
 LOG=$HOME/.local/log/rbindkeys.log
-DEV_NAME='ThinkPad USB Keyboard|AT Translated Set 2 keyboard'
+DEV_NAME='ThinkPad USB Keyboard|AT Translated Set 2 keyboard|Topre Corporation Realforce 87'
 
 ##
 

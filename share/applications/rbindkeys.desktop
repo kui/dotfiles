@@ -5,6 +5,6 @@
 #
 [Desktop Entry]
 Type=Application
-Terminal=false
+Terminal=true
 Exec=sudo /home/kui/.settings/bin/start_rbindkeys.sh
 Name=rbindkeys
