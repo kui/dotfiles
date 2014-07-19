@@ -158,12 +158,40 @@ function j(){
     fi
 }
 
-# 現在のディレクトリをルートディレクトリとしたHTTPサーバを立ち上げる
-function http_server(){
-    local port=8888
+# HTTPサーバを立ち上げる
+function serve(){
+    local port=8007
+
+    local dir file
+    if [[ $# -eq 0 ]]; then
+        # no-op
+    elif [[ -d "$1" ]]; then
+        local dir="$1"
+    elif [[ -f "$1" ]]; then
+        local dir="$(dirname "$1")"
+        local file="$(basename "$1")"
+    fi
+    [[ -n "$dir" ]] && pushd "$dir"
+
+    local url="http://localhost:$port/$file"
+
+    if [[ -n "$dir" ]]
+    then color256_echo 0 5 0 "Serve $dir"
+    else color256_echo 0 5 0 "Serve the current directory"
+    fi
     python -m SimpleHTTPServer $port &
-    [ -f /usr/bin/xdg-open ] && /usr/bin/xdg-open http://localhost:$port/
+
+    color256_echo 0 5 0 "Open $url"
+    if which sensible-browser &> /dev/null; then
+        sensible-browser "$url"
+    elif which xdg-open &> /dev/null; then
+        xdg-open "$url"
+    fi
+    fg
+
+    [[ -n "$dir" ]] && popd
 }
+alias http-serve=serve
 
 # screen のコピー機能と、X Window System のクリップボードの同期
 if which xsel > /dev/null 2>&1
@@ -215,8 +243,8 @@ color_list(){
 if [ -f /usr/bin/xdg-open ]
 then
     alias open=/usr/bin/xdg-open
-    alias o=/usr/bin/xdg-open
 fi
+alias o=open
 
 ## 256色生成用便利関数
 ### red: 0-5
@@ -239,7 +267,7 @@ color256_echo(){
     local g=$1; shift
     local b=$1; shift
 
-    echo "\e[38;5;`color256 $r $g $b`m$@"
+    echo "\e[38;5;`color256 $r $g $b`m$@\e[39m"
 }
 
 #####################################################################
