@@ -232,10 +232,16 @@ fi
 
 ## 色一覧
 color_list(){
+    for c in {000..015}
+    do
+        echo -n "\e[38;5;${c}m $c"
+        [ $((c%8)) -eq 7 ] && echo
+    done
+
     for c in {016..255}
     do
         echo -n "\e[38;5;${c}m $c"
-        [ $(($((c-16))%6)) -eq 5 ] && echo
+        [ $(((c-16)%6)) -eq 5 ] && echo
     done
 }
 
