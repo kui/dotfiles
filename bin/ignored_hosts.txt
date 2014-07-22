@@ -28,6 +28,7 @@ o.yieldsquare.com
 otapict.com
 pagead2.googlesyndication.com
 pixel.mathtag.com
+productsearch.ubuntu.com
 redir.adap.tv
 rs.adapf.com
 secure.adnxs.com
