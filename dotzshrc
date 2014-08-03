@@ -171,7 +171,7 @@ function serve(){
         local dir="$(dirname "$1")"
         local file="$(basename "$1")"
     fi
-    [[ -n "$dir" ]] && pushd "$dir"
+    [[ -n "$dir" ]] && pushd "$dir" $>/dev/null
 
     local url="http://localhost:$port/$file"
 
@@ -189,7 +189,7 @@ function serve(){
     fi
     fg
 
-    [[ -n "$dir" ]] && popd
+    [[ -n "$dir" ]] && popd $>/dev/null
 }
 alias http-serve=serve
 
