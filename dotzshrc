@@ -24,19 +24,14 @@ source_if_exist "$HOME/.nvm/nvm.sh"
 
 ############################################################
 # java
-JAVA=`which java 2>/dev/null`
-if [ $? -eq 0 ]
-then
-    if [ -x /usr/libexec/java_home ]
-    then
-        JAVA_HOME="`/usr/libexec/java_home`"
-    else
-        JAVA="`readlink -n -f $JAVA`"
-        JAVA_BIN="`dirname $JAVA`"
-        JAVA_HOME="`dirname $JAVA_BIN`"
-    fi
-    export JAVA_HOME
+if [[ -d /usr/libexec/java_home ]]
+then JAVA_HOME="/usr/libexec/java_home"
+elif which jar &>/dev/null
+then JAVA_HOME="$(which jar | xargs readlink -f | xargs dirname | xargs dirname)"
+elif which java &>/dev/null
+then JAVA_HOME="$(which java | xargs readlink -f | xargs dirname | xargs dirname)"
 fi
+[[ -n "${JAVA_HOME}" ]] && export JAVA_HOME
 
 ############################################################
 # パスの設定
