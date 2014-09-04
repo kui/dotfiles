@@ -14,6 +14,7 @@ link_file_list=(
     dotirssi
     dotxinitrc
     dotdir_colors
+    doteasystroke
 )
 
 rsense_dir="$HOME/.rsense.d"
