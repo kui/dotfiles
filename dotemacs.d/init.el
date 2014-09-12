@@ -384,6 +384,10 @@ but if not, return nil."
   (global-set-key "\C-cgo" 'git-gutter:popup-diff)
   )
 
+;; git-blame
+(when (kui/package-require 'git-blame nil nil t)
+  )
+
 ;; linum & hlinum
 ;; (when (kui/autoload-if-exist 'linum-mode "linum")
 ;;   ;; linum-mode が発動するフック一覧
