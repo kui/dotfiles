@@ -354,16 +354,21 @@ create *scratch* if it did not exists"
 but if not, return nil."
   (find-if (lambda (m) (eq m mode)) (kui/current-minor-modes)))
 
-;; backindentation
-;; (defun kui/backindent ()
-;;   "Unindent"
-;;   (interactive)
-;;   (labels ((f (pos)
-;;               (previous-line)
-;;               (when (not (= pos (point)))
+(defun kui/find-font (&rest fonts)
+  "Return an existing font which was find at first"
+  (find-if (lambda (f)
+             (find-font (font-spec :name f)))
+           fonts))
 
-;;   (save-excursion
-;;     ()))
+(defun kui/revert-buffer ()
+  "Execute `revert-buffer' without confimations if it was not edited
+or execute `revert-buffer' with confimations if it was edited."
+  (interactive)
+  (if (not (buffer-modified-p))
+      (revert-buffer t t)
+    (error "The buffer has been modified")))
+(global-set-key (kbd "<f5>")
+                'kui/revert-buffer)
 
 ;; -------------------------------------------------------------------------
 ;; 便利な感じのマイナーモード
@@ -594,6 +599,12 @@ but if not, return nil."
        "timer for flymake-display-err-menu-for-current-line")
      (defvar flymake-display-err-before-line nil)
      (defvar flymake-display-err-before-colmun nil)
+
+    (when window-system
+      (set-face-attribute 'flymake-errline nil
+                          :foreground nil
+                          :background nil
+                          :inherit nil))
 
      (when (require 'popup nil t)
 
@@ -1066,7 +1077,10 @@ but if not, return nil."
   (set-scroll-bar-mode nil)
 
   ;; フォントの指定
-  (set-default-font "Inconsolata-11")
+  (let ((font (kui/find-font "Ricty-11"
+                             "Inconsolata-11"
+                             "Monospace-11")))
+    (if font (set-default-font font)))
 
   ;; ウィンドウサイズを画面に揃える（精度は微妙）
   (set-frame-size
