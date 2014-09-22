@@ -365,7 +365,9 @@ but if not, return nil."
 or execute `revert-buffer' with confimations if it was edited."
   (interactive)
   (if (not (buffer-modified-p))
-      (revert-buffer t t)
+      (let ()
+        (revert-buffer t t)
+        (message "revert the current buffer"))
     (error "The buffer has been modified")))
 (global-set-key (kbd "<f5>")
                 'kui/revert-buffer)
