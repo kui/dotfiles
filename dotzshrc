@@ -120,6 +120,8 @@ then
     alias ls="ls -F -G"
 fi
 
+alias grep='grep --color'
+
 function markdown_preview(){
     if [ $# -ne 1 ]; then
         echo "error: invalid arguments"
