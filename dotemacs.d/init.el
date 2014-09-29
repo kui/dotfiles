@@ -26,6 +26,11 @@
 ;; meadow 向けの設定
 (if (string-equal system-type "windows-nt") (let () ))
 
+;; git checkout によるファイル変更などに追従する
+;; (custom-set-variables '(auto-revert-check-vc-info t))
+;; (global-auto-revert-mode 1)
+;; バッファに変更があったときに特に何も言わずに追従をやめてしまうのがつらい
+
 ;; 自動保存機能
 (setq auto-save-default t
       ;; 自動保存に関する情報
@@ -361,14 +366,13 @@ but if not, return nil."
            fonts))
 
 (defun kui/revert-buffer ()
-  "Execute `revert-buffer' without confimations if it was not edited
-or execute `revert-buffer' with confimations if it was edited."
+  "Execute `revert-buffer' without confimations if it was not edited"
   (interactive)
   (if (not (buffer-modified-p))
       (let ()
         (revert-buffer t t)
         (message "revert the current buffer"))
-    (error "The buffer has been modified")))
+    (error "ERROR: The buffer has been modified")))
 (global-set-key (kbd "<f5>")
                 'kui/revert-buffer)
 
