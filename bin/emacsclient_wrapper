@@ -1,0 +1,67 @@
+#!/bin/sh -e
+
+RETRY_TIMES=30
+RETRY_INTERVAL=0.5 # sec
+
+main() {
+    local server_name="$(get_server_name)"
+
+    if [ -z "$server_name" ]
+    then abort "Cannot generate a server name"
+    fi
+
+    if ! is_running "$server_name"
+    then start_server "$server_name"
+    fi
+
+    c=$RETRY_TIMES
+    while [ $c -ne 0 ] && ! try_emacsclient "$server_name" "$@"
+    do
+        sleep $RETRY_INTERVAL
+        c=$((c-1))
+    done
+
+    if [ $c -eq 0 ]
+    then abort "emacsclient timeout"
+    fi
+}
+
+get_server_name() {
+    if [ -n "$DISPLAY" ]; then echo "${USER}-wm-${DISPLAY}"
+    elif [ -n "$STY" ];   then echo "${USER}-sty-${STY}"
+    fi
+}
+
+is_running() {
+    emacsclient --socket-name "$1" --eval "server-name" > /dev/null 2>&1
+}
+
+start_server() {
+    local server_name="$1"
+
+    echo "Do not found the socket: ${server_name}"
+    echo "Create a new emacs server"
+
+    local el
+    el="$el --eval '(setq server-name \"${server_name}\")'"
+    el="$el --eval '(server-start)'"
+    if [ -n "$DISPLAY" ]
+    then eval nohup emacs $el > /dev/null 2>&1 &
+    elif [ -n "$STY" ]
+    then eval screen emacs $el
+    fi
+}
+
+try_emacsclient() {
+    local server_name="$1"
+    shift
+
+    emacsclient --socket-name "$server_name" "$@" 2>/dev/null
+}
+
+abort() {
+    echo "ERROR:" "$@" >&2
+    exit 1
+}
+
+main "$@"

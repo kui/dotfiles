@@ -91,18 +91,6 @@
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 ;; (remove-hook 'before-save-hook 'delete-trailing-whitespace)
 
-;; サーバーモードの設定
-;; (when (and (require 'server nil t)
-;;            (not (server-running-p)))
-
-;;   server-mode になった時に、終了しにくくする。
-;;   (defadvice server-start (after server-set-confirm-kill-emacs activate compile)
-;;     "Switch `confirm-kill-emacs' when `server-start' is called"
-;;     (setq confirm-kill-emacs (if (server-running-p) 'yes-or-no-p)))
-
-;;   (server-start)
-;;   )
-
 ;; -------------------------------------------------------------------------
 ;; グローバルキーバインド変更
 
@@ -381,6 +369,7 @@ but if not, return nil."
 
 ;; 環境変数をシェルからインポート
 (when (kui/package-require 'exec-path-from-shell nil nil t)
+  (add-to-list 'exec-path-from-shell-variables "EMACS_SERVER_NAME")
   (exec-path-from-shell-initialize))
 
 ;; git-gutter
