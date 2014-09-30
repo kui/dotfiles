@@ -3,27 +3,30 @@
 RETRY_TIMES=30
 RETRY_INTERVAL=0.5 # sec
 
+server_name=''
+
 main() {
-    local server_name="$(get_server_name)"
+    server_name="$(get_server_name)"
 
     if [ -z "$server_name" ]
-    then abort "Cannot generate a server name"
+    then abort "cannot generate a server name"
     fi
 
-    if ! is_running "$server_name"
-    then start_server "$server_name"
+    echo "Server Name: ${server_name}"
+
+    if ! is_running
+    then
+        echo "Not found by the server name"
+        echo "Create a new emacs server"
+
+        if ! start_server
+        then abort "timeout for emacs-server start"
+        fi
     fi
 
-    c=$RETRY_TIMES
-    while [ $c -ne 0 ] && ! try_emacsclient "$server_name" "$@"
-    do
-        sleep $RETRY_INTERVAL
-        c=$((c-1))
-    done
+    emacsclient --socket-name "${server_name}" "$@"
 
-    if [ $c -eq 0 ]
-    then abort "emacsclient timeout"
-    fi
+    switch_to_server
 }
 
 get_server_name() {
@@ -33,30 +36,53 @@ get_server_name() {
 }
 
 is_running() {
-    emacsclient --socket-name "$1" --eval "server-name" > /dev/null 2>&1
+    pid=$(emacsclient --socket-name "${server_name}" --eval "(emacs-pid)" \
+        2>/dev/null)
+    [ -n "${pid}" ]
 }
 
 start_server() {
-    local server_name="$1"
-
-    echo "Do not found the socket: ${server_name}"
-    echo "Create a new emacs server"
-
-    local el
     el="$el --eval '(setq server-name \"${server_name}\")'"
     el="$el --eval '(server-start)'"
     if [ -n "$DISPLAY" ]
-    then eval nohup emacs $el > /dev/null 2>&1 &
+    then eval nohup emacs $el >/dev/null 2>&1
     elif [ -n "$STY" ]
     then eval screen emacs $el
     fi
+
+    c=$RETRY_TIMES
+    while [ $c -ne 0 ] && ! is_running
+    do
+        echo_spinning_bar $c  >&2
+        sleep $RETRY_INTERVAL
+        c=$((c-1))
+    done
+
+    [ $c -ne 0 ]
 }
 
-try_emacsclient() {
-    local server_name="$1"
-    shift
+echo_spinning_bar() {
+    case $(($1%4)) in
+        0) echo -n "-\r";;
+        1) echo -n "\\\\\r";;
+        2) echo -n "|\r";;
+        3) echo -n "/\r";;
+    esac
+}
 
-    emacsclient --socket-name "$server_name" "$@" 2>/dev/null
+switch_to_server() {
+    if [ -n "$DISPLAY" ]
+    then : # no-op
+    elif [ -n "$STY" ]
+    then
+        w=$(emacsclient \
+            --socket-name "${server_name}" \
+            --eval "(getenv \"WINDOW\")" 2>/dev/null | \
+            tr -d '"')
+        if [ -n "$w" ]
+        then screen -X select $w
+        fi
+    fi
 }
 
 abort() {

@@ -145,17 +145,6 @@ function markdown_preview(){
     fi
 }
 
-function j(){
-    class=`echo $1 | sed -e "s/\\.java$//"`
-    shift
-    echo $@
-    if [ -f build.xml ]; then
-        ant && java -DDebug=on $class $@
-    else
-        javac $class.java && java -DDebug=on $do_java $@
-    fi
-}
-
 # HTTPサーバを立ち上げる
 function serve(){
     local port=${SERVE_PORT:-8007}
