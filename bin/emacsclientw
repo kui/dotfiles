@@ -1,0 +1,154 @@
+#!/usr/bin/python
+
+RETRY_NUMBER = 30
+RETRY_INTERVAL = 0.5 # sec
+
+##
+
+import os, sys, subprocess, time
+from optparse import (OptionParser,BadOptionError,AmbiguousOptionError)
+try:
+    from subprocess import DEVNULL # py3k
+except ImportError:
+    import os
+    DEVNULL = open(os.devnull, 'wb')
+
+def main():
+    server = get_server()
+    if server is None:
+        abort("cannot generate the socket-name. "
+              "require DISPLAY or STY environment variable.")
+    get_command().run(server)
+
+def get_server():
+    if os.getenv("DISPLAY"):
+        return XEmacsServer()
+    elif os.getenv("STY"):
+        return ScreenEmacsServer()
+    else:
+        return None
+
+def get_command():
+    p = PassThroughOptionParser()
+    p.set_defaults(command=Command.EMACSCLIENT_INVOKER)
+    p.add_option("--print-server-name",
+                 help="print server name. does not invoke emacsclient.",
+                 action="store_const",
+                 dest="command",
+                 const=Command.SERVER_NAME_PRINTER)
+    opts, args = p.parse_args()
+    return opts.command
+
+def abort(msg):
+    sys.exit("Abort: " + msg)
+
+def invoke_emacsclient(server_name):
+    cmd = ["emacsclient", "--socket-name", server_name] + sys.argv[1:]
+    print("Invoke: %s" % cmd)
+    return subprocess.Popen(cmd)
+
+## commands
+# TODO: tmux support
+
+class ServerNamePrinter:
+    def run(self, server):
+        print(server.name)
+
+class EmacsclientInvoker:
+    def run(self, server):
+        if not server.is_running():
+            server.start()
+        e = invoke_emacsclient(server.name)
+        server.focus()
+        e.wait()
+
+class Command:
+    SERVER_NAME_PRINTER = ServerNamePrinter()
+    EMACSCLIENT_INVOKER = EmacsclientInvoker()
+
+## emacs-servers
+
+class EmacsServer:
+    """super class for emacs server"""
+    def is_running(self):
+        s = subprocess.call(["emacsclient",
+                             "--socket-name", self.name,
+                             "--eval", "(emacs-pid)"],
+                            stderr=DEVNULL, stdout=DEVNULL)
+        return s == 0
+
+    def start(self):
+        cmd = [
+            "emacs",
+            "--eval", "(setq server-name \"%s\")" % self.name,
+            "--eval", "(server-start)"
+        ]
+        self._start(cmd)
+        self.__wait()
+
+    def focus(self):
+        pass
+
+    def __wait(self):
+        c = 0
+        while c < RETRY_NUMBER and (not self.is_running()):
+            c += 1
+            time.sleep(RETRY_INTERVAL)
+            sys.stdout.write("%d\r" % c)
+            sys.stdout.flush()
+
+        if c == RETRY_NUMBER:
+            raise RetryLimitExceededException()
+
+class RetryLimitExceededException(BaseException):
+    pass
+
+class XEmacsServer(EmacsServer):
+    """emacs-server for X Window System"""
+    def __init__(self):
+        self.name = "wm-" + os.getenv("DISPLAY")
+
+    def _start(self, emacs_cmd):
+        cmd = " ".join(["'%s'" % e for e in emacs_cmd]) + " >/dev/null 2>&1 &"
+        subprocess.check_call(["sh", "-c", cmd])
+
+class ScreenEmacsServer(EmacsServer):
+    """emacs-server for GNU screen"""
+    def __init__(self):
+        self.name = "sty-" + os.getenv("STY")
+
+    def _start(self, emcas_cmd):
+        subprocess.check_call(["screen"] + emcas_cmd)
+
+    def focus(self):
+        o = subprocess.check_output(["emacsclient",
+                                     "--socket-name", self.name,
+                                     "--eval", "(getenv \"WINDOW\")"])
+        wid = o.replace('"', "")
+        if len(wid) == 0:
+            return
+
+        subprocess.check_call(["screen", "-X", "select", str(wid)])
+
+##
+
+# http://stackoverflow.com/questions/1885161/how-can-i-get-optparses-optionparser-to-ignore-invalid-options
+class PassThroughOptionParser(OptionParser):
+    """
+    An unknown option pass-through implementation of OptionParser.
+
+    When unknown arguments are encountered, bundle with largs and try again,
+    until rargs is depleted.
+
+    sys.exit(status) will still be called if a known argument is passed
+    incorrectly (e.g. missing arguments or bad argument types, etc.)
+    """
+    def _process_args(self, largs, rargs, values):
+        while rargs:
+            try:
+                OptionParser._process_args(self,largs,rargs,values)
+            except (BadOptionError,AmbiguousOptionError), e:
+                largs.append(e.opt_str)
+
+if __name__ == "__main__":
+    main()

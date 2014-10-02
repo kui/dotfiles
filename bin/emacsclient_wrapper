@@ -4,10 +4,33 @@ RETRY_TIMES=30
 RETRY_INTERVAL=0.5 # sec
 
 server_name=''
+cmd=''
 
 main() {
-    server_name="$(get_server_name)"
+    cmd="$(parse_args "$@")"
+    eval $cmd "$@"
+}
 
+parse_args() {
+    for arg in "$@"
+    do
+        case "$arg" in
+            --echo-server-name)
+                echo "echo_server_name"
+                return
+                ;;
+        esac
+    done
+
+    echo "start_emacsclient"
+}
+
+echo_server_name() {
+    get_server_name
+}
+
+start_emacsclient() {
+    server_name="$(get_server_name)"
     if [ -z "$server_name" ]
     then abort "cannot generate a server name"
     fi
@@ -16,7 +39,7 @@ main() {
 
     if ! is_running
     then
-        echo "Not found by the server name"
+        echo "Not found the server name"
         echo "Create a new emacs server"
 
         if ! start_server
@@ -45,7 +68,7 @@ start_server() {
     el="$el --eval '(setq server-name \"${server_name}\")'"
     el="$el --eval '(server-start)'"
     if [ -n "$DISPLAY" ]
-    then eval nohup emacs $el >/dev/null 2>&1
+    then eval nohup emacs $el >/dev/null 2>&1 &
     elif [ -n "$STY" ]
     then eval screen emacs $el
     fi

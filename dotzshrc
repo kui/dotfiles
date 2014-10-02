@@ -200,10 +200,10 @@ fi
 [ $DISPLAY ] && [ $STY ] && [ $copy_cmd ] &&\
   screen -X bindkey -m ' ' eval "stuff ' '" writebuf "exec sh -c '$copy_cmd'"
 
-if which emacsclient_wrapper &> /dev/null
+if which emacsclientw &> /dev/null
 then
-    alias e="emacsclient_wrapper --no-wait"
-    export EDITOR=emacsclient_wrapper
+    alias e="emacsclientw --no-wait"
+    export EDITOR=emacsclientw
 fi
 
 ## 色一覧
