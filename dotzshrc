@@ -656,12 +656,6 @@ bindkey '^m' do_enter
 
 timetrack_threshold=10 # seconds
 
-if which growlnotify >/dev/null 2>&1
-then notify_method="growlnotify"
-elif which notify-send >/dev/null 2>&1
-then notify_method="notify-send"
-fi
-
 export timetrack_threshold
 export timetrack_ignore_progs
 
@@ -679,7 +673,6 @@ function preexec_end_timetrack() {
     local message
 
     if [[ -z "$DISPLAY" || \
-          -z "$notify-send" || \
           -z "$timetrack_start" || \
           -z "$timetrack_threshold" ]]
     then return
@@ -696,25 +689,23 @@ function preexec_end_timetrack() {
     if [[ "$exec_time" -ge "$timetrack_threshold" ]]
     then
         message="Time: $exec_time seconds\nCOMMAND: $command"
-        case "$notify_method" in
-            "growlnotify" )
-                echo "$message" | growlnotify -n "ZSH timetracker" --appIcon Terminal
-                ;;
-            "notify-send" )
-                notify-send "Command finished" "$message"
-                ;;
-        esac
+
+        if which growlnotify &>/dev/null
+        then echo "$message" | growlnotify -n "ZSH timetracker" --appIcon Terminal
+        elif which notify-send &>/dev/null
+        then notify-send --icon=terminal "Command finished" "$message"
+        fi
     fi
 
     unset timetrack_start
     unset timetrack_command
 }
 
-if ( which growlnotify >/dev/null 2>&1 || which notify-send >/dev/null 2>&1 ) &&
+if ( which growlnotify &>/dev/null || which notify-send &>/dev/null) &&
     autoload -U add-zsh-hook 2>/dev/null
 then
-        add-zsh-hook preexec preexec_start_timetrack
-        add-zsh-hook precmd preexec_end_timetrack
+    add-zsh-hook preexec preexec_start_timetrack
+    add-zsh-hook precmd preexec_end_timetrack
 fi
 
 ## マシンごとの設定
