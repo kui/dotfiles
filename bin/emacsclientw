@@ -5,7 +5,7 @@ RETRY_INTERVAL = 0.5 # sec
 
 ##
 
-import os, sys, subprocess, time, itertools, re, optparse
+import os, sys, subprocess, time, itertools, re, optparse, shutil, tempfile
 
 PROG = os.path.basename(sys.argv[0])
 USAGE = """
@@ -16,10 +16,12 @@ and name the server after the current environments to avoid the `server-name` co
 All unknown arguments/options will be passed to emacsclient.
 """[1:][:-1].format(prog=PROG)
 
-DEVNULL = open(os.devnull, 'wb')
+DEVNULL = open(os.devnull, "wb")
+PROGRESS_CHARS = ["\\", "|", "/", "-"]
 
 def main():
-    get_command().run()
+    cmd, args = get_command()
+    cmd.run(args)
 
 def get_command():
     p = PassThroughOptionParser(add_help_option=False)
@@ -40,7 +42,7 @@ def get_command():
                  dest="command",
                  const=Command.SERVER_NAME_PRINTER)
     opts, args = p.parse_args()
-    return opts.command()
+    return opts.command(), args
 
 def get_server():
     svrs = [XEmacsServer, ScreenEmacsServer]
@@ -54,12 +56,13 @@ def get_server():
 def abort(msg):
     sys.exit("Abort: " + msg)
 
-def err(s):
-    sys.stderr.write(s + "\n")
+def stderr(s):
+    sys.stderr.write(s)
+    sys.stderr.write(os.linesep)
 
-def invoke_emacsclient(server_name):
-    cmd = ["emacsclient", "--socket-name", server_name] + sys.argv[1:]
-    err("Invoke: %s" % pp_string_as_cmd(cmd))
+def invoke_emacsclient(server_name, args):
+    cmd = ["emacsclient", "--socket-name", server_name] + args
+    stderr("Invoke: %s" % pp_string_as_cmd(cmd))
     return subprocess.Popen(cmd)
 
 def pp_string_as_cmd(cmd):
@@ -71,24 +74,48 @@ def convert_as_arg(arg):
     else:
         return arg
 
+def remove_all_from(l, *elements):
+    for e in elements:
+        while e in l:
+            l.remove(e)
+
+def create_stdin_tempfile():
+    t = tempfile.NamedTemporaryFile(delete=False)
+    shutil.copyfileobj(sys.stdin, t)
+    return t.name
+
+def get_progress_char(c):
+    return PROGRESS_CHARS[c % len(PROGRESS_CHARS)]
+
 ## commands
 
 class ServerNamePrinter:
-    def run(self):
+    def run(self, args):
         server = get_server()
         print(server.name)
 
 class EmacsclientInvoker:
-    def run(self):
+    def run(self, args):
         server = get_server()
         if not server.is_running():
             server.start()
-        e = invoke_emacsclient(server.name)
+
+        stdin_file = None
+        if "-" in args:
+            remove_all_from(args, "-", "--no-wait", "-n")
+            stdin_file = create_stdin_tempfile()
+            args.append("--eval")
+            args.append(("(let ((b (create-file-buffer \"*stdin*\")))"
+                         "  (switch-to-buffer b)"
+                         "  (insert-file-contents \"{stdin_file}\")"
+                         "  (delete-file \"{stdin_file}\"))").format(**vars()))
+
+        e = invoke_emacsclient(server.name, args)
         server.focus()
         e.wait()
 
 class EmacsclientHelpPrinter:
-    def run(self):
+    def run(self, args):
         subprocess.call(["emacsclient", "--help"])
 
 class Command:
@@ -125,8 +152,8 @@ class EmacsServer:
         while c < RETRY_NUMBER and (not self.is_running()):
             c += 1
             time.sleep(RETRY_INTERVAL)
-            sys.stdout.write("%d\r" % c)
-            sys.stdout.flush()
+            sys.stderr.write("%d\r" % get_progress_char(c))
+            sys.stderr.flush()
 
         if c == RETRY_NUMBER:
             raise RetryLimitExceededException()

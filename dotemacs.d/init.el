@@ -369,7 +369,6 @@ but if not, return nil."
 
 ;; 環境変数をシェルからインポート
 (when (kui/package-require 'exec-path-from-shell nil nil t)
-  (add-to-list 'exec-path-from-shell-variables "EMACS_SERVER_NAME")
   (exec-path-from-shell-initialize))
 
 ;; git-gutter
