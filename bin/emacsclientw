@@ -152,7 +152,7 @@ class EmacsServer:
         while c < RETRY_NUMBER and (not self.is_running()):
             c += 1
             time.sleep(RETRY_INTERVAL)
-            sys.stderr.write("%d\r" % get_progress_char(c))
+            sys.stderr.write("{}\r".format(get_progress_char(c)))
             sys.stderr.flush()
 
         if c == RETRY_NUMBER:
