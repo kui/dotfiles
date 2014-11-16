@@ -26,6 +26,11 @@
 ;; meadow 向けの設定
 (if (string-equal system-type "windows-nt") (let () ))
 
+;; git checkout によるファイル変更などに追従する
+;; (custom-set-variables '(auto-revert-check-vc-info t))
+;; (global-auto-revert-mode 1)
+;; バッファに変更があったときに特に何も言わずに追従をやめてしまうのがつらい
+
 ;; 自動保存機能
 (setq auto-save-default t
       ;; 自動保存に関する情報
@@ -85,18 +90,6 @@
 ;; 保存前に末尾空白の削除
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 ;; (remove-hook 'before-save-hook 'delete-trailing-whitespace)
-
-;; サーバーモードの設定
-;; (when (and (require 'server nil t)
-;;            (not (server-running-p)))
-
-;;   server-mode になった時に、終了しにくくする。
-;;   (defadvice server-start (after server-set-confirm-kill-emacs activate compile)
-;;     "Switch `confirm-kill-emacs' when `server-start' is called"
-;;     (setq confirm-kill-emacs (if (server-running-p) 'yes-or-no-p)))
-
-;;   (server-start)
-;;   )
 
 ;; -------------------------------------------------------------------------
 ;; グローバルキーバインド変更
@@ -354,16 +347,22 @@ create *scratch* if it did not exists"
 but if not, return nil."
   (find-if (lambda (m) (eq m mode)) (kui/current-minor-modes)))
 
-;; backindentation
-;; (defun kui/backindent ()
-;;   "Unindent"
-;;   (interactive)
-;;   (labels ((f (pos)
-;;               (previous-line)
-;;               (when (not (= pos (point)))
+(defun kui/find-font (&rest fonts)
+  "Return an existing font which was find at first"
+  (find-if (lambda (f)
+             (find-font (font-spec :name f)))
+           fonts))
 
-;;   (save-excursion
-;;     ()))
+(defun kui/revert-buffer ()
+  "Execute `revert-buffer' without confimations if it was not edited"
+  (interactive)
+  (if (not (buffer-modified-p))
+      (let ()
+        (revert-buffer t t)
+        (message "revert the current buffer"))
+    (error "ERROR: The buffer has been modified")))
+(global-set-key (kbd "<f5>")
+                'kui/revert-buffer)
 
 ;; -------------------------------------------------------------------------
 ;; 便利な感じのマイナーモード
@@ -382,6 +381,10 @@ but if not, return nil."
   (global-set-key "\C-cgn" 'git-gutter:next-diff)
   (global-set-key "\C-cgp" 'git-gutter:previous-diff)
   (global-set-key "\C-cgo" 'git-gutter:popup-diff)
+  )
+
+;; git-blame
+(when (kui/package-require 'git-blame nil nil t)
   )
 
 ;; linum & hlinum
@@ -590,6 +593,12 @@ but if not, return nil."
        "timer for flymake-display-err-menu-for-current-line")
      (defvar flymake-display-err-before-line nil)
      (defvar flymake-display-err-before-colmun nil)
+
+    (when window-system
+      (set-face-attribute 'flymake-errline nil
+                          :foreground nil
+                          :background nil
+                          :inherit nil))
 
      (when (require 'popup nil t)
 
@@ -1062,7 +1071,10 @@ but if not, return nil."
   (set-scroll-bar-mode nil)
 
   ;; フォントの指定
-  (set-default-font "Inconsolata-11")
+  (let ((font (kui/find-font "Ricty-11"
+                             "Inconsolata-11"
+                             "Monospace-11")))
+    (if font (set-default-font font)))
 
   ;; ウィンドウサイズを画面に揃える（精度は微妙）
   (set-frame-size

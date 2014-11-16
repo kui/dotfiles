@@ -48,6 +48,7 @@ path=(
     node_modules/.bin
     $GEM_HOME/bin(N-/)
     $path
+    /usr/local/heroku/bin(N-/)
     /usr/local/{rvm,rbenv}/bin(N-/)
     /app/{script,mingw/tdm/bin,gs/bin,gs/lib}(N-/)
     /usr{/local,/usr,}/bin(N-/)
@@ -120,6 +121,8 @@ then
     alias ls="ls -F -G"
 fi
 
+alias grep='grep --color'
+
 function markdown_preview(){
     if [ $# -ne 1 ]; then
         echo "error: invalid arguments"
@@ -142,40 +145,33 @@ function markdown_preview(){
     fi
 }
 
-function j(){
-    class=`echo $1 | sed -e "s/\\.java$//"`
-    shift
-    echo $@
-    if [ -f build.xml ]; then
-        ant && java -DDebug=on $class $@
-    else
-        javac $class.java && java -DDebug=on $do_java $@
-    fi
-}
-
 # HTTPサーバを立ち上げる
 function serve(){
-    local port=8007
+    local port=${SERVE_PORT:-8007}
 
+    local current_dir="$(pwd)"
     local dir file
     if [[ $# -eq 0 ]]; then
         # no-op
     elif [[ -d "$1" ]]; then
-        local dir="$1"
+        dir="$1"
     elif [[ -f "$1" ]]; then
-        local dir="$(dirname "$1")"
-        local file="$(basename "$1")"
+        dir="$(dirname "$1")"
+        file="$(basename "$1")"
     fi
-    [[ -n "$dir" ]] && pushd "$dir" $>/dev/null
 
     if [[ -n "$dir" ]]
-    then color256_echo 0 5 0 "Serve $dir"
-    else color256_echo 0 5 0 "Serve the current directory"
+    then
+        color_echo green "Serve $dir"
+        cd "$dir"
+    else
+        color_echo green "Serve the current directory"
     fi
     python -m SimpleHTTPServer $port &
+    cd "${current_dir}"
 
     local url="http://localhost:$port/$file"
-    color256_echo 0 5 0 "Open $url"
+    color_echo green "Open $url"
     if which sensible-browser &> /dev/null; then
         sensible-browser "$url"
     elif which xdg-open &> /dev/null; then
@@ -183,8 +179,6 @@ function serve(){
     fi
 
     fg
-
-    [[ -n "$dir" ]] && popd $>/dev/null
 }
 alias http-serve=serve
 
@@ -206,23 +200,10 @@ fi
 [ $DISPLAY ] && [ $STY ] && [ $copy_cmd ] &&\
   screen -X bindkey -m ' ' eval "stuff ' '" writebuf "exec sh -c '$copy_cmd'"
 
-## emacs server の設定
-if (which emacs && which emacsclient) > /dev/null
+if which emacsclientw &> /dev/null
 then
-    if [ -z "$EMACS_SERVER_NAME" ]
-    then
-        EMACS_SERVER_NAME="${USER}-tty-`basename ${TTY}`"
-        # [ $STY ] && EMACS_SERVER_NAME="${USER}-sty-${STY}"
-        [ $DISPLAY ] && EMACS_SERVER_NAME="${USER}-wm-${DISPLAY}"
-        export EMACS_SERVER_NAME
-    fi
-
-    which start_emacsclient > /dev/null 2>&1 && \
-      alias e="start_emacsclient --no-wait"
-    alias emacsclient="emacsclient --socket-name \"$EMACS_SERVER_NAME\""
-
-    which start_emacsclient > /dev/null 2>&1 && \
-      export EDITOR=start_emacsclient
+    alias e="emacsclientw --no-wait"
+    export EDITOR=emacsclientw
 fi
 
 ## 色一覧
@@ -247,6 +228,37 @@ then
 fi
 alias o=open
 
+color_echo(){
+    if [ $# -lt 1 ]
+    then
+        (
+            echo "usage: $0 COLOR [string...]"
+            echo "  COLOR: black, gray, red, green, blue, brown, purple, cyan, [0-7]"
+            echo "sample 1: $0 red foo"
+            echo "sample 2: $0 1 foo"
+        ) >&2
+        return 1
+    fi
+
+    local c="$1"; shift
+    case "$c" in
+        black)  c="0";;
+        red)    c="1";;
+        green)  c="2";;
+        brown)  c="3";;
+        blue)   c="4";;
+        purple) c="5";;
+        cyan)   c="6";;
+        gray)   c="7";;
+        [1-7])  ;; # no-op
+        *)
+            echo "unknown COLOR: $c"
+            return 1
+    esac
+
+    echo "\e[3${c}m$@\e[39m"
+}
+
 ## 256色生成用便利関数
 ### red: 0-5
 ### green: 0-5
@@ -258,9 +270,11 @@ color256(){
 color256_echo(){
     if [ $# -lt 3 ]
     then
-        echo "usage: $0 RED GREEN BLUE [string...]"
-        echo "  RED, GREEN, BLUE: 0-5"
-        echo "sample: $0 0 5 5 foo"
+        (
+            echo "usage: $0 RED GREEN BLUE [string...]"
+            echo "  RED, GREEN, BLUE: 0-5"
+            echo "sample: $0 0 5 5 foo"
+        ) >&2
         return 1
     fi
 
@@ -268,7 +282,7 @@ color256_echo(){
     local g=$1; shift
     local b=$1; shift
 
-    echo "\e[38;5;`color256 $r $g $b`m$@\e[39m"
+    echo "\e[38;5;$(color256 $r $g $b)m$@\e[39m"
 }
 
 #####################################################################
@@ -642,12 +656,6 @@ bindkey '^m' do_enter
 
 timetrack_threshold=10 # seconds
 
-if which growlnotify >/dev/null 2>&1
-then notify_method="growlnotify"
-elif which notify-send >/dev/null 2>&1
-then notify_method="notify-send"
-fi
-
 export timetrack_threshold
 export timetrack_ignore_progs
 
@@ -665,7 +673,6 @@ function preexec_end_timetrack() {
     local message
 
     if [[ -z "$DISPLAY" || \
-          -z "$notify-send" || \
           -z "$timetrack_start" || \
           -z "$timetrack_threshold" ]]
     then return
@@ -682,25 +689,23 @@ function preexec_end_timetrack() {
     if [[ "$exec_time" -ge "$timetrack_threshold" ]]
     then
         message="Time: $exec_time seconds\nCOMMAND: $command"
-        case "$notify_method" in
-            "growlnotify" )
-                echo "$message" | growlnotify -n "ZSH timetracker" --appIcon Terminal
-                ;;
-            "notify-send" )
-                notify-send "Command finished" "$message"
-                ;;
-        esac
+
+        if which growlnotify &>/dev/null
+        then echo "$message" | growlnotify -n "ZSH timetracker" --appIcon Terminal
+        elif which notify-send &>/dev/null
+        then notify-send --icon=terminal "Command finished" "$message"
+        fi
     fi
 
     unset timetrack_start
     unset timetrack_command
 }
 
-if ( which growlnotify >/dev/null 2>&1 || which notify-send >/dev/null 2>&1 ) &&
+if ( which growlnotify &>/dev/null || which notify-send &>/dev/null) &&
     autoload -U add-zsh-hook 2>/dev/null
 then
-        add-zsh-hook preexec preexec_start_timetrack
-        add-zsh-hook precmd preexec_end_timetrack
+    add-zsh-hook preexec preexec_start_timetrack
+    add-zsh-hook precmd preexec_end_timetrack
 fi
 
 ## マシンごとの設定
