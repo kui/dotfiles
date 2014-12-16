@@ -1,6 +1,6 @@
 ;; -*- mode: lisp-interaction; syntax: elisp; coding: utf-8-unix -*-
 
-(add-to-list 'load-path "~/.emacs.d")
+;; (add-to-list 'load-path "~/.emacs.d")
 
 ;; パッケージ管理
 (require 'package)
@@ -606,7 +606,7 @@ but if not, return nil."
        ;; https://gist.github.com/292827
        (defun flymake-display-err-menu-for-current-line ()
          (interactive)
-         (let* ((line-no (flymake-current-line-no))
+         (let* ((line-no (line-number-at-pos))
                 (line-err-info-list
                  (nth 0 (flymake-find-err-info flymake-err-info line-no))))
            (when (and (flymake-display-err-check-moved line-no (current-column))
