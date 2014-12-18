@@ -27,7 +27,7 @@ main(){
         exit 1
     fi
 
-    tmpfile="$(tempfile --mode 0644)"
+    tmpfile="/tmp/$(head -c 18 /dev/urandom | base64 | tr '/+' '_.')"
     print_new_hosts > "$tmpfile"
 
     if ! $is_dryrun
