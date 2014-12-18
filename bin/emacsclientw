@@ -1,5 +1,16 @@
 #!/usr/bin/python
 
+USAGE = """
+Usage: {prog} [OPTIONS] FILE...
+       {prog} --print-server-name
+An emacsclient wrapper which invoke emacs-server automatically
+and name the server after the current environments to avoid the `server-name` conflicts.
+All unknown arguments/options will be passed to emacsclient.
+"""
+
+# TODO: tmux support
+# TODO: No GUI Mac OS X support
+
 RETRY_NUMBER = 30
 RETRY_INTERVAL = 0.5 # sec
 
@@ -8,14 +19,7 @@ RETRY_INTERVAL = 0.5 # sec
 import os, sys, subprocess, time, itertools, re, optparse, shutil, tempfile
 
 PROG = os.path.basename(sys.argv[0])
-USAGE = """
-Usage: {prog} [OPTIONS] FILE...
-       {prog} --print-server-name
-An emacsclient wrapper which invoke emacs-server automatically
-and name the server after the current environments to avoid the `server-name` conflicts.
-All unknown arguments/options will be passed to emacsclient.
-"""[1:][:-1].format(prog=PROG)
-
+USAGE = USAGE[1:][:-1].format(prog=PROG)
 DEVNULL = open(os.devnull, "wb")
 PROGRESS_CHARS = ["\\", "|", "/", "-"]
 
@@ -45,7 +49,7 @@ def get_command():
     return opts.command(), args
 
 def get_server():
-    svrs = [XEmacsServer, ScreenEmacsServer]
+    svrs = [XEmacsServer, MacOSXServer, ScreenEmacsServer]
     itr = itertools.ifilter(lambda s:s.is_runnable(), svrs)
     svr = next(itr, None)
     if svr is None:
@@ -66,7 +70,7 @@ def invoke_emacsclient(server_name, args):
     return subprocess.Popen(cmd)
 
 def pp_string_as_cmd(cmd):
-    return ' '.join(map(convert_as_arg, cmd))
+    return " ".join(map(convert_as_arg, cmd))
 
 def convert_as_arg(arg):
     if re.search(r'[\s?!&]', arg, 1):
@@ -124,7 +128,6 @@ class Command:
     EMACSCLIENT_HELP_PRINTER = EmacsclientHelpPrinter
 
 ## emacs-servers
-# TODO: tmux support
 
 class EmacsServer:
     """super class for emacs server"""
@@ -136,12 +139,11 @@ class EmacsServer:
         return s == 0
 
     def start(self):
-        cmd = [
-            "emacs",
+        opts = [
             "--eval", "(setq server-name \"%s\")" % self.name,
             "--eval", "(server-start)"
         ]
-        self._start(cmd)
+        self._start(opts)
         self.__wait()
 
     def focus(self):
@@ -166,21 +168,38 @@ class XEmacsServer(EmacsServer):
     def __init__(self):
         self.name = "wm-" + os.getenv("DISPLAY")
 
-    def _start(self, emacs_cmd):
-        cmd = " ".join(["'%s'" % e for e in emacs_cmd]) + " >/dev/null 2>&1 &"
+    def _start(self, emacs_opts):
+        cmd = "emacs "
+        cmd += " ".join(["'%s'" % e for e in emacs_opts])
+        cmd += " >/dev/null 2>&1 &"
         subprocess.check_call(["sh", "-c", cmd])
+        # nohup?
 
     @staticmethod
     def is_runnable():
         return bool(os.getenv("DISPLAY"))
+
+class MacOSXServer(EmacsServer):
+    """emacs-server for Mac OS X"""
+    def __init__(self):
+        self.name = "Darwin"
+
+    def _start(self, emacs_opts):
+        cmd = ["open", "-a",  "Emacs", "--args"]
+        cmd += emacs_opts
+        subprocess.check_call(cmd)
+
+    @staticmethod
+    def is_runnable():
+        return subprocess.check_output(["uname"]).strip() == "Darwin"
 
 class ScreenEmacsServer(EmacsServer):
     """emacs-server for GNU screen"""
     def __init__(self):
         self.name = "sty-" + os.getenv("STY")
 
-    def _start(self, emcas_cmd):
-        subprocess.check_call(["screen"] + emcas_cmd)
+    def _start(self, emcas_opts):
+        subprocess.check_call(["screen", "emacs"] + emcas_opts)
 
     def focus(self):
         o = subprocess.check_output(["emacsclient",

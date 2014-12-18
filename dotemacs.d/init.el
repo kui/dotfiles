@@ -40,6 +40,9 @@
       ;; 自動保存する時間
       auto-save-timeout 10)
 
+(when (eq system-type 'darwin)
+   (setq ns-command-modifier (quote meta)))
+
 ;; フォントロックモード (強調表示等) を有効にする
 ;; (global-font-lock-mode t)
 
