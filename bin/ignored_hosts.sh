@@ -32,7 +32,8 @@ main(){
 
     if ! $is_dryrun
     then
-        mv --force --verbose --backup "$tmpfile" "$HOSTS_FILE"
+        cp -fv "$HOSTS_FILE" "${HOSTS_FILE}~"
+        mv -fv "$tmpfile" "$HOSTS_FILE"
     else
         if type git &>/dev/null
         then git diff --word-diff /etc/hosts "$tmpfile"
@@ -44,7 +45,7 @@ main(){
 
 print_new_hosts(){
     cat /etc/hosts \
-        | grep -vP '^0\.0\.0\.0[^0-9]' \
+        | grep -vG '^0\.0\.0\.0[^0-9]' \
         | grep -vF "## $MESSAGE ##" \
         | grep -vF "##/$MESSAGE ##"
 
