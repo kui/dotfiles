@@ -40,12 +40,6 @@
       ;; 自動保存する時間
       auto-save-timeout 10)
 
-(when (eq system-type 'darwin)
-   (setq ns-command-modifier (quote meta)))
-
-;; フォントロックモード (強調表示等) を有効にする
-;; (global-font-lock-mode t)
-
 ;; 対応する括弧をハイライト
 (show-paren-mode 1)
 (setq show-paren-style 'mixed)
@@ -89,10 +83,6 @@
 
 ;; 現在の行をハイライト
 (global-hl-line-mode)
-
-;; 保存前に末尾空白の削除
-(add-hook 'before-save-hook 'delete-trailing-whitespace)
-;; (remove-hook 'before-save-hook 'delete-trailing-whitespace)
 
 ;; -------------------------------------------------------------------------
 ;; グローバルキーバインド変更
@@ -337,18 +327,17 @@ create *scratch* if it did not exists"
     (switch-to-buffer "*scratch*")
     (insert initial-scratch-message)))
 
-(defun kui/current-minor-modes ()
-  "Return minor modes on the current buffer"
-  (remove-if
-   (lambda (mode)
-     (not (and (boundp mode) (symbol-value mode)
-               (fboundp (or (get mode :minor-mode-function) mode)))))
-   minor-mode-list))
-
-(defun kui/active-minor-modep (mode)
+(defun kui/active-minor-mode-p (mode)
   "Return MODE if MODE was activate on the current buffer,
 but if not, return nil."
-  (find-if (lambda (m) (eq m mode)) (kui/current-minor-modes)))
+  (not (and (boundp mode)
+            (symbol-value mode)
+            (fboundp (or (get mode :minor-mode-function) mode)))))
+
+(defun kui/current-minor-modes ()
+  "Return minor modes on the current buffer"
+  (remove-if 'kui/active-minor-mode-p
+             minor-mode-list))
 
 (defun kui/find-font (&rest fonts)
   "Return an existing font which was find at first"
@@ -455,10 +444,31 @@ but if not, return nil."
 
 (when (and (kui/package-require 'flycheck nil nil t)
            (kui/package-require 'flycheck-pos-tip nil nil t))
-  ;; ...
   (eval-after-load 'flycheck
     '(custom-set-variables
       '(flycheck-display-errors-function #'flycheck-pos-tip-error-messages)))
+  )
+
+;; company-mode
+(when (kui/package-require 'company nil nil t)
+
+  (setq company-global-modes nil
+        ;; 自動補完を有効
+        company-auto-complete t
+        ;; 補完リスト表示字数
+        company-minimum-prefix-length 2)
+
+  ;; 補完開始
+  (define-key company-mode-map "\M-/" 'company-complete)
+
+  ;; 補完リスト表示時
+  (define-key company-active-map "\C-[" 'company-abort)
+  (define-key company-active-map "\C-n" 'company-select-next)
+  (define-key company-active-map "\C-p" 'company-select-previous)
+  (define-key company-active-map "\C-h" (lambda ()
+                                          (interactive)
+                                          (company-abort)
+                                          (delete-backward-char 1)))
   )
 
 ;; auto-complete-mode
@@ -478,7 +488,7 @@ but if not, return nil."
 
   ;; *補完リスト表示開始
   ;; (global-set-key "\C-o" 'ac-start)
-  (global-set-key "\M-/" 'ac-start)
+  (define-key ac-mode-map "\M-/" 'ac-start)
 
   ;; *補完リスト表示自動開始文字数（nil だと自動表示されない）
   (setq ac-auto-start 2)
@@ -667,8 +677,6 @@ but if not, return nil."
   (defun kui/markdown-init-set-values ()
     ;; (set (make-variable-buffer-local 'indent-tabs-mode) nil)
     (set (make-variable-buffer-local 'tab-width) 4)
-    (remove-hook 'before-save-hook
-                 'delete-trailing-whitespace t)
     (set (make-variable-buffer-local 'whitespace-style)
          '(;; faceを使って視覚化する。
            face
@@ -863,7 +871,7 @@ but if not, return nil."
        ;; multi-web-mode での js-mode では flymake-jshint を使わない
        (remove-hook 'js-mode-hook 'flymake-jshint-load)
        (add-hook 'js-mode-hook
-                 (lambda nil (unless (kui/active-minor-modep 'multi-web-mode)
+                 (lambda nil (unless (kui/active-minor-mode-p 'multi-web-mode)
                                (flymake-jshint-load))))
        (eval-after-load "js"
          '(progn
@@ -888,12 +896,28 @@ but if not, return nil."
 ;; rust-mode
 (when (and (kui/autoload-if-exist 'rust-mode "rust-mode")
            (kui/package-require 'flycheck-rust nil nil t))
+
+  ;; flycheck
   (eval-after-load 'flycheck
     '(add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
-  (add-hook 'after-change-major-mode-hook
-            (lambda ()
-              (when (eq major-mode 'rust-mode)
-                (flycheck-mode))))
+  (add-hook 'rust-mode-hook #'flycheck-mode)
+
+  ;; racer(Code Completion)
+  (let* ((racer-path (executable-find "racer"))
+         (racer-path (if racer-path (file-chase-links racer-path 100)))
+         (racer-dir (if racer-path
+                        (file-name-directory
+                         (directory-file-name
+                          (file-name-directory racer-path)))))
+         (racer-load-path (if racer-dir
+                              (concat racer-dir "editors")))
+         (rust-path (getenv "RUST_SRC_PATH")))
+    (when (and racer-dir
+               rust-path)
+      (add-to-list 'load-path racer-load-path)
+      (require 'racer nil t)
+      (setq racer-rust-src-path rust-path
+            racer-cmd racer-path)))
   )
 
 ;; -------------------------------------------------------------------------
