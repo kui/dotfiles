@@ -453,8 +453,12 @@ but if not, return nil."
 
   (guide-key-mode 1))
 
-(when (kui/package-require 'flycheck nil nil t)
+(when (and (kui/package-require 'flycheck nil nil t)
+           (kui/package-require 'flycheck-pos-tip nil nil t))
   ;; ...
+  (eval-after-load 'flycheck
+    '(custom-set-variables
+      '(flycheck-display-errors-function #'flycheck-pos-tip-error-messages)))
   )
 
 ;; auto-complete-mode
@@ -499,11 +503,11 @@ but if not, return nil."
      (defvar flymake-display-err-before-line nil)
      (defvar flymake-display-err-before-colmun nil)
 
-    (when window-system
-      (set-face-attribute 'flymake-errline nil
-                          :foreground nil
-                          :background nil
-                          :inherit nil))
+     (when window-system
+       (set-face-attribute 'flymake-errline nil
+                           :foreground nil
+                           :background nil
+                           :inherit nil))
 
      (when (require 'popup nil t)
 
@@ -882,8 +886,14 @@ but if not, return nil."
   (add-to-list 'ac-modes 'haml-mode))
 
 ;; rust-mode
-(when (kui/autoload-if-exist 'rust-mode "rust-mode")
-  ;; ...
+(when (and (kui/autoload-if-exist 'rust-mode "rust-mode")
+           (kui/package-require 'flycheck-rust nil nil t))
+  (eval-after-load 'flycheck
+    '(add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
+  (add-hook 'after-change-major-mode-hook
+            (lambda ()
+              (when (eq major-mode 'rust-mode)
+                (flycheck-mode))))
   )
 
 ;; -------------------------------------------------------------------------
