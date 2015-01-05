@@ -27,8 +27,6 @@ defencoding utf8
 ## 256色表示を有効に
 term xterm-256color
 defbce "on"
-# termcapinfo xterm* 'Co#256:pa#256:AB=\E[48;5;%dm:AF=\E[38;5;%dm:'
-#attrcolor b ".I"
 
 ## シェルの設定
 # shell zsh
@@ -38,6 +36,8 @@ defbce "on"
 
 ## flow 切る
 defflow off
+
+termcapinfo * ti@:te@
 
 ## keybind
 bind L layout next
