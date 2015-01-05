@@ -1,6 +1,6 @@
 ;; -*- mode: lisp-interaction; syntax: elisp; coding: utf-8-unix -*-
 
-(add-to-list 'load-path "~/.emacs.d")
+;; (add-to-list 'load-path "~/.emacs.d")
 
 ;; パッケージ管理
 (require 'package)
@@ -39,6 +39,9 @@
       auto-save-intrval 50
       ;; 自動保存する時間
       auto-save-timeout 10)
+
+(when (eq system-type 'darwin)
+   (setq ns-command-modifier (quote meta)))
 
 ;; フォントロックモード (強調表示等) を有効にする
 ;; (global-font-lock-mode t)
@@ -450,6 +453,10 @@ but if not, return nil."
 
   (guide-key-mode 1))
 
+(when (kui/package-require 'flycheck nil nil t)
+  ;; ...
+  )
+
 ;; auto-complete-mode
 (when (kui/package-require 'auto-complete-config nil 'auto-complete t)
   (ac-config-default)
@@ -482,108 +489,6 @@ but if not, return nil."
   ;; (ac-show-menu-immediately-on-auto-complete t)
   )
 
-;; ;; tabbar-mode
-;; (when (kui/package-require 'tabbar nil nil t)
-
-;;   ;; tabbar のタブのグループの仕方
-;;   ;;   デフォルト: 一部を除き major-mode ごとにタブをグループ化
-;;   ;; see http://www.emacswiki.org/emacs/TabBarMode
-;;   (setq tabbar-buffer-groups-function (lambda () (list "Buffers")))
-
-;;   (defcustom kui/tabbar-buffer-filter-list nil
-;;     "A function list to filter tabbar buffer list")
-
-;;   ;; kui/tabbar-buffer-filter-list を順に適応する
-;;   (setq tabbar-buffer-list-function
-;;         '(lambda ()
-;;            (reduce (lambda (result func) (funcall func result))
-;;                    (cons (buffer-list)
-;;                          kui/tabbar-buffer-filter-list))))
-;;   ;; (funcall tabbar-buffer-list-function)
-
-;;   ;; 処理を順番に書く
-;;   (setq
-;;    kui/tabbar-buffer-filter-list
-;;    '(;; * で始まるバッファは消す
-;;      (lambda (blist)
-;;        (remove-if (lambda (b) (string-match "^ ?\\*" (buffer-name b)))
-;;                   blist))
-
-;;      (lambda (blist)
-;;        (remove-if (lambda (b) (string-match "^ ?\\*" (buffer-name b)))
-;;                   blist))
-
-;;      ;; 指定されたバッファが存在するなら、追加する
-;;      (lambda (blist)
-;;        (let ((target-bname-list (list "*scratch*" "*Package*" "*Help*"
-;;                                       (buffer-name (current-buffer)))))
-;;          (append blist
-;;                  (remove-if 'not
-;;                             (mapcar 'kui/find-buffer-by-name
-;;                                     target-bname-list)))))
-
-;;      ;; *scratch* が無かったら作る
-;;      (lambda (blist)
-;;        (if (not (kui/find-buffer-by-name "*scratch*"))
-;;            (save-excursion
-;;              (kui/switch-to-scratch-buffer)))
-;;        blist)
-;;      ))
-
-;;   ;; 左に表示されるボタンを消す
-;;   (dolist (button '(tabbar-buffer-home-button
-;;                     tabbar-scroll-left-button
-;;                     tabbar-scroll-right-button))
-;;     (set button (cons (cons "" nil) (cons "" nil))))
-
-;;   ;; 色とか
-;;   (set-face-attribute 'tabbar-selected nil
-;;                       :foreground "white"
-;;                       :background nil
-;;                       :box nil
-;;                       :inherit nil
-;;                       :height 1.0
-;;                       )
-;;   (set-face-attribute 'tabbar-unselected nil
-;;                       :height 1.0
-;;                       :foreground "#dedede")
-
-;;   ;; ウィンドウシステムを使っていないとき
-;;   (when (not window-system)
-
-;;     ;; タブの間に挟む文字
-;;     (setq tabbar-separator-value "/")
-
-;;     ;; faces
-;;     (set-face-attribute 'tabbar-default nil
-;;                         :background "#333333"
-;;                         :foreground "black"
-;;                         :underline t
-;;                         :box nil)
-;;     (set-face-attribute 'tabbar-selected nil
-;;                         :background "black"
-;;                         :foreground "white"
-;;                         :underline nil
-;;                         :box nil)
-;;     (set-face-attribute 'tabbar-unselected nil
-;;                         :background "white"
-;;                         :foreground "black"
-;;                         :underline t
-;;                         :box nil)
-;;     )
-
-;;   ;; Ctrl+Tab でタブ切り替え
-;;   (global-set-key "\M-[1;5i" 'tabbar-forward)  ;; for mintty
-;;   (global-set-key "\M-[1;6i" 'tabbar-backward) ;; for mintty
-;;   (global-set-key [(control tab)] 'tabbar-forward)
-;;   (global-set-key [(control shift tab)] 'tabbar-backward)
-;;   (global-set-key [(control shift iso-lefttab)] 'tabbar-backward) ;; for x window system
-;;   (global-set-key "\C-xn" 'tabbar-forward)
-;;   (global-set-key "\C-xp" 'tabbar-backward)
-
-;;   (tabbar-mode)
-;;   )
-
 ;; flymake 使うとき
 (eval-after-load "flymake"
   '(let nil
@@ -606,7 +511,7 @@ but if not, return nil."
        ;; https://gist.github.com/292827
        (defun flymake-display-err-menu-for-current-line ()
          (interactive)
-         (let* ((line-no (flymake-current-line-no))
+         (let* ((line-no (line-number-at-pos))
                 (line-err-info-list
                  (nth 0 (flymake-find-err-info flymake-err-info line-no))))
            (when (and (flymake-display-err-check-moved line-no (current-column))
@@ -972,9 +877,14 @@ but if not, return nil."
   (add-to-list 'auto-mode-alist '("\\.gradle\\'" . groovy-mode)))
 
 ;; haml-mode
-(when (kui/autoload-if-exist 'groovy-mode "haml-mode")
+(when (kui/autoload-if-exist 'haml-mode "haml-mode")
   (add-to-list 'auto-mode-alist '("\\.haml\\'" . haml-mode))
   (add-to-list 'ac-modes 'haml-mode))
+
+;; rust-mode
+(when (kui/autoload-if-exist 'rust-mode "rust-mode")
+  ;; ...
+  )
 
 ;; -------------------------------------------------------------------------
 ;; 色とか

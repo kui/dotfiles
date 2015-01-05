@@ -22,14 +22,18 @@ source_if_exist "$HOME/.rvm/scripts/rvm"
 ## nvm
 source_if_exist "$HOME/.nvm/nvm.sh"
 
+readlink_f() {
+    python -c "import os; print(os.path.realpath('$1'))"
+}
+
 ############################################################
 # java
-if [[ -d /usr/libexec/java_home ]]
-then JAVA_HOME="/usr/libexec/java_home"
+if [[ -e /usr/libexec/java_home ]]
+then JAVA_HOME="$(/usr/libexec/java_home)"
 elif which jar &>/dev/null
-then JAVA_HOME="$(which jar | xargs readlink -f | xargs dirname | xargs dirname)"
+then JAVA_HOME="$(readlink_f $(which jar | head -n 1) | xargs dirname | xargs dirname)"
 elif which java &>/dev/null
-then JAVA_HOME="$(which java | xargs readlink -f | xargs dirname | xargs dirname)"
+then JAVA_HOME="$(readlink_f $(which java | head -n 1) | xargs dirname | xargs dirname)"
 fi
 [[ -n "${JAVA_HOME}" ]] && export JAVA_HOME
 
@@ -47,6 +51,7 @@ path=(
     $HOME/.nodebrew/current/bin(N-/)
     node_modules/.bin
     $GEM_HOME/bin(N-/)
+    /opt/local/bin(N-/)
     $path
     /usr/local/heroku/bin(N-/)
     /usr/local/{rvm,rbenv}/bin(N-/)
@@ -61,8 +66,11 @@ typeset -U path
 ## -x: export SUDO_PATHも一緒に行う。
 ## -T: SUDO_PATHとsudo_pathを連動する。
 typeset -xT SUDO_PATH sudo_path
-sudo_path=({,/usr/pkg,/usr/local,/usr}/sbin(N-/)
-        $sudo_path $path)
+sudo_path=(
+    /opt/local/sbin
+    {,/usr/pkg,/usr/local,/usr}/sbin(N-/)
+    $sudo_path $path
+)
 ## 重複したパスを登録しない。
 typeset -U sudo_path
 
@@ -107,7 +115,7 @@ compdef _kitchen kitchen
 
 ############################################################
 ## alias, funcction の設定
-if which screen > /dev/null 2>&1
+if which screen &> /dev/null
 then
     alias s="screen"
     [ $STY ] && alias s="screen -X focus; screen"
@@ -495,7 +503,6 @@ update_prompt(){
 }
 precmd_functions=($precmd_functions update_prompt)
 PROMPT="${USER_COLOR}${USER}%f@${HOST_COLOR}${HOST}%f %F{yellow}%~%f "$'\n'"%(!.#.$) "
-ORIGIN_TTY=$(echo $STY | sed --silent -e 's/.*\.pts-\([0-9]*\)\..*/\1/p')
 
 ############################################################
 ##  screen の window タイトルを設定
@@ -503,7 +510,7 @@ update_screen_title() {
     [[ -z "$STY" ]] && return
 
     local shell=$(echo -n ${SHELL} | sed -e 's/^.*\///')
-    local dir=$(print -P '%~' | sed 's/ /_/g' | xargs -I '{}' basename "{}")
+    local dir=$(print -P '%~' | sed -e 's/ /_/g' | xargs -I '{}' basename "{}")
     echo -n "\033k${shell}#${dir}\033\\" 2>/dev/null
 }
 [ "$STY" ] && precmd_functions=($precmd_functions update_screen_title)
@@ -704,7 +711,7 @@ function preexec_end_timetrack() {
     unset timetrack_command
 }
 
-if ( which growlnotify &>/dev/null || which notify-send &>/dev/null) &&
+if ( which growlnotify &>/dev/null || which notify-send &>/dev/null ) &&
     autoload -U add-zsh-hook 2>/dev/null
 then
     add-zsh-hook preexec preexec_start_timetrack
@@ -716,8 +723,7 @@ fi
 source ~/.zshrc.local
 
 ## rbenv
-if which rbenv > /dev/null 2>&1 &&
-    ! which rvm > /dev/null 2>&1
+if which rbenv &> /dev/null && ! which rvm &> /dev/null
 then
     echo load rbenv
     eval "$(rbenv init - zsh)"
