@@ -756,7 +756,7 @@ but if not, return nil."
   ;;(define-key markdown-mode-map "TAB" 'indent-for-tab-command)
 
   (defun kui/markdown-init-set-values ()
-    (set (make-variable-buffer-local 'indent-tabs-mode) t)
+    ;; (set (make-variable-buffer-local 'indent-tabs-mode) nil)
     (set (make-variable-buffer-local 'tab-width) 4)
     (remove-hook 'before-save-hook
                  'delete-trailing-whitespace t)
