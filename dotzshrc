@@ -51,6 +51,7 @@ path=(
     $HOME/.nodebrew/current/bin(N-/)
     node_modules/.bin
     $GEM_HOME/bin(N-/)
+    /opt/local/bin(N-/)
     $path
     /usr/local/heroku/bin(N-/)
     /usr/local/{rvm,rbenv}/bin(N-/)
@@ -65,8 +66,11 @@ typeset -U path
 ## -x: export SUDO_PATHも一緒に行う。
 ## -T: SUDO_PATHとsudo_pathを連動する。
 typeset -xT SUDO_PATH sudo_path
-sudo_path=({,/usr/pkg,/usr/local,/usr}/sbin(N-/)
-        $sudo_path $path)
+sudo_path=(
+    /opt/local/sbin
+    {,/usr/pkg,/usr/local,/usr}/sbin(N-/)
+    $sudo_path $path
+)
 ## 重複したパスを登録しない。
 typeset -U sudo_path
 
