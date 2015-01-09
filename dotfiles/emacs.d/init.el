@@ -132,19 +132,19 @@
       (message "Cannot get latest version of package %s" pkg-name)
       nil)))
 
-(defun kui/pop-as-assoc (keys seq)
-  "Pop head elements in SEQ as alist which has KEYS.
+(defun kui/pop-as-alist (keys seq)
+  "Pop head elements of SEQ as alist which has KEYS.
 
 Example:
 
-	(kui/pop-as-assoc '(:a :b) '(:a 1 :b 2 :c 3))
+	(kui/pop-as-alist '(:a :b) '(:a 1 :b 2 :c 3))
 	;; => ((:a . 1) (:b . 2))
-	(kui/pop-as-assoc '(:a :b) '(:d 1 :e 2 :a 3 :b 4))
+	(kui/pop-as-alist '(:a :b) '(:d 1 :e 2 :a 3 :b 4))
 	;; => nil"
   (let ((first (nth 0 seq)))
     (if (cl-find first keys)
         (cons `(,(nth 0 seq) . ,(nth 1 seq))
-              (kui/pop-as-assoc keys (nthcdr 2 seq)))
+              (kui/pop-as-alist keys (nthcdr 2 seq)))
       nil)))
 
 ;; インストール済みでアップデート可能なパッケージをリストアップ
@@ -177,7 +177,7 @@ if NON-INTERACTIVE is non-nil, update all package without interaction."
   "Install and require FEATURE with `package'. return non-nil,
 if (requie future) success.
 
-See also `with-pkg'.
+See also `kui/with-pkg'.
 
 Examples:
 
@@ -192,7 +192,7 @@ Examples:
 	(when (kui/package-require 'typescript-mode
 	                           :filename \"TypeScript\")
 	  (add-hook 'typescript-mode-hook (lambda () ... )))"
-  (let* ((opts (kui/pop-as-assoc '(:file :package :throwerror) args))
+  (let* ((opts (kui/pop-as-alist '(:file :package :throwerror) args))
          (fl (cdr (assoc :file opts)))
          (pkg (or (cdr (assoc :package opts)) feature))
          (err (cdr (assoc :throwerror opts))))
@@ -207,39 +207,39 @@ Examples:
                         "kui/package-require" (cadr e))
                nil)))))
 
-(put 'with-pkg 'lisp-indent-function 1)
-(defmacro with-pkg (feature &rest args)
+(put 'kui/with-pkg 'lisp-indent-function 1)
+(defmacro kui/with-pkg (feature &rest args)
   "Install `package' and require FRETURE. Execute BODY, If FEATURE was found.
 
 Examples:
 
-	(with-pkg 'git-gutter
+	(kui/with-pkg 'git-gutter
 	  (global-git-gutter-mode t))
 
-	(with-pkg 'auto-complete-config
+	(kui/with-pkg 'auto-complete-config
 	  :packagename 'auto-complete
 	  (ac-config-default)
 	  (global-auto-complete-mode t))
 
-	(with-pkg 'typescript-mode
+	(kui/with-pkg 'typescript-mode
 	  :filename \"TypeScript\"
 	  (add-hook 'typescript-mode-hook (lambda () ... )))"
-  (let* ((opts (kui/pop-as-assoc '(:file :package) args))
+  (let* ((opts (kui/pop-as-alist '(:file :package) args))
          (fname (cdr (assoc :file opts)))
          (pname (cdr (assoc :package opts)))
          (body (nthcdr (* 2 (length opts)) args)))
     `(when (kui/package-require ,feature :file ,fname :package ,pname) ,@body)))
 
-(put 'with-lib 'lisp-indent-function 1)
-(defmacro with-lib (file &rest body)
+(put 'kui/with-lib 'lisp-indent-function 1)
+(defmacro kui/with-lib (file &rest body)
   "Execute BODY if FILE can be loaded as library.
 This macro does not load FILE. So, you cannot set variables in FILE.
-Use `after-loaded'."
+Use `kui/after-loaded'."
   `(when (locate-library ,file) ,@body))
 
-;; 24.4 以降なら with-eval-after-loaded で同じことができる
-(put 'after-loaded 'lisp-indent-function 1)
-(defmacro after-loaded (file &rest body)
+;; 24.4 以降なら with-eval-kui/after-loaded で同じことができる
+(put 'kui/after-loaded 'lisp-indent-function 1)
+(defmacro kui/after-loaded (file &rest body)
   "Execute BODY after the FILE loading"
   `(eval-after-load ,file (lambda () ,@body)))
 
@@ -419,16 +419,16 @@ but if not, return nil."
 ;; 便利な感じのマイナーモード
 
 ;; 対応する括弧のハイライト
-(with-pkg 'paren
+(kui/with-pkg 'paren
   (show-paren-mode 1)
   (setq show-paren-style 'mixed))
 
 ;; 環境変数をシェルからインポート
-(with-pkg 'exec-path-from-shell
+(kui/with-pkg 'exec-path-from-shell
   (exec-path-from-shell-initialize))
 
 ;; git-gutter
-(with-pkg 'git-gutter
+(kui/with-pkg 'git-gutter
   (global-git-gutter-mode t)
 
   (setq git-gutter:unchanged-sign " ")
@@ -439,17 +439,17 @@ but if not, return nil."
   )
 
 ;; git-blame
-(with-pkg 'git-blame
+(kui/with-pkg 'git-blame
   ;; ...
   )
 
 ;; popup
-(with-pkg 'popup
+(kui/with-pkg 'popup
   ;; ...
   )
 
 ;; popwin
-(with-pkg 'popwin
+(kui/with-pkg 'popwin
   (setq
    ;; display-buffer の置き換え
    display-buffer-function 'popwin:display-buffer
@@ -482,12 +482,12 @@ but if not, return nil."
   )
 
 ;; editorconfig
-(with-pkg 'editorconfig
+(kui/with-pkg 'editorconfig
   ;;...
   )
 
 ;; gude-key
-(with-pkg 'guide-key
+(kui/with-pkg 'guide-key
   (setq
    guide-key/guide-key-sequence '("M-t" "C-c" "C-x RET" "C-x C-h" "C-x r" "M-m" "Esc m")
    guide-key/popup-window-position 'bottom
@@ -498,10 +498,10 @@ but if not, return nil."
 
   (guide-key-mode 1))
 
-(with-pkg 'flycheck
+(kui/with-pkg 'flycheck
   ;; ...
   (add-hook 'after-init-hook #'global-flycheck-mode)
-  (with-pkg 'flycheck-pos-tip
+  (kui/with-pkg 'flycheck-pos-tip
     (setq flycheck-display-errors-function #'flycheck-pos-tip-error-messages))
 
   (global-set-key "\M-e" 'flycheck-next-error)
@@ -509,7 +509,7 @@ but if not, return nil."
   )
 
 ;; company-mode
-(with-pkg 'company
+(kui/with-pkg 'company
 
   (setq company-global-modes nil
         ;; 自動補完を有効
@@ -531,7 +531,7 @@ but if not, return nil."
   )
 
 ;; auto-complete-mode
-(with-pkg 'auto-complete-config
+(kui/with-pkg 'auto-complete-config
   :package 'auto-complete
 
   (ac-config-default)
@@ -564,8 +564,8 @@ but if not, return nil."
   ;; (ac-show-menu-immediately-on-auto-complete t)
   )
 
-(after-loaded "flymake"
-  (with-pkg 'popup
+(kui/after-loaded "flymake"
+  (kui/with-pkg 'popup
 
     ;; flymake 現在行のエラーをpopup.elのツールチップで表示する
     ;; https://gist.github.com/292827
@@ -629,7 +629,7 @@ but if not, return nil."
     ;;                    (flymake-display-err-menu-for-current-line)))
     ))
 
-(with-pkg 'helm
+(kui/with-pkg 'helm
   (setq
    helm-ff-transformer-show-only-basename nil
    helm-buffer-max-length 20)
@@ -642,16 +642,16 @@ but if not, return nil."
   (global-set-key "\C-s" 'helm-occur)
   (global-set-key "\M-x" 'helm-M-x)
 
-  (after-loaded 'helm
+  (kui/after-loaded 'helm
     (define-key helm-map "\C-h" 'delete-backward-char)
     (define-key helm-map "TAB" 'helm-execute-persistent-action))
-  (after-loaded 'helm-files
+  (kui/after-loaded 'helm-files
     (define-key helm-find-files-map "\C-h" 'delete-backward-char)
     (define-key helm-find-files-map "TAB" 'helm-execute-persistent-action))
   )
 
 ;; whitespace-mode
-(with-pkg 'whitespace
+(kui/with-pkg 'whitespace
   ;; n 列以上はハイライトで警告
   ;; (setq whitespace-line-column 90)
 
@@ -677,7 +677,7 @@ but if not, return nil."
   )
 
 ;; gnu global (gtags)
-(with-lib "gtag"
+(kui/with-lib "gtag"
   (global-set-key "\M-tg" nil)
   (global-set-key "\M-tgt" 'gtags-find-tag)
   (global-set-key "\M-tgr" 'gtags-find-rtag)
@@ -689,14 +689,14 @@ but if not, return nil."
   )
 
 ;; ctag-update.el 自動で TAGS アップデートしてくれる
-(with-pkg 'ctags-update
+(kui/with-pkg 'ctags-update
   (set 'ctags-update-command
        (kui/find-if-executable '("ctags-exuberant"
                                  "exuberant-ctags"
                                  "ctags")))
   )
 
-(with-pkg 'multiple-cursors
+(kui/with-pkg 'multiple-cursors
   (multiple-cursors-mode)
   (global-set-key "\M-mn" 'mc/mark-next-like-this)
   (global-set-key "\M-mp" 'mc/mark-previous-like-this)
@@ -716,7 +716,7 @@ but if not, return nil."
 
 ;; markdown-mode
 ;; 読み込めたら *scratch* に使うから kui/autoload-if-exist じゃなくて require
-(with-pkg 'markdown-mode
+(kui/with-pkg 'markdown-mode
   (defun kui/markdown-init-set-values ()
     ;; (set (make-variable-buffer-local 'indent-tabs-mode) nil)
     (set (make-variable-buffer-local 'tab-width) 4)
@@ -743,17 +743,17 @@ but if not, return nil."
   )
 
 ;; yaml-mode
-(with-lib "yaml-mode"
+(kui/with-lib "yaml-mode"
   ;; ...
   )
 
 ;; ruby-mode
-(with-lib "ruby-mode"
+(kui/with-lib "ruby-mode"
   (add-to-list 'auto-mode-alist '("\\.gemspec\\'" . ruby-mode))
   (add-to-list 'auto-mode-alist '("/config\\.ru\\'" . ruby-mode))
   (add-to-list 'auto-mode-alist '("\\(Rake\\|Gem\\|Thor\\|Berks\\|Vagrant\\)file\\'" . ruby-mode))
   (add-to-list 'auto-mode-alist '("\\.builder\\'" . ruby-mode)))
-(after-loaded "ruby-mode"
+(kui/after-loaded "ruby-mode"
   (setq ruby-deep-indent-paren nil)
 
   (defun kui/ruby-init ()
@@ -763,7 +763,7 @@ but if not, return nil."
     (electric-indent-mode t))
   (add-hook 'ruby-mode-hook 'kui/ruby-init)
 
-  (with-pkg 'robe
+  (kui/with-pkg 'robe
     (add-hook 'ruby-mode-hook 'robe-mode)
     (add-hook 'robe-mode-hook 'ac-robe-setup))
 
@@ -771,17 +771,17 @@ but if not, return nil."
              (kui/package-require 'rbenv))
     (add-hook 'ruby-mode-hook 'global-rbenv-mode))
 
-  (with-pkg 'ruby-block
+  (kui/with-pkg 'ruby-block
     (setq ruby-block-highlight-toggle 'overlay)
     (add-hook 'ruby-mode-hook '(lambda () (ruby-block-mode t))))
   )
 
 ;; coffee-mode
-(with-lib "coffee"
+(kui/with-lib "coffee"
   (kui/add-to-list-if-exist 'ac-modes 'coffee-mode)
-  (with-pkg 'col-highlight
+  (kui/with-pkg 'col-highlight
     (add-hook 'coffee-mode-hook 'column-highlight-mode)))
-(after-loaded "coffee"
+(kui/after-loaded "coffee"
   (setq coffee-tab-width 2)
   (setq coffee-debug-mode t)
 
@@ -818,13 +818,13 @@ but if not, return nil."
 (kui/add-to-list-if-exist 'ac-modes 'css-mode)
 
 ;; scss-mode
-(with-lib "scss-mode"
+(kui/with-lib "scss-mode"
   (setq scss-compile-at-save nil))
 
 ;; js-mode
-(with-lib "js"
+(kui/with-lib "js"
   (add-to-list 'auto-mode-alist '("\\.json\\'" . js-mode)))
-(after-loaded "js"
+(kui/after-loaded "js"
   (setq js-indent-level 2)
   (if (and (executable-find "jshint")
            (kui/package-require 'flymake-jshint))
@@ -835,9 +835,9 @@ but if not, return nil."
 (kui/add-to-list-if-exist 'ac-modes 'html-mode)
 
 ;; multi-web-mode
-(with-lib "multi-web-mode"
+(kui/with-lib "multi-web-mode"
   (add-to-list 'auto-mode-alist '("\\.html\\'" . multi-web-mode)))
-(after-loaded "multi-web-mode"
+(kui/after-loaded "multi-web-mode"
   (setq mweb-default-major-mode 'html-mode)
   (setq mweb-tags '((php-mode "<\\?php\\|<\\? \\|<\\?=" "\\?>")
                     (js-mode "<script>" "</script>")
@@ -849,25 +849,25 @@ but if not, return nil."
   )
 
 ;; web-mode
-(with-lib "web-mode"
+(kui/with-lib "web-mode"
   ;; (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
   (kui/add-to-list-if-exist 'ac-modes 'web-mode))
 
 ;; groovy-mode
-(with-lib "groovy-mode"
+(kui/with-lib "groovy-mode"
   (add-to-list 'auto-mode-alist '("\\.gradle\\'" . groovy-mode))
   (kui/add-to-list-if-exist 'ac-modes 'haml-mode))
 
 ;; haml-mode
-(with-lib "haml-mode"
+(kui/with-lib "haml-mode"
   (kui/add-to-list-if-exist 'ac-modes 'haml-mode))
 
 ;; rust-mode
-(after-loaded "rust-mode"
+(kui/after-loaded "rust-mode"
 
   ;; flycheck for rust-mode
-  (with-pkg 'flycheck-rust
-    (after-loaded "flycheck"
+  (kui/with-pkg 'flycheck-rust
+    (kui/after-loaded "flycheck"
       '(add-hook 'flycheck-mode-hook 'flycheck-rust-setup))
     (add-hook 'rust-mode-hook 'flycheck-mode))
 
@@ -891,10 +891,10 @@ but if not, return nil."
 
 ;; -------------------------------------------------------------------------
 ;; 色とか
-(with-pkg 'color-theme
+(kui/with-pkg 'color-theme
   (color-theme-initialize)
 
-  (with-pkg 'color-theme-sanityinc-tomorrow
+  (kui/with-pkg 'color-theme-sanityinc-tomorrow
     (load-theme 'sanityinc-tomorrow-night t)
     (custom-set-faces
      '(highlight
