@@ -1,4 +1,7 @@
 ;; -*- mode: lisp-interaction; syntax: elisp; coding: utf-8-unix -*-
+(message "Start init.el %s" (current-time-string))
+(setq kui/init-start-time (float-time))
+
 (require 'cl)
 
 ;; パッケージ管理
@@ -384,7 +387,6 @@ but if not, return nil."
   (global-git-gutter-mode t)
 
   (setq git-gutter:unchanged-sign " ")
-  (message "git-gutter: loaded")
 
   (global-set-key "\C-cgn" 'git-gutter:next-diff)
   (global-set-key "\C-cgp" 'git-gutter:previous-diff)
@@ -935,10 +937,9 @@ but if not, return nil."
      :background "#112244")))
  '(show-paren-match
    ((((background dark))
-     :inverse-video t
      :inherit nil
      :weight ultra-bold
-     :background nil
+     :background "#004400"
      :foreground nil))))
 
 (unless window-system
@@ -965,14 +966,14 @@ but if not, return nil."
        :weight bold)))))
 
 (when (featurep 'git-gutter)
-  (custom-set-faces
-   '(git-gutter:unchanged ((t :background nil)))
-   '(git-gutter:modified  ((t :background nil)))
-   '(git-gutter:added     ((t :background nil)))
-   '(git-gutter:deleted   ((t :background nil)))))
+  (dolist (f '(git-gutter:unchanged git-gutter:modified git-gutter:added git-gutter:deleted))
+    (custom-set-faces `(,f ((((background dark))
+                             :background "#333300"
+                             :inverse-video nil)
+                            (((background light))
+                             :backgorund "#ffff99"
+                             :inverse-video nil))))))
 
-;; -------------------------------------------------------------------------
-;; window system がある時
 (when window-system
   ;; カーソルの色
   (set-cursor-color "green")
@@ -997,3 +998,6 @@ but if not, return nil."
         kui/min-colmun-number)
    (/ (display-pixel-height) (frame-char-height)))
   )
+
+(message "End init.el %s" (current-time-string))
+(message "Elapsed time: %s sec" (- (float-time) kui/init-start-time))
