@@ -1,6 +1,6 @@
 ;; -*- mode: lisp-interaction; syntax: elisp; coding: utf-8-unix -*-
 (message "Start init.el %s" (current-time-string))
-(setq kui/init-start-time (float-time))
+(defvar kui/init-start-time (float-time))
 
 (require 'cl)
 
@@ -22,7 +22,7 @@
 (setq default-file-name-coding-system 'utf-8-unix)
 
 ;; meadow 向けの設定
-(if (string-equal system-type "windows-nt") (let () ))
+;; (if (string-equal system-type "windows-nt") (let () ))
 
 ;; git checkout によるファイル変更などに追従する
 ;; (custom-set-variables '(auto-revert-check-vc-info t))
@@ -34,7 +34,7 @@
       ;; 自動保存に関する情報
       auto-save-list-file-name (concat user-emacs-directory "/auto-save-list")
       ;; 自動保存する打鍵回数
-      auto-save-intrval 50
+      auto-save-interval 50
       ;; 自動保存する時間
       auto-save-timeout 10)
 
@@ -155,8 +155,7 @@ if NON-INTERACTIVE is non-nil, update all package without interaction."
     (if (not pkg-list)
         (message "No update available package")
       (dolist (pkg-name pkg-list)
-        (if (or non-interactivep
-                (y-or-n-p (format "update package?: %s" pkg-name)))
+        (if (y-or-n-p (format "update package?: %s" pkg-name))
             (package-install pkg-name)))
       (package-initialize))))
 
@@ -204,7 +203,9 @@ Examples:
 
 (put 'with-lib 'lisp-indent-function 1)
 (defmacro with-lib (file &rest body)
-  "Execute BODY if FILE exists"
+  "Execute BODY if FILE can be loaded as library.
+This macro does not load FILE. So, you cannot set variables in FILE.
+Use `after-loaded'."
   `(when (locate-library ,file) ,@body))
 
 ;; 24.4 以降なら with-eval-after-loaded で同じことができる
@@ -218,16 +219,6 @@ Examples:
     (if (find first keys)
         (cons `(,(nth 0 seq) . ,(nth 1 seq))
               (kui/pop-as-assoc keys (nthcdr 2 seq)))
-      nil)))
-
-(defun kui/cons-to-assoc (seq)
-  "Convert SEQ to a association list."
-  (let ((k (nth 0 seq))
-        (v (nth 1 seq)))
-    (message "%s=%s" k v)
-    (if seq
-        (cons (list k v)
-              (kui/cons-to-assoc (nthcdr 2 seq)))
       nil)))
 
 ;; このファイル(init.el)を開く
@@ -262,17 +253,11 @@ Switch to a buffer visiting init file."
 or nothing if point is in BoL"
   (interactive)
   (unless (= (point) (point-at-bol))
-    (set 'old-point (point))
-    (back-to-indentation)
-    (if (= old-point (point))
-        (move-beginning-of-line nil))))
+    (let ((old-point (point)))
+      (back-to-indentation)
+      (if (= old-point (point))
+          (move-beginning-of-line nil)))))
 (global-set-key "\C-a" 'kui/move-beginning-of-line)
-
-;; require の代わりに使う
-(defun kui/autoload-if-exist (function file &optional docstring interactive type)
-  "do `(autoload FUNCTION FILE)` if FILE exist"
-  (if (locate-library file)
-      (let () (autoload function file docstring interactive type) t)))
 
 ;; 現在の行をコメントアウト
 (defun kui/comment-or-uncomment-current-line ()
@@ -338,7 +323,6 @@ uncomment the current line"
 ;; 実行可能なコマンドを返す
 (defun kui/find-if-executable (seq)
   "Find and Return first executable command in SEQ."
-  ;; (find-if (lambda (cmd) (executable-find cmd)) seq))
   (find-if 'executable-find seq))
 
 (defun kui/find-buffer-if (func)
@@ -398,6 +382,16 @@ but if not, return nil."
     (error "ERROR: The buffer has been modified")))
 (global-set-key (kbd "<f5>")
                 'kui/revert-buffer)
+
+;; これ相当のもの、最初からありそうな気がする
+(defun kui/try-symbol-value (symbol &optional fallback-value)
+  (condition-case err (symbol-value symbol) (error fallback-value)))
+
+(defun kui/add-to-list-if-exist (list-var element &optional append compare-fn)
+  "Add ELEMENT to LIST-VAR if LIST-VAR is defined as a appendable value"
+  (let ((v (kui/try-symbol-value list-var)))
+    (if (consp v)
+        (add-to-list list-var element append compare-fn))))
 
 ;; -------------------------------------------------------------------------
 ;; 便利な感じのマイナーモード
@@ -462,6 +456,7 @@ but if not, return nil."
 
 ;; editorconfig
 (with-pkg 'editorconfig
+  ;;...
   )
 
 ;; gude-key
@@ -478,11 +473,13 @@ but if not, return nil."
 
 (with-pkg 'flycheck
   ;; ...
-
+  (add-hook 'after-init-hook #'global-flycheck-mode)
   (with-pkg 'flycheck-pos-tip
     (setq flycheck-display-errors-function #'flycheck-pos-tip-error-messages))
-  )
 
+  (global-set-key "\M-e" 'flycheck-next-error)
+  (global-set-key "\M-E" 'flycheck-perv-error)
+  )
 
 ;; company-mode
 (with-pkg 'company
@@ -540,83 +537,72 @@ but if not, return nil."
   ;; (ac-show-menu-immediately-on-auto-complete t)
   )
 
-;; flymake 使うとき
-(eval-after-load "flymake"
-  '(let nil
-     (defvar flymake-display-err-delay 1
-       "delay to display flymake error message ")
-     (defvar flymake-display-err-timer nil
-       "timer for flymake-display-err-menu-for-current-line")
-     (defvar flymake-display-err-before-line nil)
-     (defvar flymake-display-err-before-colmun nil)
+(after-loaded "flymake"
+  (with-pkg 'popup
 
-     (when window-system
-       (set-face-attribute 'flymake-errline nil
-                           :foreground nil
-                           :background nil
-                           :inherit nil))
+    ;; flymake 現在行のエラーをpopup.elのツールチップで表示する
+    ;; https://gist.github.com/292827
+    (defvar flymake-display-err-delay 1
+      "delay to display flymake error message ")
+    (defvar flymake-display-err-timer nil
+      "timer for flymake-display-err-menu-for-current-line")
+    (defvar flymake-display-err-before-line nil)
+    (defvar flymake-display-err-before-colmun nil)
+    (defun flymake-display-err-menu-for-current-line ()
+      (interactive)
+      (let* ((line-no (line-number-at-pos))
+             (line-err-info-list
+              (nth 0 (flymake-find-err-info flymake-err-info line-no))))
+        (when (and (flymake-display-err-check-moved line-no (current-column))
+                   line-err-info-list)
+          (setq flymake-display-err-before-line-no line-no)
+          (let* ((count (length line-err-info-list))
+                 (menu-item-text nil))
+            (while (> count 0)
+              (setq menu-item-text
+                    (flymake-ler-text (nth (1- count) line-err-info-list)))
+              (let* ((file (flymake-ler-file (nth (1- count)
+                                                  line-err-info-list)))
+                     (line (flymake-ler-line (nth (1- count)
+                                                  line-err-info-list))))
+                (if file
+                    (setq menu-item-text
+                          (concat menu-item-text " - " file "("
+                                  (format "%d" line) ")"))))
+              (setq count (1- count))
+              (if (> count 0) (setq menu-item-text (concat menu-item-text "\n")))
+              )
+            (popup-tip menu-item-text)))))
 
-     (when (featurep 'popup)
+    (defun flymake-display-err-check-moved (cur-line cur-col)
+      (let* ((is-not-moved (and flymake-display-err-before-line
+                                flymake-display-err-before-colmun
+                                (= cur-line flymake-display-err-before-line)
+                                (= cur-col flymake-display-err-before-colmun))))
+        (setq flymake-display-err-before-line cur-line
+              flymake-display-err-before-colmun cur-col)
+        (not is-not-moved)))
 
-       ;; flymake 現在行のエラーをpopup.elのツールチップで表示する
-       ;; https://gist.github.com/292827
-       (defun flymake-display-err-menu-for-current-line ()
-         (interactive)
-         (let* ((line-no (line-number-at-pos))
-                (line-err-info-list
-                 (nth 0 (flymake-find-err-info flymake-err-info line-no))))
-           (when (and (flymake-display-err-check-moved line-no (current-column))
-                      line-err-info-list)
-             (setq flymake-display-err-before-line-no line-no)
-             (let* ((count (length line-err-info-list))
-                    (menu-item-text nil))
-               (while (> count 0)
-                 (setq menu-item-text
-                       (flymake-ler-text (nth (1- count) line-err-info-list)))
-                 (let* ((file (flymake-ler-file (nth (1- count)
-                                                     line-err-info-list)))
-                        (line (flymake-ler-line (nth (1- count)
-                                                     line-err-info-list))))
-                   (if file
-                       (setq menu-item-text
-                             (concat menu-item-text " - " file "("
-                                     (format "%d" line) ")"))))
-                 (setq count (1- count))
-                 (if (> count 0) (setq menu-item-text (concat menu-item-text "\n")))
-                 )
-               (popup-tip menu-item-text)))))
+    (unless flymake-display-err-timer
+      (setq flymake-display-err-timer
+            (run-with-idle-timer flymake-display-err-delay t
+                                 'flymake-display-err-menu-for-current-line)))
 
-       (defun flymake-display-err-check-moved (cur-line cur-col)
-         (let* ((is-not-moved (and flymake-display-err-before-line
-                                   flymake-display-err-before-colmun
-                                   (= cur-line flymake-display-err-before-line)
-                                   (= cur-col flymake-display-err-before-colmun))))
-           (setq flymake-display-err-before-line cur-line
-                 flymake-display-err-before-colmun cur-col)
-           (not is-not-moved)))
-
-       (unless flymake-display-err-timer
-         (setq flymake-display-err-timer
-               (run-with-idle-timer flymake-display-err-delay
-                                    t
-                                    'flymake-display-err-menu-for-current-line)))
-
-       (global-set-key "\M-e"
-                       '(lambda ()
-                          (interactive)
-                          (message "next error")
-                          (flymake-goto-next-error)
-                          (flymake-display-err-menu-for-current-line)))
-       (global-set-key "\M-E"
-                       '(lambda ()
-                          (interactive)
-                          (message "prev error")
-                          (flymake-goto-prev-error)
-                          (flymake-display-err-menu-for-current-line)))
-       )))
+    ;; (global-set-key "\M-e"
+    ;;                 '(lambda ()
+    ;;                    (interactive)
+    ;;                    (message "next error")
+    ;;                    (flymake-goto-next-error)
+    ;;                    (flymake-display-err-menu-for-current-line)))
+    ;; (global-set-key "\M-E"
+    ;;                 '(lambda ()
+    ;;                    (interactive)
+    ;;                    (message "prev error")
+    ;;                    (flymake-goto-prev-error)
+    ;;                    (flymake-display-err-menu-for-current-line)))
+    ))
 
 (with-pkg 'helm
-
   (setq
    helm-ff-transformer-show-only-basename nil
    helm-buffer-max-length 20)
@@ -629,20 +615,16 @@ but if not, return nil."
   (global-set-key "\C-s" 'helm-occur)
   (global-set-key "\M-x" 'helm-M-x)
 
-  (eval-after-load 'helm
-    '(progn
-       (define-key helm-map "\C-h" 'delete-backward-char)
-       (define-key helm-map "TAB" 'helm-execute-persistent-action)
-       ))
-  (eval-after-load 'helm-files
-    '(progn
-       (define-key helm-find-files-map "\C-h" 'delete-backward-char)
-       (define-key helm-find-files-map "TAB" 'helm-execute-persistent-action)
-       ))
+  (after-loaded 'helm
+    (define-key helm-map "\C-h" 'delete-backward-char)
+    (define-key helm-map "TAB" 'helm-execute-persistent-action))
+  (after-loaded 'helm-files
+    (define-key helm-find-files-map "\C-h" 'delete-backward-char)
+    (define-key helm-find-files-map "TAB" 'helm-execute-persistent-action))
   )
 
 ;; whitespace-mode
-(when (require 'whitespace nil t)
+(with-pkg 'whitespace
   ;; n 列以上はハイライトで警告
   ;; (setq whitespace-line-column 90)
 
@@ -657,10 +639,18 @@ but if not, return nil."
           ))
 
   ;; デフォルトで有効にする。
-  (global-whitespace-mode 1))
+  (global-whitespace-mode 1)
+  (setq whitespace-action '(auto-cleanup))
+  (defun kui/whitespace-auto-cleanup-enable ()
+    (interactive)
+    (set (make-local-variable 'whitespace-action) '(auto-cleanup)))
+  (defun kui/whitespace-auto-cleanup-disable ()
+    (interactive)
+    (set (make-local-variable 'whitespace-action) nil))
+  )
 
 ;; gnu global (gtags)
-(when (locate-library "gtags")
+(with-lib "gtag"
   (global-set-key "\M-tg" nil)
   (global-set-key "\M-tgt" 'gtags-find-tag)
   (global-set-key "\M-tgr" 'gtags-find-rtag)
@@ -726,200 +716,133 @@ but if not, return nil."
   )
 
 ;; yaml-mode
-(when (kui/autoload-if-exist 'yaml-mode "yaml-mode"
-                             "Major mode for editing yaml files" t)
-
-  (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
-  (eval-after-load "yaml-mode"
-    '(let ()
-       ;; yaml-mode 読み込まれた時に評価される
-       )))
+(with-lib "yaml-mode"
+  ;; ...
+  )
 
 ;; ruby-mode
-(when (kui/autoload-if-exist 'ruby-mode "ruby-mode")
-
+(with-lib "ruby-mode"
   (add-to-list 'auto-mode-alist '("\\.gemspec\\'" . ruby-mode))
   (add-to-list 'auto-mode-alist '("/config\\.ru\\'" . ruby-mode))
   (add-to-list 'auto-mode-alist '("\\(Rake\\|Gem\\|Thor\\|Berks\\|Vagrant\\)file\\'" . ruby-mode))
-  (add-to-list 'auto-mode-alist '("\\.builder\\'" . ruby-mode))
+  (add-to-list 'auto-mode-alist '("\\.builder\\'" . ruby-mode)))
+(after-loaded "ruby-mode"
+  (setq ruby-deep-indent-paren nil)
 
-  (eval-after-load "ruby-mode"
-    '(let ()
-       (setq ruby-deep-indent-paren nil)
+  (defun kui/ruby-init ()
+    (flycheck-mode)
+    (message "hoge")
+    (electric-pair-mode t)
+    (electric-indent-mode t))
+  (add-hook 'ruby-mode-hook 'kui/ruby-init)
 
-       (defun kui/ruby-init ()
-         (flycheck-mode)
-         (message "hoge")
-         (electric-pair-mode t)
-         (electric-indent-mode t))
-       (add-hook 'ruby-mode-hook 'kui/ruby-init)
+  (with-pkg 'robe
+    (add-hook 'ruby-mode-hook 'robe-mode)
+    (add-hook 'robe-mode-hook 'ac-robe-setup))
 
-       (with-pkg 'robe
-         (add-hook 'ruby-mode-hook 'robe-mode)
-         (add-hook 'robe-mode-hook 'ac-robe-setup))
+  (when (and (executable-find "rbenv")
+             (kui/package-require 'rbenv))
+    (add-hook 'ruby-mode-hook 'global-rbenv-mode))
 
-       (when (and (executable-find "rbenv")
-                  (kui/package-require 'rbenv))
-         (add-hook 'ruby-mode-hook 'global-rbenv-mode))
-
-       (with-pkg 'ruby-block
-         (setq ruby-block-highlight-toggle 'overlay)
-         (add-hook 'ruby-mode-hook '(lambda () (ruby-block-mode t))))
-       ))
+  (with-pkg 'ruby-block
+    (setq ruby-block-highlight-toggle 'overlay)
+    (add-hook 'ruby-mode-hook '(lambda () (ruby-block-mode t))))
   )
 
 ;; coffee-mode
-(when (kui/autoload-if-exist 'coffee-mode "coffee-mode"
-                             "Major mode for editing coffescript files" t)
+(with-lib "coffee"
+  (kui/add-to-list-if-exist 'ac-modes 'coffee-mode)
+  (with-pkg 'col-highlight
+    (add-hook 'coffee-mode-hook 'column-highlight-mode)))
+(after-loaded "coffee"
+  (setq coffee-tab-width 2)
+  (setq coffee-debug-mode t)
 
-  (add-to-list 'auto-mode-alist '("\\.coffee\\'" . coffee-mode))
-  (add-to-list 'auto-mode-alist '("/Cakefile\\'" . coffee-mode))
+  ;; flymake
+  ;; (when (and (kui/package-require 'flymake-coffeescript)
+  ;;            (executable-find flymake-coffeescript-command))
+  ;;   (add-hook 'coffee-mode-hook 'flymake-coffeescript-load))
 
+  ;; 独自インデント
+  ;; インデントの先頭に移動してからじゃないと、
+  ;; insert-tab しない
+  (defun kui/coffee-indent-line ()
+    "Indent current line as CoffeeScript."
+    (interactive)
+    (let ((old-point nil)
+          (new-point nil))
+      (save-excursion
+        (set 'old-point (point))
+        (back-to-indentation)
+        (set 'new-point (point)))
+
+      (if (< old-point new-point)
+          (back-to-indentation)
+        (coffee-indent-line))
+      ))
   (add-hook 'coffee-mode-hook
             (lambda ()
-              (when (require 'col-highlight nil t)
-                (column-highlight-mode))
-              ))
-
-  (eval-after-load "coffee"
-    '(let* ((coffee-command "coffee"))
-       ;; coffee-mode が読み込まれた時に評価される
-
-       (add-to-list 'ac-modes 'coffee-mode)
-
-       ;; タブ幅
-       (setq coffee-tab-width 2)
-       (add-to-list 'ac-modes 'coffee-mode)
-
-       ;; flymake
-       (when (and (require 'flymake nil t)
-                  (require 'flymake-coffeescript nil t)
-                  (executable-find flymake-coffeescript-command))
-         (add-hook 'coffee-mode-hook 'flymake-coffeescript-load))
-
-       (setq coffee-debug-mode t)
-
-       ;; 独自インデント
-       ;; インデントの先頭に移動してからじゃないと、
-       ;; insert-tab しない
-       (defun kui/coffee-indent-line ()
-         "Indent current line as CoffeeScript."
-         (interactive)
-         (let ((old-point nil)
-               (new-point nil))
-           (save-excursion
-             (set 'old-point (point))
-             (back-to-indentation)
-             (set 'new-point (point)))
-
-           (if (< old-point new-point)
-               (back-to-indentation)
-             (coffee-indent-line))
-           ))
-       (add-hook 'coffee-mode-hook
-                 '(lambda ()
-                    (set (make-local-variable 'indent-line-function)
-                         'kui/coffee-indent-line)))
-       )))
+               (set (make-local-variable 'indent-line-function)
+                    'kui/coffee-indent-line)))
+  )
 
 ;; css-mode
 (setq css-indent-offset 2)
-(when (package-installed-p 'auto-complete)
-  (add-to-list 'ac-modes 'css-mode))
+(kui/add-to-list-if-exist 'ac-modes 'css-mode)
 
 ;; scss-mode
-(when (kui/autoload-if-exist 'scss-mode "scss-mode")
-  (add-to-list 'auto-mode-alist '("\\.scss\\'" . scss-mode))
-  (eval-after-load "scss-mode"
-    '(let nil
-       (setq scss-compile-at-save nil))))
+(with-lib "scss-mode"
+  (setq scss-compile-at-save nil))
 
 ;; js-mode
-(when (kui/autoload-if-exist 'js-mode "js")
-  (add-to-list 'auto-mode-alist '("\\.js\\'" . js-mode))
-  (add-to-list 'auto-mode-alist '("\\.json\\'" . js-mode))
-  (eval-after-load "js"
-    '(let nil
-       (setq js-indent-level 2)
-       (if (and (executable-find "jshint")
-                (require 'flymake-jshint nil t))
-           (add-hook 'js-mode-hook 'flymake-jshint-load))
-       ;; (if (and (executable-find "jslint")
-       ;;          (require 'flymake-jslint nil t))
-       ;;     (add-hook 'js-mode-hook 'flymake-jslint-load))
-       )))
-
-;; typescript-mode
-(add-to-list 'load-path "~/.emacs.d/auto-complete-ts")
-(when (kui/autoload-if-exist 'typescript-mode "TypeScript")
-  (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-mode))
-  (eval-after-load "TypeScript"
-    '(let nil
-
-       (require 'typescript-tss)
-       (require 'auto-complete-ts)
-       (load "flymake-typescript")
-
-       (setq ac-ts-auto-save nil)
-       (add-to-list 'ac-modes 'typescript-mode)
-       (add-hook 'typescript-mode-hook
-                 (let ()
-                   (local-set-key "\C-c\C-t" 'typescript-tss-show-type)
-                   (local-set-key "\C-c\C-d" 'typescript-tss-goto-definition)
-                   (add-to-list 'ac-source-ts 'ac-sources)))
-       )))
+(with-lib "js"
+  (add-to-list 'auto-mode-alist '("\\.json\\'" . js-mode)))
+(after-loaded "js"
+  (setq js-indent-level 2)
+  (if (and (executable-find "jshint")
+           (kui/package-require 'flymake-jshint))
+    (add-hook 'js-mode-hook 'flymake-jshint-load))
+  )
 
 ;; html-mode
-(when (package-installed-p 'auto-complete)
-  (add-to-list 'ac-modes 'html-mode))
+(kui/add-to-list-if-exist 'ac-modes 'html-mode)
 
 ;; multi-web-mode
-(when (kui/autoload-if-exist 'multi-web-mode "multi-web-mode")
-  (add-to-list 'auto-mode-alist '("\\.html\\'" . multi-web-mode))
-  (eval-after-load "multi-web-mode"
-    '(let nil
-       (setq mweb-default-major-mode 'html-mode)
-       (setq mweb-tags '((php-mode "<\\?php\\|<\\? \\|<\\?=" "\\?>")
-                         (js-mode "<script>" "</script>")
-                         (js-mode "<script +\\(type=\"text/javascript\"\\|language=\"javascript\"\\)>"
-                                  "</script>")
-                         (css-mode "<style +type=\"text/css\"[^>]*>" "</style>")))
-       (setq mweb-filename-extensions '("php" "htm" "html" "ctp" "phtml" "php4" "php5"))
-       (multi-web-global-mode 1)
-
-       ;; multi-web-mode での js-mode では flymake-jshint を使わない
-       (remove-hook 'js-mode-hook 'flymake-jshint-load)
-       (add-hook 'js-mode-hook
-                 (lambda nil (unless (kui/active-minor-mode-p 'multi-web-mode)
-                               (flymake-jshint-load))))
-       (eval-after-load "js"
-         '(progn
-            (remove-hook 'js-mode-hook 'flymake-jshint-load)))
-       )))
+(with-lib "multi-web-mode"
+  (add-to-list 'auto-mode-alist '("\\.html\\'" . multi-web-mode)))
+(after-loaded "multi-web-mode"
+  (setq mweb-default-major-mode 'html-mode)
+  (setq mweb-tags '((php-mode "<\\?php\\|<\\? \\|<\\?=" "\\?>")
+                    (js-mode "<script>" "</script>")
+                    (js-mode "<script +\\(type=\"text/javascript\"\\|language=\"javascript\"\\)>"
+                             "</script>")
+                    (css-mode "<style +type=\"text/css\"[^>]*>" "</style>")))
+  (setq mweb-filename-extensions '("php" "htm" "html" "ctp" "phtml" "php4" "php5"))
+  (multi-web-global-mode 1)
+  )
 
 ;; web-mode
-;; (when (kui/autoload-if-exist 'web-mode "web-mode")
-;;   (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
-;;   (add-to-list 'ac-modes 'web-mode)
-;;   )
+(with-lib "web-mode"
+  ;; (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+  (kui/add-to-list-if-exist 'ac-modes 'web-mode))
 
 ;; groovy-mode
-(when (kui/autoload-if-exist 'groovy-mode "groovy-mode")
-  (add-to-list 'auto-mode-alist '("\\.gradle\\'" . groovy-mode)))
+(with-lib "groovy-mode"
+  (add-to-list 'auto-mode-alist '("\\.gradle\\'" . groovy-mode))
+  (kui/add-to-list-if-exist 'ac-modes 'haml-mode))
 
 ;; haml-mode
-(when (kui/autoload-if-exist 'haml-mode "haml-mode")
-  (add-to-list 'auto-mode-alist '("\\.haml\\'" . haml-mode))
-  (add-to-list 'ac-modes 'haml-mode))
+(with-lib "haml-mode"
+  (kui/add-to-list-if-exist 'ac-modes 'haml-mode))
 
 ;; rust-mode
-(when (and (kui/autoload-if-exist 'rust-mode "rust-mode")
-           (kui/package-require 'flycheck-rust))
+(after-loaded "rust-mode"
 
-  ;; flycheck
-  (eval-after-load 'flycheck
-    '(add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
-  (add-hook 'rust-mode-hook #'flycheck-mode)
+  ;; flycheck for rust-mode
+  (with-pkg 'flycheck-rust
+    (after-loaded "flycheck"
+      '(add-hook 'flycheck-mode-hook 'flycheck-rust-setup))
+    (add-hook 'rust-mode-hook 'flycheck-mode))
 
   ;; racer(Code Completion)
   (let* ((racer-path (executable-find "racer"))
