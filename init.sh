@@ -31,8 +31,8 @@ main() {
     install_templates
 
     echo_green "Success!!"
-    echo_green "Next, see the following scripts: "
-    ls "$BASE_DIR/installs"
+    echo_green "Next, see the following `installs/` scripts: "
+    find installs -name '*.sh' | column
 }
 
 install_basics() {
