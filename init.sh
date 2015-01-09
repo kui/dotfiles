@@ -6,7 +6,7 @@ MACPORTS_INSTALLS=(
     git screen zsh curl wget coreutils findutils xz ctags gsed
 )
 UBUNTU_INSTALLS=(
-    git screen zsh curl wget ssh build-essential xz exuberant-ctags
+    git screen zsh curl wget ssh build-essential xz-utils exuberant-ctags
 )
 BASE_DIR="$HOME/.dotfiles"
 LN=
@@ -19,7 +19,7 @@ main() {
     install_basics
     if [[ -e "$BASE_DIR" ]];
     then cd "$BASE_DIR"; run git push origin master
-    else run git clone git@github.com:kui/kui_local.git "$BASE_DIR"
+    else run git clone git@github.com:kui/dotfiles.git "$BASE_DIR"
     fi
     cd "$BASE_DIR"
     run pwd
@@ -37,7 +37,7 @@ main() {
 
 install_basics() {
     if which lsb_release &>/dev/null && (lsb_release -a | grep 'Ubuntu') &>/dev/null; then
-        run sudo apt-get install "${UBUNTU_INSTALLS[@]}"
+        run sudo apt-get install -y "${UBUNTU_INSTALLS[@]}"
     elif grep "darwin" <<< "$OSTYPE" &>/dev/null; then
         run sudo port install "${MACPORTS_INSTALLS[@]}" ||
             abort "Require MacPorts"
