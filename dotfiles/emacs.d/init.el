@@ -162,22 +162,22 @@ if NON-INTERACTIVE is non-nil, update all package without interaction."
 
 ;; インストールされていないパッケージを require した時に、
 ;; 自動でインストールしたあとに require してくれる
-(defun kui/package-require (feature &optional filename packagename noerror)
-  "If PACKAGENAME(or FEATURE) was installed, execute `require' as:
-
-	(require FEATURE &optional FILENAME NOERROR)
-
-If PACKAGENAME(or FEATURE) not installed, execute `package-install' with
-PACKAGENAME(or FEATURE) and then execute `require'.
-If NOERROR is non-nil, then return nil if PACKAGENAME(or FEATURE) is not
-available package."
-  (condition-case err
-      (let ((pname (or packagename feature)))
-        (message "kui/package-require: %s, %s, %s, %s"
-                 feature filename packagename noerror)
-        (unless (package-installed-p pname) (package-install pname))
-        (require feature filename noerror))
-    (error (if noerror nil (error (cadr err))))))
+(put 'kui/package-require 'lisp-indent-function 1)
+(defun kui/package-require (feature &rest args)
+  (let* ((opts (kui/pop-as-assoc '(:file :package :throwerror) args))
+         (fl (cdr (assoc :file opts)))
+         (pkg (or (cdr (assoc :package opts)) feature))
+         (err (cdr (assoc :throwerror opts))))
+    (message "%s: feature=%s, file=%s, pacakge=%s, throwerror=%s"
+             "kui/package-require" feature fl pkg err)
+    (condition-case e
+        (let ()
+          (unless (package-installed-p pkg) (package-install pkg))
+          (require feature fl))
+      (error (if err (error (cadr e))
+               (message "Error on %s: %s"
+                        "kui/package-require" (cadr e))
+               nil)))))
 
 (put 'with-pkg 'lisp-indent-function 1)
 (defmacro with-pkg (feature &rest args)
@@ -196,11 +196,11 @@ Examples:
 	(with-pkg 'typescript-mode
 	  :filename \"TypeScript\"
 	  (add-hook 'typescript-mode-hook (lambda () ... )))"
-  (let* ((opts (kui/pop-as-assoc '(:filename :packagename) args))
-         (fname (cdr (assoc :filename opts)))
-         (pname (cdr (assoc :packagename opts)))
+  (let* ((opts (kui/pop-as-assoc '(:file :package) args))
+         (fname (cdr (assoc :file opts)))
+         (pname (cdr (assoc :package opts)))
          (body (nthcdr (* 2 (length opts)) args)))
-    `(when (kui/package-require ,feature ,fname ,pname ,t) ,@body)))
+    `(when (kui/package-require ,feature :file ,fname :package ,pname) ,@body)))
 
 (put 'with-lib 'lisp-indent-function 1)
 (defmacro with-lib (file &rest body)
@@ -403,11 +403,11 @@ but if not, return nil."
 ;; 便利な感じのマイナーモード
 
 ;; 環境変数をシェルからインポート
-(when (kui/package-require 'exec-path-from-shell nil nil t)
+(with-pkg 'exec-path-from-shell
   (exec-path-from-shell-initialize))
 
 ;; git-gutter
-(when (kui/package-require 'git-gutter nil nil t)
+(with-pkg 'git-gutter
   (global-git-gutter-mode t)
 
   (setq git-gutter:unchanged-sign " ")
@@ -418,14 +418,17 @@ but if not, return nil."
   )
 
 ;; git-blame
-(when (kui/package-require 'git-blame nil nil t)
+(with-pkg 'git-blame
+  ;; ...
   )
 
 ;; popup
-(when (kui/package-require 'popup nil nil t))
+(with-pkg 'popup
+  ;; ...
+  )
 
 ;; popwin
-(when (kui/package-require 'popwin nil nil t)
+(with-pkg 'popwin
   (setq
    ;; display-buffer の置き換え
    display-buffer-function 'popwin:display-buffer
@@ -442,8 +445,8 @@ but if not, return nil."
   )
 
 ;; direx
-(when (and (kui/package-require 'direx nil nil t)
-           (kui/package-require 'popwin nil nil t))
+(when (and (kui/package-require 'direx)
+           (featurep 'popwin))
   (push '(direx:direx-mode :position :left :width 40 :dedicated t)
         popwin:special-display-config)
 
@@ -453,14 +456,16 @@ but if not, return nil."
     (if (direx-project:find-project-root-noselect (or buffer-file-name default-directory))
         (direx-project:jump-to-project-root-other-window)
       (direx:jump-to-directory-other-window)))
+
   (global-set-key (kbd "M-j") 'kui/jump-to-project-directory-other-window-if-in-project)
   )
 
 ;; editorconfig
-(when (kui/package-require 'editorconfig nil nil t))
+(with-pkg 'editorconfig
+  )
 
 ;; gude-key
-(when (kui/package-require 'guide-key nil nil t)
+(with-pkg 'guide-key
   (setq
    guide-key/guide-key-sequence '("M-t" "C-c" "C-x RET" "C-x C-h" "C-x r" "M-m" "Esc m")
    guide-key/popup-window-position 'bottom
@@ -471,13 +476,16 @@ but if not, return nil."
 
   (guide-key-mode 1))
 
-(when (and (kui/package-require 'flycheck nil nil t)
-           (kui/package-require 'flycheck-pos-tip nil nil t))
-  (custom-set-variables
-      '(flycheck-display-errors-function #'flycheck-pos-tip-error-messages)))
+(with-pkg 'flycheck
+  ;; ...
+
+  (with-pkg 'flycheck-pos-tip
+    (setq flycheck-display-errors-function #'flycheck-pos-tip-error-messages))
+  )
+
 
 ;; company-mode
-(when (kui/package-require 'company nil nil t)
+(with-pkg 'company
 
   (setq company-global-modes nil
         ;; 自動補完を有効
@@ -499,7 +507,9 @@ but if not, return nil."
   )
 
 ;; auto-complete-mode
-(when (kui/package-require 'auto-complete-config nil 'auto-complete t)
+(with-pkg 'auto-complete-config
+  :package 'auto-complete
+
   (ac-config-default)
 
   ;; ac-modes に登録されてるメジャーモード時に ac 発動
@@ -605,7 +615,7 @@ but if not, return nil."
                           (flymake-display-err-menu-for-current-line)))
        )))
 
-(when (kui/package-require 'helm nil nil t)
+(with-pkg 'helm
 
   (setq
    helm-ff-transformer-show-only-basename nil
@@ -662,19 +672,20 @@ but if not, return nil."
   )
 
 ;; ctag-update.el 自動で TAGS アップデートしてくれる
-(when (kui/package-require 'ctags-update nil nil t)
+(with-pkg 'ctags-update
   (set 'ctags-update-command
        (kui/find-if-executable '("ctags-exuberant"
                                  "exuberant-ctags"
                                  "ctags")))
   )
 
-(when (kui/package-require 'multiple-cursors nil nil t)
+(with-pkg 'multiple-cursors
   (multiple-cursors-mode)
   (global-set-key "\M-mn" 'mc/mark-next-like-this)
   (global-set-key "\M-mp" 'mc/mark-previous-like-this)
   (global-set-key "\M-ma" 'mc/mark-all-like-this)
-  (global-set-key "\M-mi" 'mc/mark-more-like-this-extended))
+  (global-set-key "\M-mi" 'mc/mark-more-like-this-extended)
+  )
 
 ;; -------------------------------------------------------------------------
 ;; メジャーモードの設定や読み込み
@@ -685,21 +696,10 @@ but if not, return nil."
 (define-key lisp-interaction-mode-map "\C-cfl" 'find-library)
 (define-key lisp-interaction-mode-map "\C-cdf" 'describe-function)
 (define-key lisp-interaction-mode-map "\C-cdv" 'describe-variable)
-;; (add-hook 'lisp-mode-hook
-;; 	   (lambda ()
-;; 	     (set (make-local-variable 'lisp-indent-function)
-;; 		  'common-lisp-indent-function)))
 
 ;; markdown-mode
 ;; 読み込めたら *scratch* に使うから kui/autoload-if-exist じゃなくて require
-(when (kui/package-require 'markdown-mode nil nil t)
-
-  (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
-  (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
-
-  ;;(define-key markdown-mode-map "\C-i" 'indent-for-tab-command)
-  ;;(define-key markdown-mode-map "TAB" 'indent-for-tab-command)
-
+(with-pkg 'markdown-mode
   (defun kui/markdown-init-set-values ()
     ;; (set (make-variable-buffer-local 'indent-tabs-mode) nil)
     (set (make-variable-buffer-local 'tab-width) 4)
@@ -754,15 +754,15 @@ but if not, return nil."
          (electric-indent-mode t))
        (add-hook 'ruby-mode-hook 'kui/ruby-init)
 
-       (when (kui/package-require 'robe nil nil t)
+       (with-pkg 'robe
          (add-hook 'ruby-mode-hook 'robe-mode)
          (add-hook 'robe-mode-hook 'ac-robe-setup))
 
        (when (and (executable-find "rbenv")
-                  (kui/package-require 'rbenv nil nil t))
+                  (kui/package-require 'rbenv))
          (add-hook 'ruby-mode-hook 'global-rbenv-mode))
 
-       (when (kui/package-require 'ruby-block nil nil t)
+       (with-pkg 'ruby-block
          (setq ruby-block-highlight-toggle 'overlay)
          (add-hook 'ruby-mode-hook '(lambda () (ruby-block-mode t))))
        ))
@@ -914,7 +914,7 @@ but if not, return nil."
 
 ;; rust-mode
 (when (and (kui/autoload-if-exist 'rust-mode "rust-mode")
-           (kui/package-require 'flycheck-rust nil nil t))
+           (kui/package-require 'flycheck-rust))
 
   ;; flycheck
   (eval-after-load 'flycheck
@@ -941,38 +941,37 @@ but if not, return nil."
 
 ;; -------------------------------------------------------------------------
 ;; 色とか
-(when (kui/package-require 'color-theme nil nil t)
-  (color-theme-initialize))
+(with-pkg 'color-theme
+  (color-theme-initialize)
 
-(when (and (kui/package-require 'color-theme-sanityinc-tomorrow nil nil t)
-           (featurep 'color-theme))
-  (load-theme 'sanityinc-tomorrow-night t))
+  (with-pkg 'color-theme-sanityinc-tomorrow
+    (load-theme 'sanityinc-tomorrow-night t)
+    (custom-set-faces
+     '(highlight
+       ((((background dark))
+         :upperline t
+         :underline t
+         :background "#441133")))
+     '(hl-line
+       ((((background dark))
+         :background "#112244")))
+     '(show-paren-match
+       ((((background dark))
+         :inherit nil
+         :weight ultra-bold
+         :background "#004400"
+         :foreground nil))))
 
-(custom-set-faces
- '(highlight
-   ((((background dark))
-     :upperline t
-     :underline t
-     :background "#441133")))
- '(hl-line
-   ((((background dark))
-     :background "#112244")))
- '(show-paren-match
-   ((((background dark))
-     :inherit nil
-     :weight ultra-bold
-     :background "#004400"
-     :foreground nil))))
-
-(unless window-system
-  (custom-set-faces
-   '(mode-line
-     ((((background dark))
-       :background "#444444")))
-   '(highlight
-     ((((background dark))
-       :background "#262626"
-       :inherit nil)))))
+    (unless window-system
+      (custom-set-faces
+       '(mode-line
+         ((((background dark))
+           :background "#444444")))
+       '(highlight
+         ((((background dark))
+           :background "#262626"
+           :inherit nil))))))
+  )
 
 (when (featurep 'helm)
   (custom-set-faces
@@ -988,7 +987,8 @@ but if not, return nil."
        :weight bold)))))
 
 (when (featurep 'git-gutter)
-  (dolist (f '(git-gutter:unchanged git-gutter:modified git-gutter:added git-gutter:deleted))
+  (dolist (f '(git-gutter:unchanged git-gutter:modified
+               git-gutter:added git-gutter:deleted))
     (custom-set-faces `(,f ((((background dark))
                              :background "#333300"
                              :inverse-video nil)
