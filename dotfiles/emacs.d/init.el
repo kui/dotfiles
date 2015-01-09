@@ -173,28 +173,41 @@ If NOERROR is non-nil, then return nil if PACKAGENAME(or FEATURE) is not
 available package."
   (condition-case err
       (let ((pname (or packagename feature)))
+        (message "kui/package-require: %s, %s, %s, %s"
+                 feature filename packagename noerror)
         (unless (package-installed-p pname) (package-install pname))
         (require feature filename noerror))
     (error (if noerror nil (error (cadr err))))))
 
-(defmacro with-pkg (feature &optional opts &rest body)
+(defmacro with-pkg (feature &rest args)
   "Install `package' and require FRETURE. Execute BODY, If FEATURE was found.
 
 Examples:
-	(with-pkg 'git-gutter nil
+
+	(with-pkg 'git-gutter
 	  (global-git-gutter-mode t))
 
-	(with-pkg 'auto-complete-config (:packagename 'auto-complete)
+	(with-pkg 'auto-complete-config
+	  :packagename 'auto-complete
 	  (ac-config-default)
 	  (global-auto-complete-mode t))
 
-	(with-pkg 'typescript-mode (:filename \"TypeScript\")
+	(with-pkg 'typescript-mode
+	  :filename \"TypeScript\"
 	  (add-hook 'typescript-mode-hook (lambda () ... )))"
-  (let* ((a (kui/cons-to-assoc opts))
-         (f (nth 1 (assoc :filename a)))
-         (p (nth 1 (assoc :packagename a))))
-    `(when (kui/package-require ,feature ,f ,p) ,@body)))
-(put 'with-pkg 'lisp-indent-function 2)
+  (let* ((opts (kui/pop-as-assoc '(:filename :packagename) args))
+         (fname (cdr (assoc :filename opts)))
+         (pname (cdr (assoc :packagename opts)))
+         (body (nthcdr (* 2 (length opts)) args)))
+    `(when (kui/package-require ,feature ,fname ,pname ,t) ,@body)))
+(put 'with-pkg 'lisp-indent-function 1)
+
+(defun kui/pop-as-assoc (keys seq)
+  (let ((first (nth 0 seq)))
+    (if (find first keys)
+        (cons `(,(nth 0 seq) . ,(nth 1 seq))
+              (kui/pop-as-assoc keys (nthcdr 2 seq)))
+      nil)))
 
 (defun kui/cons-to-assoc (seq)
   "Convert SEQ to a association list."
@@ -203,7 +216,7 @@ Examples:
     (message "%s=%s" k v)
     (if seq
         (cons (list k v)
-              (kui/cons-to-assoc (cdr (cdr seq))))
+              (kui/cons-to-assoc (nthcdr 2 seq)))
       nil)))
 
 ;; このファイル(init.el)を開く
