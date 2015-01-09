@@ -179,6 +179,7 @@ available package."
         (require feature filename noerror))
     (error (if noerror nil (error (cadr err))))))
 
+(put 'with-pkg 'lisp-indent-function 1)
 (defmacro with-pkg (feature &rest args)
   "Install `package' and require FRETURE. Execute BODY, If FEATURE was found.
 
@@ -200,7 +201,17 @@ Examples:
          (pname (cdr (assoc :packagename opts)))
          (body (nthcdr (* 2 (length opts)) args)))
     `(when (kui/package-require ,feature ,fname ,pname ,t) ,@body)))
-(put 'with-pkg 'lisp-indent-function 1)
+
+(put 'with-lib 'lisp-indent-function 1)
+(defmacro with-lib (file &rest body)
+  "Execute BODY if FILE exists"
+  `(when (locate-library ,file) ,@body))
+
+;; 24.4 以降なら with-eval-after-loaded で同じことができる
+(put 'after-loaded 'lisp-indent-function 1)
+(defmacro after-loaded (file &rest body)
+  "Execute BODY after the FILE loading"
+  `(eval-after-load ,file (lambda () ,@body)))
 
 (defun kui/pop-as-assoc (keys seq)
   (let ((first (nth 0 seq)))
@@ -462,10 +473,8 @@ but if not, return nil."
 
 (when (and (kui/package-require 'flycheck nil nil t)
            (kui/package-require 'flycheck-pos-tip nil nil t))
-  (eval-after-load 'flycheck
-    '(custom-set-variables
+  (custom-set-variables
       '(flycheck-display-errors-function #'flycheck-pos-tip-error-messages)))
-  )
 
 ;; company-mode
 (when (kui/package-require 'company nil nil t)
