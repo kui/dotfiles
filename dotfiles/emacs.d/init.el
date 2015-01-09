@@ -38,10 +38,6 @@
       ;; 自動保存する時間
       auto-save-timeout 10)
 
-;; 対応する括弧をハイライト
-(show-paren-mode 1)
-(setq show-paren-style 'mixed)
-
 ;; バッファ末尾に余計な改行コードを防ぐための設定
 (setq next-line-add-newlines nil)
 
@@ -136,6 +132,21 @@
       (message "Cannot get latest version of package %s" pkg-name)
       nil)))
 
+(defun kui/pop-as-assoc (keys seq)
+  "Pop head elements in SEQ as alist which has KEYS.
+
+Example:
+
+	(kui/pop-as-assoc '(:a :b) '(:a 1 :b 2 :c 3))
+	;; => ((:a . 1) (:b . 2))
+	(kui/pop-as-assoc '(:a :b) '(:d 1 :e 2 :a 3 :b 4))
+	;; => nil"
+  (let ((first (nth 0 seq)))
+    (if (find first keys)
+        (cons `(,(nth 0 seq) . ,(nth 1 seq))
+              (kui/pop-as-assoc keys (nthcdr 2 seq)))
+      nil)))
+
 ;; インストール済みでアップデート可能なパッケージをリストアップ
 (defun kui/package-update-available-package-list ()
   "Return package list which have updates."
@@ -213,13 +224,6 @@ Use `after-loaded'."
 (defmacro after-loaded (file &rest body)
   "Execute BODY after the FILE loading"
   `(eval-after-load ,file (lambda () ,@body)))
-
-(defun kui/pop-as-assoc (keys seq)
-  (let ((first (nth 0 seq)))
-    (if (find first keys)
-        (cons `(,(nth 0 seq) . ,(nth 1 seq))
-              (kui/pop-as-assoc keys (nthcdr 2 seq)))
-      nil)))
 
 ;; このファイル(init.el)を開く
 (defun kui/find-init-file ()
@@ -396,6 +400,11 @@ but if not, return nil."
 ;; -------------------------------------------------------------------------
 ;; 便利な感じのマイナーモード
 
+;; 対応する括弧のハイライト
+(with-pkg 'paren
+  (show-paren-mode 1)
+  (setq show-paren-style 'mixed))
+
 ;; 環境変数をシェルからインポート
 (with-pkg 'exec-path-from-shell
   (exec-path-from-shell-initialize))
@@ -478,7 +487,7 @@ but if not, return nil."
     (setq flycheck-display-errors-function #'flycheck-pos-tip-error-messages))
 
   (global-set-key "\M-e" 'flycheck-next-error)
-  (global-set-key "\M-E" 'flycheck-perv-error)
+  (global-set-key "\M-E" 'flycheck-previous-error)
   )
 
 ;; company-mode
