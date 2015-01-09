@@ -1,4 +1,4 @@
-kui_local
+dotfiles
 =========
 
 ```
@@ -23,7 +23,7 @@ Installation
 In your terminal:
 
 ```
-curl -s https://raw.githubusercontent.com/kui/kui_local/master/init.sh | bash
+curl -s https://raw.githubusercontent.com/kui/dotfiles/master/init.sh | bash
 ```
 
 
