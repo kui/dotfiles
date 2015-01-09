@@ -1,12 +1,12 @@
-[submodule "dotzshrc.d/zaw"]
-	path = dotzshrc.d/zaw
-	url = https://github.com/zsh-users/zaw.git
-[submodule "dotzshrc.d/syntax-highlighting"]
-	path = dotzshrc.d/syntax-highlighting
-	url = https://github.com/zsh-users/zsh-syntax-highlighting.git
-[submodule "dotzshrc.d/zsh-completions"]
-	path = dotzshrc.d/zsh-completions
-	url = https://github.com/zsh-users/zsh-completions.git
-[submodule "dotzshrc.d/grunt-zsh-completion"]
-	path = dotzshrc.d/grunt-zsh-completion
-	url = https://github.com/yonchu/grunt-zsh-completion.git
+[submodule "dotfiles/zshrc.d/zsh-syntax-highlighting"]
+	path = dotfiles/zshrc.d/zsh-syntax-highlighting
+	url = git@github.com:zsh-users/zsh-syntax-highlighting.git
+[submodule "dotfiles/zshrc.d/zsh-completions"]
+	path = dotfiles/zshrc.d/zsh-completions
+	url = git@github.com:zsh-users/zsh-completions.git
+[submodule "dotfiles/zshrc.d/zaw"]
+	path = dotfiles/zshrc.d/zaw
+	url = git@github.com:zsh-users/zaw.git
+[submodule "dotfiles/zshrc.d/grunt-zsh-completion"]
+	path = dotfiles/zshrc.d/grunt-zsh-completion
+	url = git@github.com:yonchu/grunt-zsh-completion.git

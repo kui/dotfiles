@@ -1,6 +1,4 @@
 # -*- coding:utf-8 -*-
-
-/core
 \#*
 .\#*
 *~
@@ -9,13 +7,11 @@
 Thumbs.db
 core
 TAGS
-/dotemacs.d/ac-comphist.dat
-/dotemacs.d/url
-/dotemacs.d/tramp
-/dotemacs.d/elpa
-/dotemacs.d/anything-c-adaptive-history
-/dotemacs.d/session.*
-/dotrsense
-/src
-/dotemacs.d/auto-save-list
-/dotemacs.d/.mc-lists.el
+/dotfiles/emacs.d/ac-comphist.dat
+/dotfiles/emacs.d/url
+/dotfiles/emacs.d/tramp
+/dotfiles/emacs.d/elpa
+/dotfiles/emacs.d/anything-c-adaptive-history
+/dotfiles/emacs.d/session.*
+/dotfiles/emacs.d/auto-save-list
+/dotfiles/emacs.d/.mc-lists.el
