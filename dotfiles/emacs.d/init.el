@@ -2,7 +2,7 @@
 (message "Start init.el %s" (current-time-string))
 (defvar kui/init-start-time (float-time))
 
-(require 'cl)
+(require 'cl-lib)
 
 ;; パッケージ管理
 (require 'package)
@@ -142,7 +142,7 @@ Example:
 	(kui/pop-as-assoc '(:a :b) '(:d 1 :e 2 :a 3 :b 4))
 	;; => nil"
   (let ((first (nth 0 seq)))
-    (if (find first keys)
+    (if (cl-find first keys)
         (cons `(,(nth 0 seq) . ,(nth 1 seq))
               (kui/pop-as-assoc keys (nthcdr 2 seq)))
       nil)))
@@ -174,6 +174,24 @@ if NON-INTERACTIVE is non-nil, update all package without interaction."
 ;; 自動でインストールしたあとに require してくれる
 (put 'kui/package-require 'lisp-indent-function 1)
 (defun kui/package-require (feature &rest args)
+  "Install and require FEATURE with `package'. return non-nil,
+if (requie future) success.
+
+See also `with-pkg'.
+
+Examples:
+
+	(when (kui/package-require 'git-gutter)
+	  (global-git-gutter-mode t))
+
+	(when (kui/package-require 'auto-complete-config
+	                           :packagename 'auto-complete)
+	  (ac-config-default)
+	  (global-auto-complete-mode t))
+
+	(when (kui/package-require 'typescript-mode
+	                           :filename \"TypeScript\")
+	  (add-hook 'typescript-mode-hook (lambda () ... )))"
   (let* ((opts (kui/pop-as-assoc '(:file :package :throwerror) args))
          (fl (cdr (assoc :file opts)))
          (pkg (or (cdr (assoc :package opts)) feature))
