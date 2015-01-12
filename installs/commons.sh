@@ -18,8 +18,10 @@ has() {
 }
 
 run() {
+    local tmp="$(tempfile --suffix '.log')"
     echo_green $ "$@"
-    "$@"
+    echo_green " > log file: $tmp"
+    "$@" | tee "$tmp"
 }
 echo_green() {
     echo $'\e[32m'"${@}"$'\e[0m'

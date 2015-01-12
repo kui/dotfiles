@@ -909,7 +909,7 @@ but if not, return nil."
        ((((background dark))
          :inherit nil
          :weight ultra-bold
-         :background "#004400"
+         :background "#332244"
          :foreground nil))))
 
     (unless window-system

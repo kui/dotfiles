@@ -3,7 +3,7 @@
 set -eu
 
 MACPORTS_INSTALLS=(
-    git screen zsh curl wget coreutils findutils xz ctags gsed
+    git screen zsh curl wget coreutils findutils xz ctags gsed debianutils
 )
 UBUNTU_INSTALLS=(
     git screen zsh curl wget ssh build-essential xz-utils exuberant-ctags
