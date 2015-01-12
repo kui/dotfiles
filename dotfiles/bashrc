@@ -1,30 +1,11 @@
 # -*- coding:utf-8-unix; mode:sh; -*-
 
-# -------------------------------------------------------------
-# environment
-function push_path_if_exists {
-    [ -f "$1" ] || export PATH=$PATH:$1
-}
-function unshift_path_if_exists {
-    [ -f "$1" ] || export PATH=$1:$PATH
-}
-# unshift_path_if_exists "/app/emacs/emacs/bin"
-unshift_path_if_exists "/app/vim"
-unshift_path_if_exists "/app/script"
-unshift_path_if_exists "/app/mingw/tdm/bin"
-push_path_if_exists "/app/gs/bin"
-push_path_if_exists "/app/gs/lib"
-
-# history
 export HISTCONTROL="ignoreboth"
 export HISTFILESIZE="4096"
 export HISTSIZE="4096"
 
-# -------------------------------------------------------------
-# shell option
-
-# interaction mode
-if [[ "${PS1}" ]] ; then
+# 対話モード時
+if [[ -n "${PS1}" ]] ; then
     shopt -s cmdhist
     shopt -s histappend
     shopt -s checkwinsize
@@ -34,9 +15,6 @@ if [[ "${PS1}" ]] ; then
     shopt -q -s checkwinsize
     shopt -s cmdhist
 fi
-
-# -------------------------------------------------------------
-# terminal
 
 PROMPT_COMMAND="jobs"
 case ${TERM} in
@@ -72,37 +50,8 @@ colors=(
     $'\e[1;36m' # cyan
     # $'\e[1;37m' # gray
 )
-export USER_COLOR=$colors[$((`echo "$USER" | sum | cut -f1 -d' '`%${#colors}))+1]
-export HOST_COLOR=$colors[$((`echo "$HOST" | sum | cut -f1 -d' '`%${#colors}))+1]
+export USER_COLOR=$colors[$(($(echo "$USER" | sum | cut -f1 -d' ')%${#colors}))+1]
+export HOST_COLOR=$colors[$(($(echo "$HOST" | sum | cut -f1 -d' ')%${#colors}))+1]
 
-
-# -------------------------------------------------------------
-# complete
-
-complete -d cd
-
-# -------------------------------------------------------------
 # alias
-
-# for interactive operation
-  # alias rm='rm -i'
-  # alias cp='cp -i'
-  # alias mv='mv -i'
-
-# alias for misc
-  alias grep='grep --color'
-
-# alias for some shortcuts for different directory listings
-  # alias ls='ls -hF --color=always --show-control-chars'
-  # alias ll='ls -l'
-  # alias la='ls -A'
-  # alias l='ls -CF'
-
-# -------------------------------------------------------------
-# change directory
-if [[ "$__PWD__" != "" ]] ; then
-    cd "$(echo $__PWD__ | nkf -s)"
-else
-    cd "$(pwd)"
-fi
-
+alias grep='grep --color'
