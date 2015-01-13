@@ -366,16 +366,16 @@ color_code_from_str() {
 
 typeset -agx prompt_opts
 
+echo_job_info() {
+    print -n '%(1j.%f:%F{red}jobs:%j .)'
+}
+prompt_opts+=echo_job_info
+
 echo_vcs_info() {
     vcs_info
     print -n "$vcs_info_msg_0_"
 }
 prompt_opts+=echo_vcs_info
-
-echo_job_info() {
-    print -n '%(1j.%f:%F{red}jobs:%j .)'
-}
-prompt_opts+=echo_job_info
 
 echo_rbenv_version() {
     type rbenv &>/dev/null || return
