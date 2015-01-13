@@ -340,43 +340,49 @@ color256(){
 }
 
 ansi_brightness() {
-    if [[ 0 -le $1 && $1 -le 15 ]]; then
-        echo "Invalid ANSI Color Code" 2>/dev/null
-        return 1
-    elif [[ 16 -le $1 && $1 -le 231 ]]; then
+    if [[ 16 -le $1 && $1 -le 231 ]]; then
         local base=$(($1 - 16))
         local r=$((base / 36)) \
               g=$((base % 36 / 6)) \
               b=$((base % 6))
-        bc -l <<< "$r/6*299 + $g/6*587 + $b/6*117"
+        printf '%f\n' $((r/5.0*299 + g/5.0*587 + b/5.0*114))
         return 0
     elif [[ 232 -le $1 && $1 -le 255 ]]; then
-        bc -l <<< "255 * ($1 - 232) / (255 - 232)"
+        printf '%f\n' $((255 * ($1 - 232) / (255 - 232)))
         return 0
     else
-        echo "Invalid ANSI Color Code" 2>/dev/null
+        echo "Invalid ANSI Color Code: $1" 2>/dev/null
         return 1
     fi
 }
 
-_colors=($(seq 0 15))
+# 16 色環境向け
+color_codes=(1 2 4 5 6 9 10 12 13 14)
 
-if [ `echotc Co` = "256" ]; then
-    for c in $(seq 16 255); do
+# 256 色環境向け
+if [ "$(echotc Co)" = "256" ]; then
+    color_codes=()
+    for c in {16..255}; do
         b=$(ansi_brightness $c)
-        # if [[ $b -le 110 ]] # デフォルトバックグラウンドが明るい色の時
-        if [[ $b -ge 140 ]] # デフォルトバックグラウンドが暗い色の時
-        then _colors=($_colors $c)
+        # if [[ $b -le 500 ]] # デフォルトバックグラウンドが明るい色の時
+        if [[ $b -ge 500 ]] # デフォルトバックグラウンドが暗い色の時
+        then color_codes=($color_codes $c)
         fi
     done
 fi
+export color_codes
 
-for c in $_colors; do
-    colors=($colors $'\e'"[38;5;${c}m")
-done
+color_code_from_str() {
+    local h=$(sum <<< "$1" | cut -f1 -d' ')
+    local i=$((h % ${#color_codes}))
+    printf ${color_codes[i]}
+}
+color_from_str() {
+    printf "\e[38;5;%dm" $(color_code_from_str $1)
+}
 
-export USER_COLOR=$colors[$((`echo "$USER" | sum | cut -f1 -d' '`%${#colors}))+1]
-export HOST_COLOR=$colors[$((`echo "$HOST" | sum | cut -f1 -d' '`%${#colors}))+1]
+export USER_COLOR=$(color_from_str $USER)
+export HOST_COLOR=$(color_from_str $HOST)
 export BAR_COLOR=$'\e[0;37m'
 export TIME_COLOR=$'\e[0;37m'
 if [ `echotc Co` = "256" ]
