@@ -237,7 +237,7 @@ This macro does not load FILE. So, you cannot set variables in FILE.
 Use `kui/after-loaded'."
   `(when (locate-library ,file) ,@body))
 
-;; 24.4 以降なら with-eval-kui/after-loaded で同じことができる
+;; 24.4 以降なら with-eval-after-loaded で同じことができる
 (put 'kui/after-loaded 'lisp-indent-function 1)
 (defmacro kui/after-loaded (file &rest body)
   "Execute BODY after the FILE loading"
