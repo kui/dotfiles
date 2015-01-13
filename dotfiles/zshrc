@@ -157,6 +157,8 @@ if which port &>/dev/null; then
     done
 fi
 
+eval $(dircolors)
+
 # HTTPサーバを立ち上げる
 function serve(){
     local port=${SERVE_PORT:-8007}
@@ -397,8 +399,8 @@ prompt_opts+=echo_pyenv_version
 
 user="%F{$(color_code_from_str "$USER")}%n"
 host="%F{$(color_code_from_str "$HOST")}%m"
-PROMPT='
-'"$user"'%f@'"$host"' %F{yellow}%~ $(for f in "${prompt_opts[@]}"; "$f")
+PROMPT='%F{243}%U${(l:COLUMNS:: :)}%u
+'"$user"'%f@'"$host"'%f:%F{yellow}%~ $(for f in "${prompt_opts[@]}"; "$f")
 %(?.%f.%F{red})%(!.#.$) '
 
 ############################################################
@@ -489,7 +491,6 @@ setopt share_history
 zstyle ':completion:*:default' menu select=1
 
 ## 補完候補の色づけ
-eval $(dircolors)
 zstyle ':completion:*:default' list-colors "${LS_COLORS}"
 
 ## ディレクトリ名だけで cd
