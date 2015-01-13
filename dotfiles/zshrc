@@ -199,6 +199,14 @@ function serve(){
 }
 alias http-serve=serve
 
+list_parents() {
+    local p="${1:=$PWD}"
+    printf "$p\n"
+    if [[ "$p" != "/" ]]; then
+        list_parents "$(dirname "$p")"
+    fi
+}
+
 # screen のコピー機能と、X Window System のクリップボードの同期
 if which xsel &> /dev/null
 then
