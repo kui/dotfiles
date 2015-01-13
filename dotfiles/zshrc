@@ -302,38 +302,22 @@ color256_echo(){
 #####################################################################
 # バージョンシステム管理下のディレクトリにいる時の諸々の設定
 autoload -Uz vcs_info
+zstyle ':vcs_info:*' enable git cvs svn
 zstyle ':vcs_info:*' get-revision true
 zstyle ':vcs_info:*' check-for-changes true
-zstyle ':vcs_info:*' max-exports 6
-zstyle ':vcs_info:*' formats '%s' '%b' '%i' '%c' '%u'
-zstyle ':vcs_info:*' actionformats '%s' '%b' '%i' '%c' '%u' '%a'
+zstyle ':vcs_info:*' max-exports 1
+zstyle ':vcs_info:*' formats '%f:%F{red}%B%c%u%%b%F{green}%s:%b(%i) '
+zstyle ':vcs_info:*' actionformats '%f:%F{red}%B%c%u%b%F{red}%s:%b(%i):%a '
+zstyle ':vcs_info:git:*' formats '%f:%F{red}%B%c%u%%b%F{green}%s:%b '
+zstyle ':vcs_info:git:*' actionformats '%f:%F{blue}%B%c%u%%b%F{red}%s:%b:%a '
 
-# インデックスに追加された場合に表示される文字列
-# zstyle ':vcs_info:git:*' stagedstr "S"
 # 作業コピーに変更があった場合に表示される文字列
-# zstyle ':vcs_info:git:*' unstagedstr "U"
+zstyle ':vcs_info:*' unstagedstr "*"
+# インデックスに追加された場合に表示される文字列
+zstyle ':vcs_info:*' stagedstr "+"
 
 # bzr のとき、vcs_info でネットワーク使わせない
 zstyle ':vcs_info:bzr:*' use-simple true
-
-update_vcs_info(){
-    LANG=en_US.UTF-8 vcs_info
-
-    export VCS_NAME=$vcs_info_msg_0_
-    export VCS_BRANCH_NAME=$vcs_info_msg_1_
-    export VCS_REVISION=$vcs_info_msg_2_
-    export VCS_ACTION=$vcs_info_msg_5_
-
-    VCS_IS_COMMITED=t
-    [[ -n "$vcs_info_msg_3_" ]] && VCS_IS_COMMITED=
-    export VCS_IS_COMMITED
-
-    VCS_IS_ADDED=t
-    [[ -n "$vcs_info_msg_4_" ]] && VCS_IS_ADDED=
-    export VCS_IS_ADDED
-}
-precmd_functions=($precmd_functions update_vcs_info)
-
 
 color256(){
     echo -n $(($1 * 36 + $2 * 6 + $3 + 16))
@@ -377,158 +361,55 @@ color_code_from_str() {
     local i=$((h % ${#color_codes}))
     printf ${color_codes[i]}
 }
-color_from_str() {
-    printf "\e[38;5;%dm" $(color_code_from_str $1)
+
+typeset -agx prompt_opts
+
+echo_vcs_info() {
+    vcs_info
+    print -n "$vcs_info_msg_0_"
 }
+prompt_opts+=echo_vcs_info
 
-export USER_COLOR=$(color_from_str $USER)
-export HOST_COLOR=$(color_from_str $HOST)
-export BAR_COLOR=$'\e[0;37m'
-export TIME_COLOR=$'\e[0;37m'
-if [ `echotc Co` = "256" ]
-then
-    export BAR_COLOR=$'\e[38;5;240m'
-    export TIME_COLOR=$'\e[38;5;245m'
-fi
-
-echo_vcs_info(){
-    local color=
-    if [[ -z "$1" ]]
-    then
-        if [[ -n "$VCS_IS_ADDED" && -n "$VCS_IS_COMMITED" ]]
-        then color='%F{green}'
-        else color='%F{red}'
-        fi
-    fi
-    [[ -n "$VCS_NAME" ]] && echo -n "$color$VCS_NAME:$VCS_BRANCH_NAME"
-    [[ -n "$VCS_ACTION" ]] && echo -n "[$VCS_ACTION]"
+echo_job_info() {
+    print -n '%(1j.%f:%F{red}jobs:%j .)'
 }
+prompt_opts+=echo_job_info
 
-export _RBENV_RUBY_VERSION=
-update_rbenv_info(){
-    local basepath=$PWD
-    local version_file=
+echo_rbenv_version() {
+    type rbenv &>/dev/null || return
 
-    while [[ "/" != "$basepath" ]]
-    do
-        version_file="$basepath/.ruby-version"
-        [[ -f "$version_file" ]] && break
-        basepath=$( dirname "$basepath" )
-    done
-
-    export _RBENV_RUBY_VERSION="$(
-        [[ -f "$version_file" ]] && head -1 "$version_file"
-    )"
-}
-precmd_functions=($precmd_functions update_rbenv_info)
-
-echo_rbenv_info(){
-    [[ -n "$_RBENV_RUBY_VERSION" ]] &&  echo -n "rb$_RBENV_RUBY_VERSION"
-}
-
-export JOBS=0
-update_jobs_num(){
-    export JOBS=$( jobs | grep -E '^\[[0-9]*\] ' | wc -l )
-}
-precmd_functions=($precmd_functions update_jobs_num)
-
-echo_jobs_num(){
-    local c= d=
-    if [[ -z "$1" ]]
-    then c="%F{green}" d="%f"
-    fi
-    [[ "$JOBS" -ne 0 ]] && echo -n "jobs:$c${JOBS}$d"
-}
-
-construct_left(){
-    local no_color=
-    while getopts n opt
-    do
-        case $opt in
-            n) no_color=true;;
-        esac
-    done
-    shift `expr $OPTIND - 1`
-    local current_path=$1
-
-    local u= h= p= d=
-    if [[ -z "$no_color" ]]
-    then
-        u=$USER_COLOR
-        h=$HOST_COLOR
-        p='%F{yellow}'
-        d='%f'
-    fi
-
-    local extra_info= info=
-    for info in "$( echo_vcs_info $no_color )" "$( echo_rbenv_info $no_color )" \
-        "$( echo_jobs_num $no_color )"
-    do [[ -n "$info" ]] && extra_info=($extra_info $info)
-    done
-
-    # プロンプトのフォーマット
-    echo -n "$u${USER}$d@$h${HOST}$d:$p${current_path}"
-    if [[ -n "$extra_info" ]]
-    then
-        for info in $extra_info
-        do echo -n "$d :$info"
-        done
-        echo -n "$d"
+    local v=$(rbenv version-name)
+    if [[ "$v" != 'system' ]]; then
+        print -n "%f:%F{196}rbenv:$v "
     fi
 }
+prompt_opts+=echo_rbenv_version
 
-update_prompt(){
-    local columns=$((COLUMNS - 2))
-    local escaped_home="`echo ${HOME}|sed -e 's/\//\\\\\//g'`"
-    local current_path="`pwd|sed -e \"s/^${escaped_home}/~/\"`"
-    local left="$(construct_left -n $current_path)"
+echo_pyenv_version() {
+    type pyenv &>/dev/null || return
 
-    # build right
-    local right=" $(date +'%Y/%m/%d %H:%M:%S') "
-    local num_bar=$((${columns}-${#left}-${#right}))
-    if [[ $num_bar -lt 0 ]]
-    then
-        right=" $(date +'%H:%M:%S') "
-        num_bar=$((${columns}-${#left}-${#right}))
-        if [[ $num_bar -lt 0 ]]
-        then
-            right=''
-            num_bar=$((${columns}-${#left}-${#right}))
-        fi
+    local v=$(pyenv version-name)
+    if [[ "$v" != 'system' ]]; then
+        print -n "%f:%F{166}pyenv:$v "
     fi
-
-    # build bar
-    local bar= sep=' -'
-    while [[ $num_bar -gt $((${#bar}+${#sep})) ]]
-    do bar="$sep$bar"
-    done
-    while [[ $num_bar -gt ${#bar} ]]
-    do bar="$bar "
-    done
-
-    bar="$BAR_COLOR$bar"
-    right="$TIME_COLOR$right"
-    left="$(construct_left $current_path)"
-    PROMPT=$'\n'"${left}${bar}${right}"$'\n'"%f%(!.#.$) "
 }
-precmd_functions=($precmd_functions update_prompt)
-PROMPT="${USER_COLOR}${USER}%f@${HOST_COLOR}${HOST}%f %F{yellow}%~%f "$'\n'"%(!.#.$) "
+prompt_opts+=echo_pyenv_version
+
+user="%F{$(color_code_from_str "$USER")}%n"
+host="%F{$(color_code_from_str "$HOST")}%m"
+PROMPT='%U%(?:%F{243}:%F{red})${(l:COLUMNS:: ::%0?:)}%u
+'"$user"'%f@'"$host"'%f:%F{yellow}%~ $(for f in "${prompt_opts[@]}"; "$f")
+%f%(!.#.$) '
+RPROMPT='%F{243}%D{%FT%T%z}'
 
 ############################################################
 ##  screen の window タイトルを設定
 update_screen_title() {
-    [[ -z "$STY" ]] && return
-
-    local shell=$(echo -n ${SHELL} | sed -e 's/^.*\///')
-    local dir=$(print -P '%~' | sed -e 's/ /_/g' | xargs -I '{}' basename "{}")
+    local shell="$(basename "$SHELL")"
+    local dir="$(basename $(print -P '%~'))"
     screen -X title "${shell}#${dir}"
 }
 [ "$STY" ] && precmd_functions=($precmd_functions update_screen_title)
-
-############################################################
-##  windows で動いてる時は、job 一覧表示だけする
-display_jobs(){ echo; jobs; }
-[ "$OS" = "Windows_NT" ] && precmd_functions=(display_jobs)
 
 ############################################################
 ##  cdr の設定

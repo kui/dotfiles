@@ -40,12 +40,13 @@ defflow off
 termcapinfo * ti@:te@
 
 ## keybind
-bind L layout next
-bind ^l layout next
-bind h focus left
-bind j focus down
-bind k focus up
-bind l focus right
+# bind L layout next
+# bind ^l layout next
+# bind h focus left
+# bind j focus down
+# bind k focus up
+# bind l focus right
+bind ^l redisplay
 bind f
 bind r
 bind ^f
