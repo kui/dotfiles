@@ -457,12 +457,8 @@ but if not, return nil."
    ;; popwin がでてくる場所のデフォルト値
    ;; popwin:popup-window-position 'right
    )
-  (set 'popwin:special-display-config
-       (append
-        '(("*helm imenu*" :position :right)
-          ("*Buffer List*" :position :bottom :height 20 :dedicated t :tail t)
-          )
-        popwin:special-display-config))
+  (add-to-list 'popwin:special-display-config
+               '("*Buffer List*" :position :bottom :height 20 :dedicated t :tail t))
   )
 
 ;; direx
