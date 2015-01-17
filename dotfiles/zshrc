@@ -317,10 +317,10 @@ zstyle ':vcs_info:*' enable git cvs svn
 zstyle ':vcs_info:*' get-revision true
 zstyle ':vcs_info:*' check-for-changes true
 zstyle ':vcs_info:*' max-exports 1
-zstyle ':vcs_info:*' formats '%f:%F{red}%B%c%u%%b%F{green}%s:%b(%i) '
-zstyle ':vcs_info:*' actionformats '%f:%F{red}%B%c%u%b%F{red}%s:%b(%i):%a '
-zstyle ':vcs_info:git:*' formats '%f:%F{red}%B%c%u%%b%F{green}%s:%b '
-zstyle ':vcs_info:git:*' actionformats '%f:%F{blue}%B%c%u%%b%F{red}%s:%b:%a '
+zstyle ':vcs_info:*' formats '%f:%F{red}%B%c%u%%b%F{green}%s/%b(%i) '
+zstyle ':vcs_info:*' actionformats '%f:%F{red}%B%c%u%b%F{red}%s/%b(%i)/%a '
+zstyle ':vcs_info:git:*' formats '%f:%F{red}%B%c%u%%b%F{green}%s/%b '
+zstyle ':vcs_info:git:*' actionformats '%f:%F{blue}%B%c%u%%b%F{red}%s/%b/%a '
 
 # 作業コピーに変更があった場合に表示される文字列
 zstyle ':vcs_info:*' unstagedstr "*"
@@ -376,7 +376,7 @@ color_code_from_str() {
 typeset -agx prompt_opts
 
 echo_job_info() {
-    print -n '%(1j.%f:%F{red}jobs:%j .)'
+    print -n '%(1j.%f:%F{red}jobs/%j .)'
 }
 prompt_opts+=echo_job_info
 
@@ -391,7 +391,7 @@ echo_rbenv_version() {
 
     local v=$(rbenv version-name)
     if [[ "$v" != 'system' ]]; then
-        print -n "%f:%F{196}rbenv:$v "
+        print -n "%f:%F{196}rbenv/$v "
     fi
 }
 prompt_opts+=echo_rbenv_version
@@ -401,16 +401,16 @@ echo_pyenv_version() {
 
     local v=$(pyenv version-name)
     if [[ "$v" != 'system' ]]; then
-        print -n "%f:%F{166}pyenv:$v "
+        print -n "%f:%F{166}pyenv/$v "
     fi
 }
 prompt_opts+=echo_pyenv_version
 
 user="%F{$(color_code_from_str "$USER")}%n"
 host="%F{$(color_code_from_str "$HOST")}%m"
-PROMPT='%F{243}%U${(l:COLUMNS:: :)}%u
+PROMPT='%(?.%F{243}.%F{red})%U${(l:COLUMNS:: :)?}%u
 '"$user"'%f@'"$host"'%f:%F{yellow}%~ $(for f in "${prompt_opts[@]}"; "$f")
-%(?.%f.%F{red})%(!.#.$) '
+%(?.%f.%F{red})%(!.#.$)%f '
 
 ############################################################
 ##  screen の window タイトルを設定
