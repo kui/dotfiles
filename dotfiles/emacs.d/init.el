@@ -644,6 +644,9 @@ but if not, return nil."
   (kui/after-loaded 'helm-files
     (define-key helm-find-files-map "\C-h" 'delete-backward-char)
     (define-key helm-find-files-map "TAB" 'helm-execute-persistent-action))
+
+  (kui/with-pkg 'helm-swoop
+    (global-set-key "\C-s" 'helm-swoop))
   )
 
 ;; whitespace-mode
