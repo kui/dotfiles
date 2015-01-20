@@ -888,6 +888,27 @@ but if not, return nil."
             racer-cmd racer-path)))
   )
 
+(kui/after-loaded "typescript"
+  (kui/add-to-list-if-exist 'ac-modes 'typescript-mode)
+
+  (kui/with-pkg 'flycheck
+    (flycheck-define-checker typescript
+      "A TypeScript syntax checker using tsc command."
+      :command ("tsc" "--out" "/dev/null" source)
+      :error-patterns
+      ((error line-start (file-name) "(" line "," column "): error " (message) line-end))
+      :mode typescript-mode)
+    (add-to-list 'flycheck-checkers 'typescript))
+
+  (kui/with-pkg 'tss
+    (setq tss-popup-help-key "C-:"
+          tss-jump-to-definition-key "M-."
+          tss-implement-definition-key "M-,")
+    ;; (tss-config-default)
+    (add-hook 'typescript-mode-hook 'tss-setup-current-buffer t)
+    (add-hook 'kill-buffer-hook 'tss--delete-process t)
+    ))
+
 ;; -------------------------------------------------------------------------
 ;; 色とか
 (kui/with-pkg 'color-theme
