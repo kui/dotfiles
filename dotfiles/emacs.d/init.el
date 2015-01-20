@@ -415,6 +415,13 @@ but if not, return nil."
     (if (consp v)
         (add-to-list list-var element append compare-fn))))
 
+(defun kui/parent-directory (path &optional num)
+  (let ((num (if num num 1)))
+    (if (<= num 0)
+        path
+      (file-name-directory
+       (directory-file-name (kui/parent-directory path (- num 1)))))))
+
 ;; -------------------------------------------------------------------------
 ;; 便利な感じのマイナーモード
 
@@ -864,28 +871,28 @@ but if not, return nil."
 ;; rust-mode
 (kui/after-loaded "rust-mode"
 
-  ;; flycheck for rust-mode
+  ;; (defun kui/flycheck-rust-crate-bin ()
+  ;;   (if (save-excursion (search-forward-regexp "fn\\s-+main\\s-*(\\s-*)" nil nil))
+  ;;       (setq flycheck-rust-crate-type "bin")))
+  ;; (add-hook 'flycheck-mode-hook 'kui/flycheck-rust-crate-bin)
+
+  ;; flycheck for Cargo
   (kui/with-pkg 'flycheck-rust
     (kui/after-loaded "flycheck"
-      '(add-hook 'flycheck-mode-hook 'flycheck-rust-setup))
+      (add-hook 'flycheck-mode-hook 'flycheck-rust-setup))
     (add-hook 'rust-mode-hook 'flycheck-mode))
 
   ;; racer(Code Completion)
   (let* ((racer-path (executable-find "racer"))
          (racer-path (if racer-path (file-chase-links racer-path 100)))
-         (racer-dir (if racer-path
-                        (file-name-directory
-                         (directory-file-name
-                          (file-name-directory racer-path)))))
-         (racer-load-path (if racer-dir
-                              (concat racer-dir "editors")))
+         (racer-dir (if racer-path (kui/parent-directory racer-path 3)))
+         (racer-load-path (if racer-dir (concat racer-dir "editors")))
          (rust-path (getenv "RUST_SRC_PATH")))
-    (when (and racer-dir
-               rust-path)
+    (when (and racer-dir rust-path)
       (add-to-list 'load-path racer-load-path)
-      (require 'racer nil t)
-      (setq racer-rust-src-path rust-path
-            racer-cmd racer-path)))
+      (when (require 'racer nil t)
+        (setq racer-rust-src-path rust-path
+              racer-cmd racer-path))))
   )
 
 (kui/after-loaded "typescript"
