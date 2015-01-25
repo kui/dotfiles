@@ -107,8 +107,8 @@
 ;; pkg-alist から pkg-name のバージョンを取り出す
 (defun kui/package-get-vers (pkg-name pkg-alist)
   "Return version of PKG-NAME in PKG-ALIST"
-  (let ((pkg-desc (cdr (assoc pkg-name pkg-alist))))
-    (if pkg-desc (package-desc-vers pkg-desc))))
+  (let ((pkg-desc (car (cdr (assoc pkg-name pkg-alist)))))
+    (if pkg-desc (package-desc-version pkg-desc))))
 
 ;; インストール済みの pkg-name のバージョン
 (defun kui/package-get-activated-vers (pkg-name)
