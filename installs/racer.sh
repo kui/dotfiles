@@ -15,6 +15,6 @@ else git clone git@github.com:phildawes/racer.git "$HOME/.local/racer"
 fi
 
 cd "$HOME/.local/racer"
-make
+cargo build
 
 export RUST_SRC_PATH="$HOME/.local/rust/src"
