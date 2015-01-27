@@ -832,9 +832,6 @@ but if not, return nil."
   (add-to-list 'auto-mode-alist '("\\.json\\'" . js-mode)))
 (kui/after-loaded "js"
   (setq js-indent-level 2)
-  (if (and (executable-find "jshint")
-           (kui/package-require 'flymake-jshint))
-    (add-hook 'js-mode-hook 'flymake-jshint-load))
   )
 
 ;; html-mode
