@@ -25,9 +25,7 @@
 ;; (if (string-equal system-type "windows-nt") (let () ))
 
 ;; git checkout によるファイル変更などに追従する
-;; (custom-set-variables '(auto-revert-check-vc-info t))
 ;; (global-auto-revert-mode 1)
-;; バッファに変更があったときに特に何も言わずに追従をやめてしまうのがつらい
 
 ;; 自動保存機能
 (setq auto-save-default t
@@ -736,7 +734,8 @@ but if not, return nil."
            space-before-tab
            ;; タブの後にあるスペース
            space-after-tab
-           )))
+           ))
+    (electric-indent-local-mode -1))
   (add-hook 'markdown-mode-hook 'kui/markdown-init-set-values)
 
   ;; *scratch* 関連を更新
@@ -854,12 +853,18 @@ but if not, return nil."
 ;; web-mode
 (kui/with-lib "web-mode"
   ;; (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
-  (kui/add-to-list-if-exist 'ac-modes 'web-mode))
+  (kui/add-to-list-if-exist 'ac-modes 'web-mode)
+  (add-hook 'web-mode-hook
+            '(setq web-mode-markup-indent-offset 2
+                   web-mode-css-indent-offset 2
+                   web-mode-code-indent-offset 2
+                   web-mode-style-padding 0
+                   web-mode-script-padding 0)))
 
 ;; groovy-mode
 (kui/with-lib "groovy-mode"
   (add-to-list 'auto-mode-alist '("\\.gradle\\'" . groovy-mode))
-  (kui/add-to-list-if-exist 'ac-modes 'haml-mode))
+  (kui/add-to-list-if-exist 'ac-modes 'groovy-mode))
 
 ;; haml-mode
 (kui/with-lib "haml-mode"
