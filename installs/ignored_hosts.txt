@@ -7,6 +7,7 @@ a.yieldsquare.com
 ad-stir.com
 ad.ad-stir.com
 ad.adlantis.jp
+ad.maist.jp
 ad.yieldmanager.com
 adm.shinobi.jp
 adn.dmm.com
@@ -24,10 +25,12 @@ b.scorecardresearch.com
 b.socdm.com
 b.voicefive.com
 bid.g.doubleclick.net
+bn.maist.jp
 c.one.impact-ad.jp
 c.scorecardresearch.com
 c.socdm.com
 cas.criteo.com
+cdn.ad.maist.jp
 cdn.adnxs.com
 cdn.vidible.tv
 cloud.lokaplatform.com
