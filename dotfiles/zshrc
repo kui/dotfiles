@@ -487,7 +487,7 @@ setopt magic_equal_subst
 ## ヒストリを呼び出してから実行する間に一旦編集
 setopt hist_verify
 
-# ファイル名の展開で辞書順ではなく数値的にソート
+## ファイル名の展開で辞書順ではなく数値的にソート
 setopt numeric_glob_sort
 
 ## 出力時8ビットを通す
@@ -495,6 +495,9 @@ setopt print_eight_bit
 
 ## ヒストリを共有
 setopt share_history
+
+## command > file によるファイル上書きを禁止
+setopt noclobber
 
 ## 補完候補のカーソル選択を有効に
 zstyle ':completion:*:default' menu select=1
