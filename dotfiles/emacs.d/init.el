@@ -829,6 +829,27 @@ but if not, return nil."
 ;; js-mode
 (kui/after-loaded "js"
   (setq js-indent-level 2)
+  (defun kui/traverse-parents-for (filename &optional dirname)
+    (if dirname
+        (let ((path (concat (file-name-as-directory dirname) filename)))
+          (if (file-exists-p path)
+              path
+            (if (string= "/" dirname)
+                nil
+              (kui/traverse-parents-for filename
+                                        (file-name-directory
+                                         (directory-file-name dirname)))
+              )))
+      (kui/traverse-parents-for filename
+                                (file-name-directory buffer-file-name))))
+  (kui/with-lib "flycheck"
+    (defun kui/select-flycheck ()
+      (when (kui/traverse-parents-for ".eslintrc")
+        (message "disabled jshint flycheck-checker")
+        (flycheck-disable-checker 'javascript-jshint)
+        ;; (flycheck-select-checker 'javascript-eslint)
+        ))
+    (add-hook 'js-mode-hook 'kui/select-flycheck))
   )
 
 ;; html-mode
