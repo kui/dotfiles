@@ -873,12 +873,13 @@ but if not, return nil."
 (kui/with-lib "web-mode"
   ;; (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
   (kui/add-to-list-if-exist 'ac-modes 'web-mode)
-  (add-hook 'web-mode-hook
-            '(setq web-mode-markup-indent-offset 2
-                   web-mode-css-indent-offset 2
-                   web-mode-code-indent-offset 2
-                   web-mode-style-padding 0
-                   web-mode-script-padding 0)))
+  (defun config-web-mode()
+    (setq web-mode-markup-indent-offset 2
+          web-mode-css-indent-offset 2
+          web-mode-code-indent-offset 2
+          web-mode-style-padding 0
+          web-mode-script-padding 0))
+  (add-hook 'web-mode-hook 'config-web-mode))
 
 ;; groovy-mode
 (kui/with-lib "groovy-mode"
