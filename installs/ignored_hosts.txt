@@ -34,6 +34,8 @@ cas.criteo.com
 cdn.ad.maist.jp
 cdn.adnxs.com
 cdn.adsrv247.com
+cdn.apvdr.com
+cdn.cxense.com
 cdn.teads.tv
 cdn.vidible.tv
 cloud.lokaplatform.com
@@ -80,6 +82,7 @@ q.one.impact-ad.jp
 r.one.impact-ad.jp
 redir.adap.tv
 rs.adapf.com
+s.f1.impact-ad.jp
 s.one.impact-ad.jp
 s0.2mdn.net
 s1.2mdn.net
