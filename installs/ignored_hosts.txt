@@ -42,6 +42,7 @@ cloud.lokaplatform.com
 d.href.asia
 d.one.impact-ad.jp
 d.socdm.com
+ds.advg.jp
 e.one.impact-ad.jp
 e.socdm.com
 f.one.impact-ad.jp
@@ -57,6 +58,7 @@ i.one.impact-ad.jp
 i.socdm.com
 ib.adnxs.com
 image.ias.rakuten.co.jp
+img.adplan-ds.com
 img.ak.impact-ad.jp
 imp.asahi.com
 j.one.impact-ad.jp
