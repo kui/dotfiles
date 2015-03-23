@@ -27,14 +27,27 @@
 ;; git checkout によるファイル変更などに追従する
 ;; (global-auto-revert-mode 1)
 
+;; 自動保存ファイルの保存先ディレクトリ
+(defconst emacs-bk-dir
+  (concat temporary-file-directory
+          "emacs-bk-" (number-to-string (user-uid)) "/"))
+(mkdir emacs-bk-dir t) ;; TODO do mkdir recursively
+
 ;; 自動保存機能
 (setq auto-save-default t
       ;; 自動保存に関する情報
-      auto-save-list-file-name (concat user-emacs-directory "/auto-save-list")
+      auto-save-list-file-name (expand-file-name "~/.emacs-auto-save-list")
       ;; 自動保存する打鍵回数
       auto-save-interval 50
       ;; 自動保存する時間
-      auto-save-timeout 10)
+      auto-save-timeout 10
+      ;; 自動保存ファイルの保存先
+      backup-directory-alist `((".*" . ,emacs-bk-dir))
+      auto-save-file-name-transforms `((".*" ,emacs-bk-dir t))
+      auto-save-list-file-prefix emacs-bk-dir)
+
+;; ロックファイル(.#で始まるファイル) を無効化
+(setq create-lockfiles nil)
 
 ;; バッファ末尾に余計な改行コードを防ぐための設定
 (setq next-line-add-newlines nil)
