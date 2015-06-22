@@ -16,8 +16,8 @@
   (package-refresh-contents))
 
 ;; 言語設定は環境変数に依存
-(set-language-environment nil)
-(prefer-coding-system 'utf-8-unix)
+(set-language-environment "Japanese")
+(prefer-coding-system 'utf-8)
 
 ;; dired などでマルチバイト文字が化ける
 (setq default-file-name-coding-system 'utf-8-unix)
