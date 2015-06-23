@@ -182,7 +182,6 @@ install_libav() {
         --enable-nonfree \
         --enable-asm \
         --enable-libx264 \
-        --enable-libx265 \
         --enable-libfdk-aac \
         --enable-gpl
     run make clean
