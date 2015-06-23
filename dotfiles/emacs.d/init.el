@@ -18,6 +18,7 @@
 ;; 言語設定は環境変数に依存
 (set-language-environment "Japanese")
 (prefer-coding-system 'utf-8)
+(set-default-coding-systems 'utf-8-unix)
 
 ;; dired などでマルチバイト文字が化ける
 (setq default-file-name-coding-system 'utf-8-unix)
