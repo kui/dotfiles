@@ -106,6 +106,7 @@ static.jp.as.criteo.net
 sync.ad-stir.com
 sync.fout.jp
 sync.mathtag.com
+sync.shinobi.jp
 t.one.impact-ad.jp
 tags.mathtag.com
 tg.socdm.com
