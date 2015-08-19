@@ -899,7 +899,11 @@ but if not, return nil."
 ;; groovy-mode
 (kui/with-lib "groovy-mode"
   (add-to-list 'auto-mode-alist '("\\.gradle\\'" . groovy-mode))
-  (kui/add-to-list-if-exist 'ac-modes 'groovy-mode))
+  (kui/add-to-list-if-exist 'ac-modes 'groovy-mode)
+  (defun kui/set-groovy-indent ()
+    (set (make-local-variable 'indent-tabs-mode) nil)
+    (set (make-local-variable 'c-basic-offset) 4))
+  (add-hook 'groovy-mode-hook 'kui/set-groovy-indent))
 
 ;; haml-mode
 (kui/with-lib "haml-mode"
