@@ -12,6 +12,7 @@ ad.yieldmanager.com
 adm.shinobi.jp
 adn.dmm.com
 ads.adjust-net.jp
+ads.nicovideo.jp
 ads.pubmatic.com
 ads.rubiconproject.com
 ads.yahoo.com
