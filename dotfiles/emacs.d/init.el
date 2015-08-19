@@ -358,12 +358,12 @@ uncomment the current line"
 ;; 実行可能なコマンドを返す
 (defun kui/find-if-executable (seq)
   "Find and Return first executable command in SEQ."
-  (find-if 'executable-find seq))
+  (cl-find-if 'executable-find seq))
 
 (defun kui/find-buffer-if (func)
   "Return buffer if FUNC return non-nil.
 Return nil if FUNC did not return non-nil with any buffer."
-  (find-if func (buffer-list)))
+  (cl-find-if func (buffer-list)))
 
 ;; bname って名前のバッファを返す。そんなバッファ無い時は nil。
 (defun kui/find-buffer-by-name (bname)
@@ -403,7 +403,7 @@ but if not, return nil."
 
 (defun kui/find-font (&rest fonts)
   "Return an existing font which was find at first"
-  (find-if (lambda (f)
+  (cl-find-if (lambda (f)
              (find-font (font-spec :name f)))
            fonts))
 
@@ -888,7 +888,7 @@ but if not, return nil."
 (kui/with-lib "web-mode"
   (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
   (kui/add-to-list-if-exist 'ac-modes 'web-mode)
-  (defun config-web-mode()
+  (defun config-web-mode ()
     (setq web-mode-markup-indent-offset 2
           web-mode-css-indent-offset 2
           web-mode-code-indent-offset 2
