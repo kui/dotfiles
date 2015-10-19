@@ -408,6 +408,9 @@ prompt_opts+=echo_pyenv_version
 
 user="%F{$(color_code_from_str "$USER")}%n"
 host="%F{$(color_code_from_str "$HOST")}%m"
+if [[ -n "$TMUX" ]]; then
+    host="$host%f[%F{green}$(tmux display-message -p '#I.#P')%f]"
+fi
 PROMPT='%(?.%F{243}.%F{red})%U${(l:COLUMNS:: :)?}%u
 '"$user"'%f@'"$host"'%f:%F{yellow}%~ $(for f in "${prompt_opts[@]}"; "$f")
 %(?.%f.%F{red})%(!.#.$)%f '
@@ -609,6 +612,8 @@ function preexec_end_timetrack() {
         elif which notify-send &>/dev/null
         then notify-send --icon=terminal "Command finished" "$message"
         fi
+
+        echo $'\a'
     fi
 
     unset timetrack_start
