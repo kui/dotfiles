@@ -48,6 +48,10 @@
       auto-save-file-name-transforms `((".*" ,emacs-bk-dir t))
       auto-save-list-file-prefix emacs-bk-dir)
 
+;; http://emacsformacosx.com/ 向け設定
+(setq ns-command-modifier (quote meta))
+(setq ns-alternate-modifier (quote super))
+
 ;; ロックファイル(.#で始まるファイル) を無効化
 (setq create-lockfiles nil)
 
