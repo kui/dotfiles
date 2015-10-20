@@ -3,10 +3,13 @@
 set -eu
 
 MACPORTS_INSTALLS=(
-    git screen zsh curl wget coreutils findutils xz ctags gsed debianutils
+    git zsh curl wget coreutils findutils xz ctags gsed debianutils
+)
+HOMEBREW_INSTALLS=(
+    git zsh curl wget coreutils findutils xz ctags gnu-sed debianutils
 )
 UBUNTU_INSTALLS=(
-    git screen zsh curl wget ssh build-essential xz-utils exuberant-ctags
+    git zsh curl wget ssh build-essential xz-utils exuberant-ctags
 )
 BASE_DIR="$HOME/.dotfiles"
 LN=
@@ -39,8 +42,13 @@ install_basics() {
     if which lsb_release &>/dev/null && (lsb_release -a | grep 'Ubuntu') &>/dev/null; then
         run sudo apt-get install -y "${UBUNTU_INSTALLS[@]}"
     elif grep "darwin" <<< "$OSTYPE" &>/dev/null; then
-        run sudo port install "${MACPORTS_INSTALLS[@]}" ||
-            abort "Require MacPorts"
+        if which brew &>/dev/null; then
+            run brew install "${HOMEBREW_INSTALLS[@]}"
+        elif which port &>/dev/null; then
+            run sudo port install "${MACPORTS_INSTALLS[@]}"
+        else
+            abort "Require MacPorts or HomeBrew"
+        fi
     else
         abort "Non supported platform"
     fi
