@@ -8,7 +8,6 @@ and name the server after the current environments to avoid the `server-name` co
 All unknown arguments/options will be passed to emacsclient.
 """
 
-# TODO: tmux support
 # TODO: No GUI Mac OS X support
 
 RETRY_NUMBER = 30
@@ -49,12 +48,12 @@ def get_command():
     return opts.command(), args
 
 def get_server():
-    svrs = [XEmacsServer, MacOSXServer, ScreenEmacsServer]
+    svrs = [XEmacsServer, MacOSXServer, ScreenEmacsServer, TmuxEmacsServer]
     itr = itertools.ifilter(lambda s:s.is_runnable(), svrs)
     svr = next(itr, None)
     if svr is None:
         abort("cannot generate the socket-name. "
-              "require DISPLAY or STY environment variable.")
+              "require DISPLAY or STY or TMUX environment variable.")
     return svr()
 
 def abort(msg):
@@ -214,6 +213,28 @@ class ScreenEmacsServer(EmacsServer):
     @staticmethod
     def is_runnable():
         return bool(os.getenv("STY"))
+
+class TmuxEmacsServer(EmacsServer):
+    """emacs-server for GNU screen"""
+    def __init__(self):
+        cmd = ["tmux", "display", "-p", "#I"]
+        self.name = "tmux-" + subprocess.check_output(cmd).strip()
+
+    def _start(self, emcas_opts):
+        subprocess.check_call(["tmux", "new-window", "emacs"] + emcas_opts)
+
+    def focus(self):
+        cmd = ["emacsclient",
+               "--socket-name", self.name,
+               "--eval", "(getenv \"TMUX_PANE\")"]
+        pane_id = subprocess.check_output(cmd).strip().replace("\"", "")
+        if len(pane_id) == 0:
+            return
+        subprocess.check_call(["tmux", "select-window", "-t", str(pane_id)])
+
+    @staticmethod
+    def is_runnable():
+        return bool(os.getenv("TMUX"))
 
 ##
 
