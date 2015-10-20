@@ -16,7 +16,7 @@ if is_ubuntu; then
     run sudo apt-get build-dep emacs24 -y
     run sudo apt-get install automake autoconf
 else
-    echo "Non supported platform" >&2
+    echo "Not supported platform" >&2
     exit 1
 fi
 
@@ -26,12 +26,12 @@ run mkdir -pv "$TMP"
 
 cd "$TMP"
 run pwd
-run wget http://ftpmirror.gnu.org/emacs/emacs-24.4.tar.xz
-run tar xfJ emacs-24.4.tar.xz
+run wget http://ftpmirror.gnu.org/emacs/emacs-24.5.tar.xz
+run tar xfJ emacs-24.5.tar.xz
 
-cd "emacs-24.4"
+cd "emacs-24.5"
 run pwd
 run ./autogen.sh
 run ./configure
 run make
-run sudo porg -lD "make install"
+run sudo porg -lp "emacs" "make install"
