@@ -111,10 +111,12 @@ sync.shinobi.jp
 t.one.impact-ad.jp
 tags.mathtag.com
 tg.socdm.com
+tpc.googlesyndication.com
 u.one.impact-ad.jp
 v.one.impact-ad.jp
 vsc.send.microad.jp
 w.one.impact-ad.jp
+www.googleadservices.com
 x.one.impact-ad.jp
 y.one.impact-ad.jp
 yads.yahoo.co.jp
