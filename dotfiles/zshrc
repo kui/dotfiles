@@ -152,10 +152,9 @@ elif gls -F --color &>/dev/null; then alias ls="gls -F --color=auto"
 elif ls -F -G &>/dev/null;       then alias ls="ls -F -G"
 fi
 
-if which screen &> /dev/null
+if which tmux &> /dev/null
 then
-  alias s="screen"
-  [ $STY ] && alias s="screen -X focus; screen"
+  alias t="tmux new-window"
 fi
 
 eval $(dircolors)
@@ -208,28 +207,16 @@ list_parents() {
   fi
 }
 
-# screen のコピー機能と、X Window System のクリップボードの同期
-if which xsel &> /dev/null
-then
-  # X Window System 環境でのコピー （xsel をインストールする必要あり）
-  copy_cmd="xsel -i -b < /tmp/screen-exchange;\
-              xsel -i -p < /tmp/screen-exchange"
-elif which pbcopy &> /dev/null
-then
-  # Mac OS X 環境でのコピー （要動作テスト）
-  copy_cmd="pbcopy < /tmp/screen-exchange"
-elif which putclip &> /dev/null
-then
-  # Cygwin 環境でのコピー（要動作テスト）
-  copy_cmd="putclip < /tmp/screen-exchange"
-fi
-[[ -n "$copy_cmd" ]] && \
-  screen -X bindkey -m ' ' eval "stuff ' '" writebuf "exec sh -c '$copy_cmd'"
-
-if which emacsclientw &> /dev/null
-then
+if which emacsclientw &> /dev/null; then
   alias e="emacsclientw --no-wait"
   export EDITOR=emacsclientw
+fi
+
+if clipboard test &>/dev/null; then
+  if which tmux &>/dev/null; then
+    tmux bind -temacs-copy C-w copy-pipe 'clipboard copy'
+    tmux bind -temacs-copy M-w copy-pipe 'clipboard copy'
+  fi
 fi
 
 ## 色一覧
@@ -661,3 +648,5 @@ which npm > /dev/null 2>&1 && . <(npm completion)
 
 # racer: see installs/racer.sh
 export RUST_SRC_PATH="$HOME/.local/rust/src"
+
+pixels-fortune

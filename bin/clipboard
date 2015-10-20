@@ -1,0 +1,109 @@
+#!/bin/bash
+set -eu
+
+######################################
+# cross-platform clipboard operation
+######################################
+
+THIS="$(basename $0)"
+USAGE="$THIS [copy|paste|test]
+
+Example:
+
+    # Copy \"fooooo\"
+    $ echo fooooo | $THIS copy
+
+    # Paste
+    $ $THIS paste
+    fooooo
+
+    # Is this supported platform?
+    $ $THIS test; echo \$?
+"
+
+main() {
+  local platform cmd
+
+  if [[ "$#" -eq 0 ]]; then
+    abort "$USAGE"
+  fi
+
+  if [[ "$OSTYPE" =~ 'linux'  ]]; then
+    platform=linux
+  elif [[ "$OSTYPE" =~ 'darwin' ]]; then
+    platform=darwin # Mac OS X
+  else
+    abort "Not supported platform"
+  fi
+
+  case $1 in
+    copy|c ) cmd=copy;;
+    paste|p ) cmd=paste;;
+    test|t ) cmd=test;;
+    * ) abort "Unknown command: $1";;
+  esac
+
+  "${platform}_${cmd}"
+}
+
+linux_copy() {
+  require_command xsel
+
+  if [[ -z "$DISPLAY" ]]; then
+    abort "Require X Window System"
+  fi
+
+  xsel --input --clipboard
+}
+
+linux_paste() {
+  require_command xsel
+
+  if [[ -z "$DISPLAY" ]]; then
+    abort "Require X Window System"
+  fi
+
+  xsel --output --clipboard
+}
+
+linux_test() {
+  require_command xsel
+
+  if [[ -z "$DISPLAY" ]]; then
+    abort "Require X Window System"
+  fi
+}
+
+darwin_copy() {
+  require_command pbcopy
+  pbcopy
+}
+
+darwin_paste() {
+  require_command pbpaste
+  pbpaste
+}
+
+darwin_test() {
+  require_command pbpaste pbcopy
+}
+
+require_command() {
+  local error=0
+  for cmd in "$@"; do
+    if ! which "$cmd" &>/dev/null; then
+      echo "Require command: $cmd" >&2
+      error=1
+    fi
+  done
+  if [[ "$error" = 1 ]]; then
+    exit 1
+  fi
+}
+
+abort() {
+  echo "$@" >&2
+  exit 1
+}
+
+main "$@"
