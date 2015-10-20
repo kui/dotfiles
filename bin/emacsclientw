@@ -15,7 +15,7 @@ RETRY_INTERVAL = 0.5 # sec
 
 ##
 
-import os, sys, subprocess, time, itertools, re, optparse, shutil, tempfile
+import os, sys, subprocess, time, re, optparse, shutil, tempfile
 
 DEFAULT_EMACSCLIENT = "emacsclient"
 MACOSX_EMACSCLIENT = "/Applications/Emacs.app/Contents/MacOS/bin/emacsclient"
@@ -51,13 +51,12 @@ def get_command():
     return opts.command(), args
 
 def get_server():
-    svrs = [XEmacsServer, MacOSXServer, ScreenEmacsServer, TmuxEmacsServer]
-    itr = itertools.ifilter(lambda s:s.is_runnable(), svrs)
-    svr = next(itr, None)
-    if svr is None:
-        abort("cannot generate the socket-name. "
-              "require DISPLAY or STY or TMUX environment variable.")
-    return svr()
+    for svr in [XEmacsServer, MacOSXServer, ScreenEmacsServer, TmuxEmacsServer]:
+        s = svr()
+        if s.is_runnable():
+            return s
+    abort("cannot generate the socket-name. "
+          "require DISPLAY or STY or TMUX environment variable.")
 
 def abort(msg):
     sys.exit("Abort: " + msg)
@@ -130,28 +129,31 @@ class Command:
 class EmacsServer:
     """super class for emacs server"""
 
+    def __init__(self):
+        self.emacsclient = DEFAULT_EMACSCLIENT
+
     def is_running(self):
-        s = subprocess.call([DEFAULT_EMACSCLIENT,
-                             "--socket-name", self.name,
+        s = subprocess.call([self.emacsclient,
+                             "--socket-name", self.name(),
                              "--eval", "(emacs-pid)"],
                             stderr=DEVNULL, stdout=DEVNULL)
         return s == 0
 
     def start(self):
         opts = [
-            "--eval", "(setq server-name \"%s\")" % self.name,
+            "--eval", "(setq server-name \"%s\")" % self.name(),
             "--eval", "(server-start)"
         ]
         self._start(opts)
         self.__wait()
 
     def invoke_emacsclient(self, args):
-        cmd = [DEFAULT_EMACSCLIENT, "--socket-name", server_name] + args
+        cmd = [self.emacsclient, "--socket-name", self.name()] + args
         stderr("Invoke: %s" % pp_string_as_cmd(cmd))
         return subprocess.Popen(cmd)
 
     def help(self):
-        subprocess.call([DEFAULT_EMACSCLIENT, "--help"])
+        subprocess.call([self.emacsclient, "--help"])
 
     def focus(self):
         pass
@@ -172,8 +174,8 @@ class RetryLimitExceededException(BaseException):
 
 class XEmacsServer(EmacsServer):
     """emacs-server for X Window System"""
-    def __init__(self):
-        self.name = "wm-" + os.getenv("DISPLAY")
+    def name(self):
+        return "wm-" + os.getenv("DISPLAY")
 
     def _start(self, emacs_opts):
         cmd = "emacs "
@@ -182,51 +184,38 @@ class XEmacsServer(EmacsServer):
         subprocess.check_call(["sh", "-c", cmd])
         # nohup?
 
-    @staticmethod
-    def is_runnable():
+    def is_runnable(self):
         return bool(os.getenv("DISPLAY"))
 
+# http://emacsformacosx.com/
 class MacOSXServer(EmacsServer):
     """emacs-server for Mac OS X"""
     def __init__(self):
-        self.name = "Darwin"
+        self.emacsclient = MACOSX_EMACSCLIENT
 
-    def is_running(self):
-        s = subprocess.call([MACOSX_EMACSCLIENT,
-                             "--socket-name", self.name,
-                             "--eval", "(emacs-pid)"],
-                            stderr=DEVNULL, stdout=DEVNULL)
-        return s == 0
-
-    def help(self):
-        subprocess.call([MACOSX_EMACSCLIENT, "--help"])
+    def name(self):
+        return "Darwin"
 
     def _start(self, emacs_opts):
         cmd = ["open", "-a",  "Emacs", "--args"]
         cmd += emacs_opts
         subprocess.check_call(cmd)
 
-    def invoke_emacsclient(self, args):
-        cmd = [DEFAULT_EMACSCLIENT, "--socket-name", self.name] + args
-        stderr("Invoke: %s" % pp_string_as_cmd(cmd))
-        return subprocess.Popen(cmd)
-
-    @staticmethod
-    def is_runnable():
-        return subprocess.check_output(["uname"]).strip() == "Darwin" and \
-            os.path.exists(MACOSX_EMACSCLIENT)
+    def is_runnable(self):
+        return subprocess.check_output(["uname"]).strip() == "Darwin"
 
 class ScreenEmacsServer(EmacsServer):
     """emacs-server for GNU screen"""
-    def __init__(self):
-        self.name = "sty-" + os.getenv("STY")
+
+    def name(self):
+        return "sty-" + os.getenv("STY")
 
     def _start(self, emcas_opts):
         subprocess.check_call(["screen", "emacs"] + emcas_opts)
 
     def focus(self):
-        o = subprocess.check_output([DEFAULT_EMACSCLIENT,
-                                     "--socket-name", self.name,
+        o = subprocess.check_output([self.emacsclient,
+                                     "--socket-name", self.name(),
                                      "--eval", "(getenv \"WINDOW\")"])
         wid = o.replace('"', "")
         if len(wid) == 0:
@@ -234,30 +223,29 @@ class ScreenEmacsServer(EmacsServer):
 
         subprocess.check_call(["screen", "-X", "select", str(wid)])
 
-    @staticmethod
-    def is_runnable():
+    def is_runnable(self):
         return bool(os.getenv("STY"))
 
 class TmuxEmacsServer(EmacsServer):
     """emacs-server for GNU screen"""
-    def __init__(self):
+
+    def name(self):
         cmd = ["tmux", "display", "-p", "#I"]
-        self.name = "tmux-" + subprocess.check_output(cmd).strip()
+        return "tmux-" + subprocess.check_output(cmd).strip()
 
     def _start(self, emcas_opts):
         subprocess.check_call(["tmux", "new-window", "emacs"] + emcas_opts)
 
     def focus(self):
-        cmd = [DEFAULT_EMACSCLIENT,
-               "--socket-name", self.name,
+        cmd = [self.emacsclient,
+               "--socket-name", self.name(),
                "--eval", "(getenv \"TMUX_PANE\")"]
         pane_id = subprocess.check_output(cmd).strip().replace("\"", "")
         if len(pane_id) == 0:
             return
         subprocess.check_call(["tmux", "select-window", "-t", str(pane_id)])
 
-    @staticmethod
-    def is_runnable():
+    def is_runnable(self):
         return bool(os.getenv("TMUX"))
 
 ##
