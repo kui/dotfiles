@@ -15,8 +15,6 @@ fi
 if is_ubuntu; then
     run sudo apt-get build-dep emacs24 -y
     run sudo apt-get install automake autoconf
-elif is_mac_os_x; then
-    run sudo port install libxml2 ncurses pkgconfig texinfo automake autoconf
 else
     echo "Non supported platform" >&2
     exit 1
