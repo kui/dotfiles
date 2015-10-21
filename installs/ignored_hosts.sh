@@ -44,16 +44,11 @@ main(){
 }
 
 print_new_hosts(){
-    cat /etc/hosts \
-        | grep -vG '^0\.0\.0\.0[^0-9]' \
-        | grep -vF "## $MESSAGE ##" \
-        | grep -vF "##/$MESSAGE ##"
+    grep -v "# $MESSAGE$" /etc/hosts
 
-    echo "## $MESSAGE ##"
     echo -n '0.0.0.0 '
     grep -v '^#' "$IGNORED_HOSTS_FILE" | tr '\n' ' '
-    echo
-    echo "##/$MESSAGE ##"
+    echo "## $MESSAGE"
 }
 
 main "$@"
