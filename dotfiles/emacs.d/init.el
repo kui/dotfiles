@@ -49,8 +49,8 @@
       auto-save-list-file-prefix emacs-bk-dir)
 
 ;; http://emacsformacosx.com/ 向け設定
-(setq ns-command-modifier (quote meta))
-(setq ns-alternate-modifier (quote super))
+(setq ns-command-modifier   'meta
+      ns-alternate-modifier 'super)
 
 ;; ロックファイル(.#で始まるファイル) を無効化
 (setq create-lockfiles nil)
@@ -438,6 +438,21 @@ but if not, return nil."
         path
       (file-name-directory
        (directory-file-name (kui/parent-directory path (- num 1)))))))
+
+(defun kui/traverse-parents-for (filename &optional dirname)
+  "Find FILENAME from parent directories of the current buffer file or DIRNAME"
+  (if dirname
+      (let ((path (concat (file-name-as-directory dirname) filename)))
+        (if (file-exists-p path)
+            path
+          (if (string= "/" dirname)
+              nil
+            (kui/traverse-parents-for filename
+                                      (file-name-directory
+                                       (directory-file-name dirname)))
+            )))
+    (kui/traverse-parents-for filename
+                              (file-name-directory buffer-file-name))))
 
 ;; -------------------------------------------------------------------------
 ;; 便利な感じのマイナーモード
@@ -848,27 +863,23 @@ but if not, return nil."
 ;; js-mode
 (kui/after-loaded "js"
   (setq js-indent-level 2)
-  (defun kui/traverse-parents-for (filename &optional dirname)
-    (if dirname
-        (let ((path (concat (file-name-as-directory dirname) filename)))
-          (if (file-exists-p path)
-              path
-            (if (string= "/" dirname)
-                nil
-              (kui/traverse-parents-for filename
-                                        (file-name-directory
-                                         (directory-file-name dirname)))
-              )))
-      (kui/traverse-parents-for filename
-                                (file-name-directory buffer-file-name))))
+
+  (defun kui/find-node-modules-bin (binname)
+    "Find executable file named BINNAME from the node_modules directory"
+    (let* ((moddir (kui/traverse-parents-for "node_modules"))
+           (bin (if moddir (format "%s/.bin/%s" moddir binname))))
+      (if (file-executable-p bin) bin)))
+
   (kui/with-lib "flycheck"
-    (defun kui/select-flycheck ()
-      (when (kui/traverse-parents-for ".eslintrc")
-        (message "disabled jshint flycheck-checker")
-        (flycheck-disable-checker 'javascript-jshint)
-        ;; (flycheck-select-checker 'javascript-eslint)
-        ))
-    (add-hook 'js-mode-hook 'kui/select-flycheck))
+    (defun kui/flycheck-set-node-modules-bin (checker binname)
+      (let* ((bin (kui/find-node-modules-bin binname)))
+        (when bin
+          (message "auto-detect %s: %s" binname bin)
+          (flycheck-set-checker-executable checker bin))))
+    (defun kui/flycheck-set-checker-executable-from-node-modules ()
+      (kui/flycheck-set-node-modules-bin 'javascript-jshint "jshint")
+      (kui/flycheck-set-node-modules-bin 'javascript-eslint "eslint"))
+    (add-hook 'js-mode-hook 'kui/flycheck-set-checker-executable-from-node-modules))
   )
 
 ;; html-mode
