@@ -6,13 +6,13 @@
 ##  外部設定ファイル
 
 source_if_exist(){
-  if [ ! -f "$1" ]
-  then
-    echo cannot load "$1"
-    return 1
-  fi
-  echo load "$1"
-  source "$1"
+    if [ ! -f "$1" ]
+    then
+        echo cannot load "$1"
+        return 1
+    fi
+    echo load "$1"
+    source "$1"
 }
 
 ## rvm
@@ -23,7 +23,7 @@ source_if_exist "$HOME/.rvm/scripts/rvm"
 source_if_exist "$HOME/.nvm/nvm.sh"
 
 readlink_f() {
-  python -c "import os; print(os.path.realpath('$1'))"
+    python -c "import os; print(os.path.realpath('$1'))"
 }
 
 ############################################################
@@ -48,52 +48,52 @@ fi
 ##
 typeset -U path sudo_path ld_library_path include
 path=(
-  $HOME/.{settings,dotfiles}/bin(N-/)
-  $HOME/{.rvm,.rbenv,local,.local}/bin(N-/)
-  $HOME/.nodebrew/current/bin(N-/)
-  # ./node_modules/.bin
-  $GEM_HOME/bin(N-/)
-  /opt/local/bin(N-/)
-  $path
-  /usr/local/heroku/bin(N-/)
-  /usr/local/{rvm,rbenv}/bin(N-/)
-  /app/{script,mingw/tdm/bin,gs/bin,gs/lib}(N-/)
-  /usr{/local,/usr,}/bin(N-/)
-  /usr/local/kui-avconv/bin(N-/)
+    $HOME/.{settings,dotfiles}/bin(N-/)
+    $HOME/{.rvm,.rbenv,local,.local}/bin(N-/)
+    $HOME/.nodebrew/current/bin(N-/)
+    # ./node_modules/.bin
+    $GEM_HOME/bin(N-/)
+    /opt/local/bin(N-/)
+    $path
+    /usr/local/heroku/bin(N-/)
+    /usr/local/{rvm,rbenv}/bin(N-/)
+    /app/{script,mingw/tdm/bin,gs/bin,gs/lib}(N-/)
+    /usr{/local,/usr,}/bin(N-/)
+    /usr/local/kui-avconv/bin(N-/)
 )
 
 [ -z "$sudo_path" ] && typeset -xT SUDO_PATH sudo_path
 sudo_path=(
-  /opt/local/sbin(N-/)
-  {,/usr/pkg,/usr/local,/usr}/sbin(N-/)
-  $sudo_path $path
+    /opt/local/sbin(N-/)
+    {,/usr/pkg,/usr/local,/usr}/sbin(N-/)
+    $sudo_path $path
 )
 
 [ -z "$ld_library_path" ] && typeset -xT LD_LIBRARY_PATH ld_library_path
 ld_library_path=(
-  /usr/local/kui-avconv/lib(N-/)
-  /opt/local/lib(N-/)
-  $ld_library_path
+    /usr/local/kui-avconv/lib(N-/)
+    /opt/local/lib(N-/)
+    $ld_library_path
 )
 
 [ -z "$include" ] && typeset -xT INCLUDE include
 include=(
-  /usr/local/kui-avconv/include(N-/)
-  /opt/local/include
-  $include
+    /usr/local/kui-avconv/include(N-/)
+    /opt/local/include
+    $include
 )
 
 [ -z "$fpath" ] && typeset -xT FPATH include
 fpath=(
-  {$HOME/.rvm,/usr/local/rvm}/scripts/zsh/Completion(N-/)
-  $HOME/.zshrc.d/grunt-zsh-completion(N-/)
-  $HOME/.zshrc.d/completion(N-/)
-  $HOME/.zshrc.d/zsh-completions/src(N-/)
-  $fpath)
+    {$HOME/.rvm,/usr/local/rvm}/scripts/zsh/Completion(N-/)
+    $HOME/.zshrc.d/grunt-zsh-completion(N-/)
+    $HOME/.zshrc.d/completion(N-/)
+    $HOME/.zshrc.d/zsh-completions/src(N-/)
+    $fpath)
 
 if [ $TERM = "xterm" ] && infocmp xterm-256color &>/dev/null
 then
-  export TERM="xterm-256color"
+    export TERM="xterm-256color"
 fi
 
 # 表示言語設定
@@ -104,21 +104,21 @@ autoload -U compinit
 compinit -u
 
 _cake(){
-  if [[ -f Cakefile ]]
-  then
-    compadd $(cake | grep '^cake ' | sed -e "s/cake \([^ ]*\) .*/\1/" | grep -v '^$')
-  fi
+    if [[ -f Cakefile ]]
+    then
+        compadd $(cake | grep '^cake ' | sed -e "s/cake \([^ ]*\) .*/\1/" | grep -v '^$')
+    fi
 }
 compdef _cake cake
 
 # reffer https://github.com/RiotGames/berkshelf/blob/master/berkshelf-complete.sh
 _berks(){
-  compadd $(berks help | grep -E '^ +berks' | cut -d' ' -f4)
+    compadd $(berks help | grep -E '^ +berks' | cut -d' ' -f4)
 }
 compdef _berks berks
 
 _kitchen(){
-  compadd $(kitchen help | grep -E '^ +kitchen' | cut -d' ' -f4)
+    compadd $(kitchen help | grep -E '^ +kitchen' | cut -d' ' -f4)
 }
 compdef _kitchen kitchen
 
@@ -127,21 +127,21 @@ compdef _kitchen kitchen
 
 # MacPorts coreutils aliases
 if which port &>/dev/null; then
-  # coreutils
-  cmds=(base64 basename cat chcon chgrp chmod chown chroot cksum comm
-        cp csplit cut date dd df dir dircolors dirname du echo env expand
-        expr factor false fmt fold groups head hostid id install join kill
-        link ln logname md5sum mkdir mkfifo mknod mktemp mv nice nl nohup
-        nproc numfmt od paste pathchk pinky pr printenv printf ptx pwd
-        readlink realpath rm rmdir runcon seq sha1sum sha224sum sha256sum
-        sha384sum sha512sum shred shuf sleep sort split stat stdbuf stty
-        sum sync tac tail tee test timeout touch tr true truncate tsort tty
-        uname unexpand uniq unlink uptime users vdir wc who whoami yes)
-  # findutils, gsed
-  cmds=(find locate ldfind updatedb xargs sed $cmds)
-  for cmd in "${cmds[@]}"
-  do which "g$cmd" &>/dev/null && alias "$cmd=g$cmd"
-  done
+    # coreutils
+    cmds=(base64 basename cat chcon chgrp chmod chown chroot cksum comm
+          cp csplit cut date dd df dir dircolors dirname du echo env expand
+          expr factor false fmt fold groups head hostid id install join kill
+          link ln logname md5sum mkdir mkfifo mknod mktemp mv nice nl nohup
+          nproc numfmt od paste pathchk pinky pr printenv printf ptx pwd
+          readlink realpath rm rmdir runcon seq sha1sum sha224sum sha256sum
+          sha384sum sha512sum shred shuf sleep sort split stat stdbuf stty
+          sum sync tac tail tee test timeout touch tr true truncate tsort tty
+          uname unexpand uniq unlink uptime users vdir wc who whoami yes)
+    # findutils, gsed
+    cmds=(find locate ldfind updatedb xargs sed $cmds)
+    for cmd in "${cmds[@]}"
+    do which "g$cmd" &>/dev/null && alias "$cmd=g$cmd"
+    done
 fi
 
 alias less="less -R"
@@ -154,62 +154,62 @@ fi
 
 if which tmux &> /dev/null
 then
-  alias t="tmux new-window"
+    alias t="tmux new-window"
 fi
 
 eval $(dircolors)
 
 # HTTPサーバを立ち上げる
 function serve(){
-  local port=${SERVE_PORT:-8007}
+    local port=${SERVE_PORT:-8007}
 
-  local current_dir="$(pwd)"
-  local dir file
-  if [[ $# -eq 0 ]]; then
-    # no-op
-  elif [[ -d "$1" ]]; then
-    dir="$1"
-  elif [[ -f "$1" ]]; then
-    dir="$(dirname "$1")"
-    file="$(basename "$1")"
-  else
-    echo "Not Found $1" >&2
-    return 1
-  fi
+    local current_dir="$(pwd)"
+    local dir file
+    if [[ $# -eq 0 ]]; then
+        # no-op
+    elif [[ -d "$1" ]]; then
+        dir="$1"
+    elif [[ -f "$1" ]]; then
+        dir="$(dirname "$1")"
+        file="$(basename "$1")"
+    else
+        echo "Not Found $1" >&2
+        return 1
+    fi
 
-  if [[ -n "$dir" ]]
-  then
-    color_echo green "Serve $dir"
-    cd "$dir"
-  else
-    color_echo green "Serve the current directory"
-  fi
-  python -m SimpleHTTPServer $port &
-  cd "${current_dir}"
+    if [[ -n "$dir" ]]
+    then
+        color_echo green "Serve $dir"
+        cd "$dir"
+    else
+        color_echo green "Serve the current directory"
+    fi
+    python -m SimpleHTTPServer $port &
+    cd "${current_dir}"
 
-  local url="http://localhost:$port/$file"
-  color_echo green "Open $url"
-  if which sensible-browser &> /dev/null; then
-    sensible-browser "$url"
-  elif which xdg-open &> /dev/null; then
-    xdg-open "$url"
-  fi
+    local url="http://localhost:$port/$file"
+    color_echo green "Open $url"
+    if which sensible-browser &> /dev/null; then
+        sensible-browser "$url"
+    elif which xdg-open &> /dev/null; then
+        xdg-open "$url"
+    fi
 
-  fg
+    fg
 }
 alias http-serve=serve
 
 list_parents() {
-  local p="${1:=$PWD}"
-  printf "$p\n"
-  if [[ "$p" != "/" ]]; then
-    list_parents "$(dirname "$p")"
-  fi
+    local p="${1:=$PWD}"
+    printf "$p\n"
+    if [[ "$p" != "/" ]]; then
+        list_parents "$(dirname "$p")"
+    fi
 }
 
 if which emacsclientw &> /dev/null; then
-  alias e="emacsclientw --no-wait"
-  export EDITOR=emacsclientw
+    alias e="emacsclientw --no-wait"
+    export EDITOR=emacsclientw
 fi
 
 if clipboard test &>/dev/null; then
@@ -222,17 +222,17 @@ fi
 
 ## 色一覧
 color_list(){
-  for c in {000..015}
-  do
-    echo -n "\e[38;5;${c}m $c"
-    [[ $((c%8)) -eq 7 ]] && echo
-  done
+    for c in {000..015}
+    do
+        echo -n "\e[38;5;${c}m $c"
+        [[ $((c%8)) -eq 7 ]] && echo
+    done
 
-  for c in {016..255}
-  do
-    echo -n "\e[38;5;${c}m $c"
-    [[ $(((c-16)%6)) -eq 5 ]] && echo
-  done
+    for c in {016..255}
+    do
+        echo -n "\e[38;5;${c}m $c"
+        [[ $(((c-16)%6)) -eq 5 ]] && echo
+    done
 }
 
 # open
@@ -242,34 +242,34 @@ fi
 alias o=open
 
 color_echo(){
-  if [[ $# -lt 1 ]]
-  then
-    (
-      echo "usage: $0 COLOR [string...]"
-      echo "  COLOR: black, gray, red, green, blue, brown, purple, cyan, [0-7]"
-      echo "sample 1: $0 red foo"
-      echo "sample 2: $0 1 foo"
-    ) >&2
-    return 1
-  fi
+    if [[ $# -lt 1 ]]
+    then
+        (
+            echo "usage: $0 COLOR [string...]"
+            echo "  COLOR: black, gray, red, green, blue, brown, purple, cyan, [0-7]"
+            echo "sample 1: $0 red foo"
+            echo "sample 2: $0 1 foo"
+        ) >&2
+        return 1
+    fi
 
-  local c="$1"; shift
-  case "$c" in
-    black)  c="0";;
-    red)    c="1";;
-    green)  c="2";;
-    brown)  c="3";;
-    blue)   c="4";;
-    purple) c="5";;
-    cyan)   c="6";;
-    gray)   c="7";;
-    [1-7])  ;; # no-op
-    *)
-      echo "unknown COLOR: $c"
-      return 1
-  esac
+    local c="$1"; shift
+    case "$c" in
+        black)  c="0";;
+        red)    c="1";;
+        green)  c="2";;
+        brown)  c="3";;
+        blue)   c="4";;
+        purple) c="5";;
+        cyan)   c="6";;
+        gray)   c="7";;
+        [1-7])  ;; # no-op
+        *)
+            echo "unknown COLOR: $c"
+            return 1
+    esac
 
-  echo "\e[3${c}m$@\e[39m"
+    echo "\e[3${c}m$@\e[39m"
 }
 
 ## 256色生成用便利関数
@@ -277,25 +277,25 @@ color_echo(){
 ### green: 0-5
 ### blue: 0-5
 color256(){
-  echo -n $(($1 * 36 + $2 * 6 + $3 + 16))
+    echo -n $(($1 * 36 + $2 * 6 + $3 + 16))
 }
 
 color256_echo(){
-  if [[ $# -lt 3 ]]
-  then
-    (
-      echo "usage: $0 RED GREEN BLUE [string...]"
-      echo "  RED, GREEN, BLUE: 0-5"
-      echo "sample: $0 0 5 5 foo"
-    ) >&2
-    return 1
-  fi
+    if [[ $# -lt 3 ]]
+    then
+        (
+            echo "usage: $0 RED GREEN BLUE [string...]"
+            echo "  RED, GREEN, BLUE: 0-5"
+            echo "sample: $0 0 5 5 foo"
+        ) >&2
+        return 1
+    fi
 
-  local r=$1; shift
-  local g=$1; shift
-  local b=$1; shift
+    local r=$1; shift
+    local g=$1; shift
+    local b=$1; shift
 
-  echo "\e[38;5;$(color256 $r $g $b)m$@\e[39m"
+    echo "\e[38;5;$(color256 $r $g $b)m$@\e[39m"
 }
 
 #####################################################################
@@ -319,24 +319,24 @@ zstyle ':vcs_info:*' stagedstr "+"
 zstyle ':vcs_info:bzr:*' use-simple true
 
 color256(){
-  echo -n $(($1 * 36 + $2 * 6 + $3 + 16))
+    echo -n $(($1 * 36 + $2 * 6 + $3 + 16))
 }
 
 ansi_brightness() {
-  if [[ 16 -le $1 && $1 -le 231 ]]; then
-    local base=$(($1 - 16))
-    local r=$((base / 36)) \
-          g=$((base % 36 / 6)) \
-          b=$((base % 6))
-    printf '%f\n' $((r/5.0*299 + g/5.0*587 + b/5.0*114))
-    return 0
-  elif [[ 232 -le $1 && $1 -le 255 ]]; then
-    printf '%f\n' $((255 * ($1 - 232) / (255 - 232)))
-    return 0
-  else
-    echo "Invalid ANSI Color Code: $1" 2>/dev/null
-    return 1
-  fi
+    if [[ 16 -le $1 && $1 -le 231 ]]; then
+        local base=$(($1 - 16))
+        local r=$((base / 36)) \
+              g=$((base % 36 / 6)) \
+              b=$((base % 6))
+        printf '%f\n' $((r/5.0*299 + g/5.0*587 + b/5.0*114))
+        return 0
+    elif [[ 232 -le $1 && $1 -le 255 ]]; then
+        printf '%f\n' $((255 * ($1 - 232) / (255 - 232)))
+        return 0
+    else
+        echo "Invalid ANSI Color Code: $1" 2>/dev/null
+        return 1
+    fi
 }
 
 # 16 色環境向け
@@ -344,60 +344,60 @@ color_codes=(1 2 4 5 6 9 10 12 13 14)
 
 # 256 色環境向け
 if [ "$(echotc Co)" = "256" ]; then
-  color_codes=()
-  for c in {16..255}; do
-    b=$(ansi_brightness $c)
-    # if [[ $b -le 500 ]] # デフォルトバックグラウンドが明るい色の時
-    if [[ $b -ge 500 ]] # デフォルトバックグラウンドが暗い色の時
-    then color_codes=($color_codes $c)
-    fi
-  done
+    color_codes=()
+    for c in {16..255}; do
+        b=$(ansi_brightness $c)
+        # if [[ $b -le 500 ]] # デフォルトバックグラウンドが明るい色の時
+        if [[ $b -ge 500 ]] # デフォルトバックグラウンドが暗い色の時
+        then color_codes=($color_codes $c)
+        fi
+    done
 fi
 export color_codes
 
 color_code_from_str() {
-  local h=$(sum <<< "$1" | cut -f1 -d' ')
-  local i=$((h % ${#color_codes}))
-  printf ${color_codes[i]}
+    local h=$(sum <<< "$1" | cut -f1 -d' ')
+    local i=$((h % ${#color_codes}))
+    printf ${color_codes[i]}
 }
 
 typeset -agx prompt_opts
 
 echo_job_info() {
-  print -n '%(1j.%f:%F{red}jobs/%j .)'
+    print -n '%(1j.%f:%F{red}jobs/%j .)'
 }
 prompt_opts+=echo_job_info
 
 echo_vcs_info() {
-  vcs_info
-  print -n "$vcs_info_msg_0_"
+    vcs_info
+    print -n "$vcs_info_msg_0_"
 }
 prompt_opts+=echo_vcs_info
 
 echo_rbenv_version() {
-  type rbenv &>/dev/null || return
+    type rbenv &>/dev/null || return
 
-  local v=$(rbenv version-name)
-  if [[ "$v" != 'system' ]]; then
-    print -n "%f:%F{196}rbenv/$v "
-  fi
+    local v=$(rbenv version-name)
+    if [[ "$v" != 'system' ]]; then
+        print -n "%f:%F{196}rbenv/$v "
+    fi
 }
 prompt_opts+=echo_rbenv_version
 
 echo_pyenv_version() {
-  type pyenv &>/dev/null || return
+    type pyenv &>/dev/null || return
 
-  local v=$(pyenv version-name)
-  if [[ "$v" != 'system' ]]; then
-    print -n "%f:%F{166}pyenv/$v "
-  fi
+    local v=$(pyenv version-name)
+    if [[ "$v" != 'system' ]]; then
+        print -n "%f:%F{166}pyenv/$v "
+    fi
 }
 prompt_opts+=echo_pyenv_version
 
 user="%F{$(color_code_from_str "$USER")}%n"
 host="%F{$(color_code_from_str "$HOST")}%m"
 if [[ -n "$TMUX" ]]; then
-  host="$host%f[%F{green}$(tmux display-message -p '#I.#P')%f]"
+    host="$host%f[%F{green}$(tmux display-message -p '#I.#P')%f]"
 fi
 PROMPT='%(?.%F{243}.%F{red})%U${(l:COLUMNS:: :)?}%u
 '"$user"'%f@'"$host"'%f:%F{yellow}%~ $(for f in "${prompt_opts[@]}"; "$f")
@@ -406,9 +406,9 @@ PROMPT='%(?.%F{243}.%F{red})%U${(l:COLUMNS:: :)?}%u
 ############################################################
 ##  screen の window タイトルを設定
 update_screen_title() {
-  local shell="$(basename "$SHELL")"
-  local dir="$(basename $(print -P '%~'))"
-  screen -X title "${shell}#${dir}"
+    local shell="$(basename "$SHELL")"
+    local dir="$(basename $(print -P '%~'))"
+    screen -X title "${shell}#${dir}"
 }
 [ "$STY" ] && precmd_functions=($precmd_functions update_screen_title)
 
@@ -516,41 +516,41 @@ zstyle ':completion:sudo:*' environ PATH="$SUDO_PATH:$PATH"
 
 # エンターキー入力時の挙動
 do_enter() {
-  if [[ -n "$BUFFER" ]]
-  then
-    zle accept-line
+    if [[ -n "$BUFFER" ]]
+    then
+        zle accept-line
+        return 0
+    fi
+
+    echo
+
+    local threshold=20
+    if [[ $(ls -A1 | wc -l) -lt $threshold ]]
+    then ls -Ahl
+    elif [[ $(ls -1 | wc -l) -lt $threshold ]]
+    then ls -hl
+    else ls
+    fi
+
+    if [[ -n "$VCS_NAME" ]]
+    then
+        echo
+        echo -e "\e[0;33m### $VCS_NAME status #################\e[0m"
+        case "$VCS_NAME" in
+            git | svn ) which "$VCS_NAME" > /dev/null 2>&1 && "$VCS_NAME" status ;;
+        esac
+    fi
+
+    if [[ $( jobs | wc -l ) -gt 0 ]]
+    then
+        echo
+        echo -e "\e[0;33m### jobs #############################\e[0m"
+        jobs
+    fi
+
+    echo -e "\n\n"
+    zle reset-prompt
     return 0
-  fi
-
-  echo
-
-  local threshold=20
-  if [[ $(ls -A1 | wc -l) -lt $threshold ]]
-  then ls -Ahl
-  elif [[ $(ls -1 | wc -l) -lt $threshold ]]
-  then ls -hl
-  else ls
-  fi
-
-  if [[ -n "$VCS_NAME" ]]
-  then
-    echo
-    echo -e "\e[0;33m### $VCS_NAME status #################\e[0m"
-    case "$VCS_NAME" in
-      git | svn ) which "$VCS_NAME" > /dev/null 2>&1 && "$VCS_NAME" status ;;
-    esac
-  fi
-
-  if [[ $( jobs | wc -l ) -gt 0 ]]
-  then
-    echo
-    echo -e "\e[0;33m### jobs #############################\e[0m"
-    jobs
-  fi
-
-  echo -e "\n\n"
-  zle reset-prompt
-  return 0
 }
 zle -N do_enter
 bindkey '^m' do_enter
@@ -568,51 +568,51 @@ unset timetrack_start
 unset timetrack_command
 
 function preexec_start_timetrack() {
-  export timetrack_command="$1"
-  export timetrack_start="`date +%s`"
+    export timetrack_command="$1"
+    export timetrack_start="`date +%s`"
 }
 
 function preexec_end_timetrack() {
-  local command="$timetrack_command"
-  local exec_time
-  local message
+    local command="$timetrack_command"
+    local exec_time
+    local message
 
-  if [[ -z "$DISPLAY" || \
+    if [[ -z "$DISPLAY" || \
           -z "$timetrack_start" || \
           -z "$timetrack_threshold" ]]
-  then return
-  fi
-
-  if [[ -z "$command" ]]
-  then command="<UNKNOWN>"
-  fi
-
-  export timetrack_end=`date +%s`
-
-  exec_time="$(( timetrack_end - timetrack_start ))"
-
-  if [[ "$exec_time" -ge "$timetrack_threshold" ]]
-  then
-    message="Time: $exec_time seconds\nCOMMAND: $command"
-
-    if which growlnotify &>/dev/null
-    then echo "$message" | growlnotify -n "ZSH timetracker" --appIcon Terminal
-    elif which notify-send &>/dev/null
-    then notify-send --icon=terminal "Command finished" "$message"
+    then return
     fi
 
-    echo $'\a'
-  fi
+    if [[ -z "$command" ]]
+    then command="<UNKNOWN>"
+    fi
 
-  unset timetrack_start
-  unset timetrack_command
+    export timetrack_end=`date +%s`
+
+    exec_time="$(( timetrack_end - timetrack_start ))"
+
+    if [[ "$exec_time" -ge "$timetrack_threshold" ]]
+    then
+        message="Time: $exec_time seconds\nCOMMAND: $command"
+
+        if which growlnotify &>/dev/null
+        then echo "$message" | growlnotify -n "ZSH timetracker" --appIcon Terminal
+        elif which notify-send &>/dev/null
+        then notify-send --icon=terminal "Command finished" "$message"
+        fi
+
+        echo $'\a'
+    fi
+
+    unset timetrack_start
+    unset timetrack_command
 }
 
 if ( which growlnotify &>/dev/null || which notify-send &>/dev/null ) &&
-     autoload -U add-zsh-hook 2>/dev/null
+       autoload -U add-zsh-hook 2>/dev/null
 then
-  add-zsh-hook preexec preexec_start_timetrack
-  add-zsh-hook precmd preexec_end_timetrack
+    add-zsh-hook preexec preexec_start_timetrack
+    add-zsh-hook precmd preexec_end_timetrack
 fi
 
 ## マシンごとの設定
@@ -622,20 +622,20 @@ source ~/.zshrc.local
 ## rbenv
 if which rbenv &> /dev/null && ! which rvm &> /dev/null
 then
-  echo load rbenv
-  eval "$(rbenv init - zsh)"
+    echo load rbenv
+    eval "$(rbenv init - zsh)"
 fi
 
 # zaw
 if source_if_exist "$HOME/.zshrc.d/zaw/zaw.zsh"
 then
-  bindkey "^o"   zaw-cdr
-  bindkey "^x^f" zaw-open-file
-  bindkey "^r"   zaw-history
-  bindkey "^xp"  zaw-process
-  bindkey "^xb"  zaw-git-branches
+    bindkey "^o"   zaw-cdr
+    bindkey "^x^f" zaw-open-file
+    bindkey "^r"   zaw-history
+    bindkey "^xp"  zaw-process
+    bindkey "^xb"  zaw-git-branches
 
-  zstyle ':filter-select' case-insensitive yes
+    zstyle ':filter-select' case-insensitive yes
 fi
 
 # syntax-highligting
