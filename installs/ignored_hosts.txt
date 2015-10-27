@@ -32,6 +32,7 @@ c.one.impact-ad.jp
 c.scorecardresearch.com
 c.socdm.com
 cas.criteo.com
+cas.jp.as.criteo.com
 cdn.ad.maist.jp
 cdn.adnxs.com
 cdn.adsrv247.com
@@ -62,6 +63,7 @@ image.ias.rakuten.co.jp
 img.adplan-ds.com
 img.ak.impact-ad.jp
 imp.asahi.com
+j.microad.net
 j.one.impact-ad.jp
 j.socdm.com
 jp-ads.mediaforge.com
