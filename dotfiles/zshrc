@@ -48,10 +48,10 @@ fi
 ##
 typeset -U path sudo_path ld_library_path include
 path=(
-  $HOME/.{setting,dotfile}s/bin(N-/)
+  $HOME/.{settings,dotfiles}/bin(N-/)
   $HOME/{.rvm,.rbenv,local,.local}/bin(N-/)
   $HOME/.nodebrew/current/bin(N-/)
-  ./node_modules/.bin
+  # ./node_modules/.bin
   $GEM_HOME/bin(N-/)
   /opt/local/bin(N-/)
   $path
