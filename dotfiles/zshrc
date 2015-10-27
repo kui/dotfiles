@@ -125,8 +125,8 @@ compdef _kitchen kitchen
 ############################################################
 ## alias, funcction の設定
 
-# MacPorts coreutils aliases
-if which port &>/dev/null; then
+# MacPorts/Homebrew coreutils aliases
+if which port &>/dev/null || which brew &>/dev/null; then
     # coreutils
     cmds=(base64 basename cat chcon chgrp chmod chown chroot cksum comm
           cp csplit cut date dd df dir dircolors dirname du echo env expand
