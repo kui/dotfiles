@@ -49,8 +49,9 @@
       auto-save-list-file-prefix emacs-bk-dir)
 
 ;; http://emacsformacosx.com/ 向け設定
-(setq ns-command-modifier   'meta
-      ns-alternate-modifier 'super)
+(when (equal window-system "mac")
+  (defvar ns-command-modifier   'meta)
+  (defvar ns-alternate-modifier 'super))
 
 ;; ロックファイル(.#で始まるファイル) を無効化
 (setq create-lockfiles nil)
