@@ -213,10 +213,11 @@ if which emacsclientw &> /dev/null; then
 fi
 
 if clipboard test &>/dev/null; then
-  if which tmux &>/dev/null; then
-    tmux bind -temacs-copy C-w copy-pipe 'clipboard copy'
-    tmux bind -temacs-copy M-w copy-pipe 'clipboard copy'
-  fi
+    if which tmux &>/dev/null; then
+        tmux bind C-y run 'clipboard paste | tmux load-buffer - && tmux paste-buffer'
+        tmux bind -temacs-copy C-w copy-pipe 'clipboard copy'
+        tmux bind -temacs-copy M-w copy-pipe 'clipboard copy'
+    fi
 fi
 
 ## 色一覧
