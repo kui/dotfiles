@@ -42,6 +42,8 @@ if which apt-get &> /dev/null; then
 elif which yum &> /dev/null; then
     sudo yum install gcc-c++ glibc-headers openssl-devel readline \
         libyaml-devel readline-devel zlib zlib-devel
+elif which brew &> /dev/null; then
+    brew install openssl libyaml pkg-config autoconf
 elif which port &> /dev/null; then
     port install openssl libyaml
 else
