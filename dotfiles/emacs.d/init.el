@@ -753,10 +753,8 @@ but if not, return nil."
 (define-key lisp-interaction-mode-map "\C-cdf" 'describe-function)
 (define-key lisp-interaction-mode-map "\C-cdv" 'describe-variable)
 
-;; markdown-mode
-;; 読み込めたら *scratch* に使うから kui/autoload-if-exist じゃなくて require
 (kui/with-pkg 'markdown-mode
-  (defun kui/markdown-init-set-values ()
+  (defun kui/markdown-init ()
     ;; (set (make-variable-buffer-local 'indent-tabs-mode) nil)
     (set (make-variable-buffer-local 'tab-width) 4)
     (set (make-variable-buffer-local 'whitespace-style)
@@ -771,16 +769,17 @@ but if not, return nil."
            space-after-tab
            ))
     (electric-indent-local-mode -1))
-  (add-hook 'markdown-mode-hook 'kui/markdown-init-set-values)
+  (add-hook 'markdown-mode-hook 'kui/markdown-init)
 
   ;; *scratch* 関連を更新
   (setq
    ;; *scratch* の major-mode
    initial-major-mode 'markdown-mode
-
    ;; *scratch* の初期文字列
    initial-scratch-message "Scratch\n========\n\n")
   )
+
+(kui/with-pkg 'jekyll-modes)
 
 ;; yaml-mode
 (kui/with-lib "yaml-mode"
