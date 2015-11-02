@@ -860,27 +860,32 @@ but if not, return nil."
 (kui/with-lib "scss-mode"
   (setq scss-compile-at-save nil))
 
-;; js-mode
+;; javascript
+(defun kui/find-node-modules-bin (binname)
+  "Find executable file named BINNAME from the node_modules directory"
+  (let* ((moddir (kui/traverse-parents-for "node_modules"))
+         (bin (if moddir (format "%s/.bin/%s" moddir binname))))
+    (if (file-executable-p bin) bin)))
+(kui/with-lib "flycheck"
+  (defun kui/flycheck-set-node-modules-bin (checker binname)
+    (let* ((bin (kui/find-node-modules-bin binname)))
+      (when bin
+        (message "auto-detect %s: %s" binname bin)
+        (flycheck-set-checker-executable checker bin))))
+  (defun kui/flycheck-init-js ()
+    ;; use jshint/eslint in node_modules/.bin
+    (kui/flycheck-set-node-modules-bin 'javascript-jshint "jshint")
+    (kui/flycheck-set-node-modules-bin 'javascript-eslint "eslint")
+    ;; disable jshint if eslint can be used
+    (when (flycheck-may-use-checker 'javascript-eslint)
+      (message "disale jshint on flycheck")
+      (flycheck-disable-checker 'javascript-jshint)))
+  (add-hook 'js-mode-hook 'kui/flycheck-init-js)
+  (add-hook 'js2-mode-hook 'kui/flycheck-init-js))
 (kui/after-loaded "js"
-  (setq js-indent-level 2)
-
-  (defun kui/find-node-modules-bin (binname)
-    "Find executable file named BINNAME from the node_modules directory"
-    (let* ((moddir (kui/traverse-parents-for "node_modules"))
-           (bin (if moddir (format "%s/.bin/%s" moddir binname))))
-      (if (file-executable-p bin) bin)))
-
-  (kui/with-lib "flycheck"
-    (defun kui/flycheck-set-node-modules-bin (checker binname)
-      (let* ((bin (kui/find-node-modules-bin binname)))
-        (when bin
-          (message "auto-detect %s: %s" binname bin)
-          (flycheck-set-checker-executable checker bin))))
-    (defun kui/flycheck-set-checker-executable-from-node-modules ()
-      (kui/flycheck-set-node-modules-bin 'javascript-jshint "jshint")
-      (kui/flycheck-set-node-modules-bin 'javascript-eslint "eslint"))
-    (add-hook 'js-mode-hook 'kui/flycheck-set-checker-executable-from-node-modules))
-  )
+  (setq js-indent-level 2))
+(kui/with-pkg 'js2-mode
+  (add-to-list 'auto-mode-alist '("\\.js\\'"  . js2-mode)))
 
 ;; html-mode
 (kui/add-to-list-if-exist 'ac-modes 'html-mode)
