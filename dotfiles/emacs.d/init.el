@@ -49,7 +49,7 @@
       auto-save-list-file-prefix emacs-bk-dir)
 
 ;; http://emacsformacosx.com/ 向け設定
-(when (equal window-system "mac")
+(when (string= window-system "ns")
   (defvar ns-command-modifier   'meta)
   (defvar ns-alternate-modifier 'super))
 

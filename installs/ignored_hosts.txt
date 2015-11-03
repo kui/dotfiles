@@ -1,4 +1,5 @@
 2mdn.net
+a.iogous.com
 a.one.impact-ad.jp
 a.scorecardresearch.com
 a.scorecardresearch.com
@@ -21,6 +22,7 @@ ai.yimg.jp
 anz.rd.rakuten.co.jp
 ard.yahoo.co.jp
 as.dc.impact-ad.jp
+b.iogous.com
 b.one.impact-ad.jp
 b.scorecardresearch.com
 b.scorecardresearch.com
@@ -64,6 +66,7 @@ img.adplan-ds.com
 img.ak.impact-ad.jp
 imp.asahi.com
 j.microad.net
+j.microad.net
 j.one.impact-ad.jp
 j.socdm.com
 jp-ads.mediaforge.com
@@ -104,6 +107,7 @@ sin1.g.adnxs.com
 spad.i-mobile.co.jp
 spdeliver.i-mobile.co.jp
 spnet5.i-mobile.co.jp
+ssp.send.microad.jp
 stat.vidcore.tv
 static.jp.as.criteo.net
 sync.ad-stir.com
