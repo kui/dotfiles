@@ -50,8 +50,8 @@
 
 ;; http://emacsformacosx.com/ 向け設定
 (when (string= window-system "ns")
-  (defvar ns-command-modifier   'meta)
-  (defvar ns-alternate-modifier 'super))
+  (setq ns-command-modifier   'meta
+        ns-alternate-modifier 'super))
 
 ;; ロックファイル(.#で始まるファイル) を無効化
 (setq create-lockfiles nil)
