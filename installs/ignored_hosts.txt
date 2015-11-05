@@ -8,6 +8,7 @@ a.yieldsquare.com
 ad-stir.com
 ad.ad-stir.com
 ad.adlantis.jp
+ad.fout.jp
 ad.maist.jp
 ad.yieldmanager.com
 adm.shinobi.jp
@@ -28,6 +29,7 @@ b.scorecardresearch.com
 b.scorecardresearch.com
 b.socdm.com
 b.voicefive.com
+banner.dspcdn.com
 bid.g.doubleclick.net
 bn.maist.jp
 c.one.impact-ad.jp
