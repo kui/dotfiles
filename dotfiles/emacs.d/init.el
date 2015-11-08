@@ -885,6 +885,7 @@ but if not, return nil."
 (kui/after-loaded "js"
   (setq js-indent-level 2))
 (kui/with-pkg 'js2-mode
+  (js2-mode-hide-warnings-and-errors)
   (add-to-list 'auto-mode-alist '("\\.js\\'"  . js2-mode)))
 
 ;; html-mode
