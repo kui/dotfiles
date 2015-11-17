@@ -519,7 +519,7 @@ but if not, return nil."
 
 ;; editorconfig
 (kui/with-pkg 'editorconfig
-  ;;...
+  (editorconfig-mode 1)
   )
 
 ;; gude-key
