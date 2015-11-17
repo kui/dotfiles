@@ -1,8 +1,8 @@
 #!/usr/bin/python
- 
+
 # Install script
 # curl -o pixels-fortune https://gist.githubusercontent.com/kui/c0f4b48d143b7af19018/raw/pixels-fortune.py && chmod +x pixels-fortune
- 
+
 # How to add PIXELS.
 # 1. Edit on https://kui.github.io/ansi_pixels/
 # 2. Copy and paste the hash(#) in URL
@@ -12,28 +12,37 @@
 PIXELS = [
     # Ansi Pixels Logo
     "eAGrVirIrEjNCc6sSlWyMjXQUUpKd87PyS9SslIKcndy1DDQUYAiPQtNJR2lNLh0eEZmSSpQJBnEDy5ITAYaoGRkagYUystPL8pMKVayKikqTdWB2ADkRUcb6MBhrA6YZwaEMB6YBSKhPAhElTOF6oOZElsLAJ-TMsM=",
- 
+
     # Coffin (Dragon Quest)
     "eAGrVirIrEjNCc6sSlWyMjbWUUpKd87PyS9SslIKcndy1DDQUYAiPQtNJR2lNLh0eEZmSSpQJBnEDy5ITAYaoGRkagYUystPL8pMKVayKikqTdWB2ADkRUcbmumQjmJ1hqY-cyPcmJB2oBpTbAinYQjdEK2WJjpGRmYgChlhMw2mFWoaVCMyRjMEjpC1m8J1GxoYgHWBaBAmUjeqAdjUomFTFO0Qz-ELcyyBiaIdM3hMjRBSyEGIFNpwm3H5Eoc-uJ-xKkR1JGbSwp40BmEWIFpfbC0ANoLx_A==",
- 
+
     # Mosquito (Metal Max)
     "eAGtVM8LwiAU_lfinQokTKHGbtWhex06RId-rDUYLVZBFP3vudTh3DQd49vUOd_33vee-oZr8ozSVfKKIByNEezjeZZmOYSwXMymfYx64hkGA0BwKn-vz8k9YjOH4nt13R0YAQRs4pLFeXK8QXjPHxHi_Oxrs7k80hS1bPAP3nZb5OwVCxDxdu8GI8rA-Ym3nhZSquiKvcEZVzNhMOrydSCjlimTY51c8tb1UmHBGSQa7IvIiyW0RNVYnXd1LqtMtLF7UrAIW7Wn4q3tHwMR16FGpQOXqowUaj5NYEQW-4mogRq-ih-zRYKUa_JNrP6Jso5qbfV02Mthg1s5lIBsgtzCoZpzvf9T13qGiLF3JGrccnqW2t5n8oBWW58D5Vnapjts-_kCVMQmQw==",
- 
+
     # Pac-Man
     "eAHNlD0LwjAQhv-K3KQQJLUSpZs6uNvBoXTwo2qhWLEOovjfTWnSpElOCyrI2-HNXXkuXK93h1N6TbIwvSUQDCiB9X6WZ_kZAljMp5MuJR3x9Mc9ILCr08tDekl4ZFOew9NqwwEw5oFjvj-n2wKC3SorElIV4McoouRniklN92u53_WEMBYTsum-JTcZq8AM6XSb3eSbbJNvsmt-C7pHRlySqrxilzFJVV7vO84fCUm29NTIS7b0za9q16hiQy5J1D018iVR9za9WaPqC0b3RF8wOmtxdw_tu6RjfWct-u6aF5OO6f3M_Dv91b_6DTq-ZxTJ5fTt4nDOibR3DO6otlcs14L-geL48QSYojuO",
- 
-    # Black Mage (Final Fantasy)
+
+    # Black Mage (Final Fantasy III)
     "eAGllEkLwjAQhf-KzEkhyGADSm_qwbsePIgHrW0thFZcQBT_u6maZhvrUl4pWb73kkxor7DLzrGYZZcYwl6fwTodF6LYQwjTyWjYRtZ6Pd1BBxgk1fR8mx1jORKV_dluFckAGMiBvEj32eYAYbISh5g9F5DdxSI_CcEav_ChsrlkzSPLrEAKG4Y9UwLW-zMJzYRfT6fNpd0NQEsmp0iF69nA4Xz2Fa0mfQOBG9txfRZfd350AuoXsy8ICfe7YmPlCDwXOgfiRnVVS43Z5eIMSXG6uvwhhZgicR_ysu2rRgem013W7tfsBL_FNYq1O3HwTxs3qoi_4bbhC9zM1SuiLiEnZZjoz1WJ_P8tb3dwlp-G",
- 
-    # White Mage (Final Fantasy)
+
+    # White Mage (Final Fantasy III)
     "eAGVk0uLwjAQx7-KzEkhLBN7qPS2etj7etiDePBRtRCs-ABx2e--bfNqJhNRpg1N5vf_5zHNL5yqe6nm1aOEYpwLWO9ntarPUMD31_RziGJgno_JCATsXPrnUF3LZmTT9uen1aYxgEkzcKz352p7gWK3UpdS6Ama7mJxvCkl3m_QRDi8FC_7aXluAt_w6OtCfULKCZ6JOBpTCptAMg1GOBpOmgjp_v4pGdIc2-azJ3Rgih2MRoIUDBabdW_mvpMnpwUezxyeqq1V2MCYJ0tCovFnHynaffoyxMWhbFwQJAtyoE3n5uSZevth7yedOHKUEchUTxJPJDJm4y9NTUH-dmhbzUqBbn6ZYO0btlrL_Akyit494W5oOjr35d8_NLtiZg==",
- 
+
+    # Magus (Final Fantasy III)
+    "eAGdVU1rwkAQ_StlTxWWUkXXJrfWQ-966EFysDbawGJEWygt_nc3JO7ufGQ2FCYh-_HevHk7Sf7Usfop7ar6LVU-mWn1vl_Utj6pXC1fX57vH_VdFw9PI6XVzi-_fVZfpZvZNuPVcbN1BGoyM27qUO9P1cdZ5buNPZe6TeGG6_Xh21ot38ami_5FPy50grHZP8_CZWIakzXRzSWpYnGBruXwMTYSDy3qRjacKCBElvY5ydKiuJK8RYjDHw-2lgqIa75xoEpjNigcKXZ4v4IQxDnOe5gfFMFRcfmBBx3JnHD1sdCDiDzET5CJ61CmDqolMjVVP00ZXjXvfd-ZCeZFeYXttAdC3p6XjUJA5xAsDqbfqdVkezZtYgge9kiAAkWSdgkdZJj_o7ESDj9QAOscKg4dnuA6tH5YwyQ-uyjkX0tRXK5bE9TK",
+
     # Locke (Final Fantasy VI)
     "eAGVlMtOwzAQRX8FeQWShRonTersgAV7umARdVFKWiJFTdWChED8Ox6_MhlPEZWch-05947Hcb7Fofts-2X31Yo6K6R42T0M_XAUtXh6vL-7nskr324XN0KKbZx-fuveWzOygf7ysN4YAaHmpRnaD7tj93oS9Xbdn1rpLEy3afYffS_JLSuZxgXCbSWbhCwKe80X0FCPlwkKZ0mVZ_E906kKErCh5qFUEEA6wGq6HOpehrBJJ5KzPNAIdEtjuGDu-pbl6lUpXLkSlcs3zYOwzHHR_G6l2do8dICtuQ6DsT5ciaKAg62AT30ioNEuMeyYuG8jWUVFmrP3yasAwdvoaqZtFVg4uAGCrymusARvDfM2ZkpTfwMbQBc-VXjxcAA15mIZHQcxmI2NjBCvGOCVITf3sYb1xiBaW_K5IIEyBdNdZf4e-Kzg_P8roPHZ4_9AZxTwIXAqxPkvBcLggl_sj4Uu4FM59km0Vj-_i96k9Q==",
+
+    # Cecil (Final Fantasy IV)
+    "eAG1lc9rwjAUx_-VkdMGYbRpWqW36WH3edhBenCuaqFY0Q3Gxv73pclLml82bXHgt5LEft73vReeP-hUfZX1qvouUU5SjN72y6ZuzihHL8-Lp_sI38Hncf6AMNqp49dD9VGynW27Xp02WwZAJM3Y1rHZn6v3C8p3m_pSYhGCLdfr42dd4_94FPiWbJKQSej2PSlnI6YzdRBkqpeilIlyZbFYMo7OCgJlcC7Oc5gGqw_YJRI7PM4S2AH-VHaOM5Nmk0I4ECEZl3I0LlkdZ6MYBkjsy2i3w_K10XBD1VHfNdH39d-qd5KZEJx19aT-Kyc9OQCQAbdAwYqBh3nEpXvWQ_Z0wI5urqleern0mnNtwHWDe2WzRWODKC009PB6oNSpv69fZnBJgjRjQrmuNtIeMmDMDqR5HT42VOM6D7ZGDmLjWhFqhLCrP5zY5i0qCGl6UcN5-qz13f9JWbMZksU3YUqclLSb-IblhOaE-zzp_3H0oyh-_wDhE3p3",
+
+    # Hero (Dragon Quest III)
+    "eAHVld9LwzAQx_8VyZNCkC0yG_rm9uC7e_Bh9EFn3QplHXUDUfzfTdukuSSXH5sICkmWXLvk07vvXT7Jvnov62X1UZKczSh53iyaumlJTh7u53eXE3oh2zW_IpS8jo8ft9WhFJZ1t17un9ZiA8Jmt8K0azZt9fJG8kN7LOlwglitVrtjXdN_MxTUBmY3U_tFlnUNTNXqpIFz3c6hOxksjRJipcIFuEaOztz3zGjhzRnH2w9pNIYF9Is0LohyiEmjLWnRmfIJYnXChmMolm4T-QOmEilNNJJDbaEtZ3inHywYewp85XeUF0pxOdHzh0ufbXdTReYfe4FoGNgHKxseBEGMnMHySKxh3Dw-GUkgFdNgofhkcHMfzDDzS4eP3wpOZTEGA8R4D6knVg7BEHkVoilYQtlzrwjNIjsUaIJI8HS2Ezta6XQ5w0ut5R3T21AYhmLhOhHByQ-cI3MRYFV1IsNiDOADfWmKlQ8sGEEKjz88wjBkG5N57PKBgki6iEJQf3Ioiq9vIIYi-g==",
 ]
- 
+
 import sys, base64, zlib, json, types, random
- 
+
 def main():
     px = select_pixels()
     m = convert(px)
@@ -41,10 +50,10 @@ def main():
         for code in row:
             sys.stdout.write('%s  ' % ansi_color(code))
         print(ansi_color(None))
- 
+
 def select_pixels():
     return PIXELS[random.randint(0, len(PIXELS) - 1)]
- 
+
 def convert(b64):
     zipped = base64.urlsafe_b64decode(b64)
     json_str = zlib.decompress(zipped)
@@ -55,11 +64,11 @@ def convert(b64):
         return j
     else:
         sys.exit('Invalid JSON: %s' % type(j))
- 
+
 def ansi_color(code):
     if code == None:
         return '\033[0m'
     else:
         return '\033[48;5;%dm' % code
- 
+
 main()
