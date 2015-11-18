@@ -2,6 +2,62 @@
 <root>
   <item>
     <name>kui</name>
+
+    <item>
+      <name>IDE (Eclipse, IntelliJ IDEA)</name>
+      <appendix>**IntelliJ IDEA**: you must set keymaps to "Eclipse (Mac OS X)"</appendix>
+      <appdef>
+        <appname>IDE</appname>
+        <equal>com.jetbrains.intellij</equal>
+        <equal>org.eclipse.platform.ide</equal>
+      </appdef>
+      <item>
+        <name>Command+X to Command+3 (Find Action)</name>
+        <identifier>kui.ide.commandX</identifier>
+        <modifier_not>
+          ModifierFlag::CONTROL_L, ModifierFlag::CONTROL_R,
+          ModifierFlag::OPTION_L,  ModifierFlag::OPTION_R,
+          ModifierFlag::SHIFT_L,   ModifierFlag::SHIFT_R,
+        </modifier_not>
+        <only>IDE</only>
+        <autogen>
+          __KeyToKey__
+          KeyCode::X, MODIFIERFLAG_EITHER_LEFT_OR_RIGHT_COMMAND,
+          KeyCode::KEY_3, MODIFIERFLAG_EITHER_LEFT_OR_RIGHT_COMMAND,
+        </autogen>
+      </item>
+      <item>
+        <name>Command+/ to Control+Space (Completion)</name>
+        <identifier>kui.ide.commandSlash</identifier>
+        <modifier_not>
+          ModifierFlag::CONTROL_L, ModifierFlag::CONTROL_R,
+          ModifierFlag::OPTION_L,  ModifierFlag::OPTION_R,
+          ModifierFlag::SHIFT_L,   ModifierFlag::SHIFT_R,
+        </modifier_not>
+        <only>IDE</only>
+        <autogen>
+          __KeyToKey__
+          KeyCode::SLASH, MODIFIERFLAG_EITHER_LEFT_OR_RIGHT_COMMAND,
+          KeyCode::SPACE, MODIFIERFLAG_EITHER_LEFT_OR_RIGHT_CONTROL,
+        </autogen>
+      </item>
+      <item>
+        <name>Command+; to Command+/ (Toggle comment)</name>
+        <identifier>kui.ide.commandSemicolon</identifier>
+        <modifier_not>
+          ModifierFlag::CONTROL_L, ModifierFlag::CONTROL_R,
+          ModifierFlag::OPTION_L,  ModifierFlag::OPTION_R,
+          ModifierFlag::SHIFT_L,   ModifierFlag::SHIFT_R,
+        </modifier_not>
+        <only>IDE</only>
+        <autogen>
+          __KeyToKey__
+          KeyCode::SEMICOLON, MODIFIERFLAG_EITHER_LEFT_OR_RIGHT_COMMAND,
+          KeyCode::SLASH, MODIFIERFLAG_EITHER_LEFT_OR_RIGHT_COMMAND,
+        </autogen>
+      </item>
+    </item>
+
     <item>
       <name>Thinkpad Keyboard</name>
       <devicevendordef>
