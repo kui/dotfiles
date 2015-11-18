@@ -2,9 +2,6 @@
 # -*- coding:utf-8 -*-
 set -eu
 
-MACPORTS_INSTALLS=(
-    git zsh curl wget coreutils findutils xz ctags gsed debianutils
-)
 HOMEBREW_INSTALLS=(
     git zsh curl wget coreutils findutils xz ctags gnu-sed debianutils
 )
@@ -12,18 +9,12 @@ UBUNTU_INSTALLS=(
     git zsh curl wget ssh build-essential xz-utils exuberant-ctags
 )
 BASE_DIR="$HOME/.dotfiles"
-LN=
-if which gln &>/dev/null
-then LN=gln
-else LN=ln
-fi
 
 main() {
     install_basics
-    if [[ -e "$BASE_DIR" ]];
-    then cd "$BASE_DIR"; run git push origin master
-    else run git clone git@github.com:kui/dotfiles.git "$BASE_DIR"
-    fi
+
+    git_clone_or_pull git@github.com:kui/dotfiles.git "$BASE_DIR"
+
     cd "$BASE_DIR"
     run pwd
 
@@ -34,7 +25,7 @@ main() {
     install_templates
 
     echo_green "Success!!"
-    echo_green "Next, see the following `installs/` scripts: "
+    echo_green "Next, see the following 'installs/' scripts: "
     find installs -name '*.sh' | column
 }
 
@@ -42,19 +33,36 @@ install_basics() {
     if which lsb_release &>/dev/null && (lsb_release -a | grep 'Ubuntu') &>/dev/null; then
         run sudo apt-get install -y "${UBUNTU_INSTALLS[@]}"
     elif grep "darwin" <<< "$OSTYPE" &>/dev/null; then
-        if which brew &>/dev/null; then
-            run brew install "${HOMEBREW_INSTALLS[@]}"
-        elif which port &>/dev/null; then
-            run sudo port install "${MACPORTS_INSTALLS[@]}"
-        else
-            abort "Require MacPorts or HomeBrew"
+        if [[ ! -e ~/.homebrew ]]; then
+            run mkdir ~/.homebrew
+            run curl -L https://github.com/Homebrew/homebrew/tarball/master | tar xz --strip 1 -C ~/.homebrew
         fi
+        PATH=$HOME/.homebrew/bin:$PATH
+        run $HOME/.homebrew/bin/brew install "${HOMEBREW_INSTALLS[@]}"
     else
         abort "Non supported platform"
     fi
 }
 
+git_clone_or_pull() {
+    local git_uri=$1
+    local dir=$2
+    if [[ -e "$dir" ]]; then
+        local pwd=$(pwd)
+        cd "$dir"
+        run git pull
+        cd "$pwd"
+    else
+        run git clone "$git_uri" "$dir"
+    fi
+}
+
 install_dotfiles() {
+    if which gln &>/dev/null
+    then LN=gln
+    else LN=ln
+    fi
+
     local file
     for file in $(pwd)/dotfiles/*; do
         local dest="$HOME/.$(basename $file)"

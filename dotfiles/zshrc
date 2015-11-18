@@ -8,7 +8,6 @@
 source_if_exist(){
     if [ ! -f "$1" ]
     then
-        echo cannot load "$1"
         return 1
     fi
     echo load "$1"
@@ -48,7 +47,7 @@ fi
 ##
 typeset -U path sudo_path ld_library_path include
 path=(
-    $HOME/.{settings,dotfiles}/bin(N-/)
+    $HOME/.{settings,dotfiles,homebrew}/bin(N-/)
     $HOME/{.rvm,.rbenv,local,.local}/bin(N-/)
     $HOME/.nodebrew/current/bin(N-/)
     # ./node_modules/.bin
