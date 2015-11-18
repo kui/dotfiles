@@ -39,6 +39,9 @@ PIXELS = [
 
     # Hero (Dragon Quest III)
     "eAHVld9LwzAQx_8VyZNCkC0yG_rm9uC7e_Bh9EFn3QplHXUDUfzfTdukuSSXH5sICkmWXLvk07vvXT7Jvnov62X1UZKczSh53iyaumlJTh7u53eXE3oh2zW_IpS8jo8ft9WhFJZ1t17un9ZiA8Jmt8K0azZt9fJG8kN7LOlwglitVrtjXdN_MxTUBmY3U_tFlnUNTNXqpIFz3c6hOxksjRJipcIFuEaOztz3zGjhzRnH2w9pNIYF9Is0LohyiEmjLWnRmfIJYnXChmMolm4T-QOmEilNNJJDbaEtZ3inHywYewp85XeUF0pxOdHzh0ufbXdTReYfe4FoGNgHKxseBEGMnMHySKxh3Dw-GUkgFdNgofhkcHMfzDDzS4eP3wpOZTEGA8R4D6knVg7BEHkVoilYQtlzrwjNIjsUaIJI8HS2Ezta6XQ5w0ut5R3T21AYhmLhOhHByQ-cI3MRYFV1IsNiDOADfWmKlQ8sGEEKjz88wjBkG5N57PKBgki6iEJQf3Ioiq9vIIYi-g==",
+
+    # EggHero (Hanjuku Hero)
+    "eAHNlt9PwyAQx_8Vw5MmjVm7jdG9qQ--uwcflj34o84mzbbMLTEa_3ehQIHr0bH-iCbHslLK53vcHfBNdvlnVizyr4zMk2lEntd322K7J3PycH97czmKLpRdsysSkbfq9eN7fsh4z4t4XuyeXvgEJJlS3rXZrvf56weZH_bHLJIE_rRcbo5FEf2Tn5gqE0-raGl1_p2aycw0aotKaa_aYs90NQ1wgfQoxtRL_kfaSW3axbHbqOV7Mo4B1wtPKdpQITaWUbfRCmh8piNhSGqk1Dhb-Y6gNVBBhFula8x2FsKAxzHKoo6pHoXSmBIlJ06F-SAQ57yLsXU1SNWN4RSoim1jVjihrYfNXV6zAGJyWRIYllE7vVrzkXIBOUxdNsytXjX4dCmIUWEFDogJqNJWWmQYakvPvCUatmO01WLXQy0mDBMzWJQ81elUKpYxJ4tnCDUNSsrwzvy7R6fUre1dvjqyjwuzQfcrxNvq55Y-rXqTUv7oSsL0QA1mQcx5MtQGE9SoPg0GSF15kgXKwGLShxi15Y9MIvqDYh_AfYmw-UisGq51_g_P1BEyU19TnLgewLtaBz0Bd5UmRfzbyUhYknQVw2cQ8_A6mrReIClHzQElwduMtrPAHjoES3azQW6oz3KoXHZ78UNoarxkNrsrL8dqtPki0DnUznCvowUmHRrI4XCQvvr5Bdx35O8=",
 ]
 
 import sys, base64, zlib, json, types, random
@@ -52,7 +55,13 @@ def main():
         print(ansi_color(None))
 
 def select_pixels():
-    return PIXELS[random.randint(0, len(PIXELS) - 1)]
+    argv = sys.argv
+    argc = len(argv)
+    if argc <= 1:
+        return PIXELS[random.randint(0, len(PIXELS) - 1)]
+
+    idx = int(argv[1])
+    return PIXELS[idx]
 
 def convert(b64):
     zipped = base64.urlsafe_b64decode(b64)
