@@ -1,0 +1,17 @@
+#!/bin/bash
+# -*- coding: utf-8-unix -*-
+set -eu
+
+#
+# find with Breadth First Search
+#
+
+FIND=find
+if which gfind >>/dev/null; then
+    FIND=gfind
+fi
+
+d=0
+while gfind "$@" -mindepth $d -maxdepth $d | grep .; do
+    d=$((d + 1))
+done
