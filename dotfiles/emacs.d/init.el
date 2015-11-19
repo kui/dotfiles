@@ -787,7 +787,8 @@ but if not, return nil."
    initial-scratch-message "Scratch\n========\n\n")
   )
 
-(kui/with-pkg 'jekyll-modes)
+;; shell-script-mode
+(add-to-list 'auto-mode-alist '("\\.zsh\\'" . shell-script-mode))
 
 ;; yaml-mode
 (kui/with-lib "yaml-mode"
