@@ -285,6 +285,12 @@ Switch to a buffer visiting init file."
     (backward-kill-word 1)))
 (global-set-key "\C-w" 'kui/backward-kill-word-or-kill-region)
 
+(defun kui/backward-kill-line (arg)
+  "Kill ARG lines backward."
+  (interactive "p")
+  (kill-line (- 1 arg)))
+(global-set-key "\C-u" 'kui/backward-kill-line)
+
 ;; インデント先頭に移動
 ;; インデント先頭時は行頭移動
 ;; 行頭時は何もしない （要するに eclipse 風）
@@ -525,7 +531,7 @@ but if not, return nil."
 ;; gude-key
 (kui/with-pkg 'guide-key
   (setq
-   guide-key/guide-key-sequence '("M-t" "C-c" "C-x RET" "C-x C-h" "C-x r" "M-m" "Esc m")
+   guide-key/guide-key-sequence '("M-t" "C-c" "C-x RET" "C-x C-h" "C-x r" "M-m")
    guide-key/popup-window-position 'bottom
    guide-key/polling-time 0.5
    guide-key/popup-if-super-key-sequence t
@@ -673,19 +679,21 @@ but if not, return nil."
   (global-set-key "\C-xa" 'helm-apropos)
   (global-set-key "\C-x\C-f" 'helm-find-files)
   (global-set-key "\C-xb" 'helm-buffers-list)
-  (global-set-key "\C-o" 'helm-buffers-list)
-  (global-set-key "\M-i" 'helm-imenu)
+  ;; (global-set-key "\C-o" 'helm-buffers-list)
+  (global-set-key "\M-o" 'helm-imenu)
+  (global-set-key "\C-o" 'helm-imenu)
+  (global-set-key "\M-i" 'helm-buffers-list)
   (global-set-key "\C-s" 'helm-occur)
   (global-set-key "\M-x" 'helm-M-x)
 
   (kui/after-loaded 'helm
     (define-key helm-map "\C-h" 'delete-backward-char)
+    (define-key helm-map "\C-w" 'kui/backward-kill-word-or-kill-region)
+    (define-key helm-map "\C-u" 'kui/backward-kill-line)
     (define-key helm-map "TAB" 'helm-execute-persistent-action))
-  (kui/after-loaded 'helm-files
-    (define-key helm-find-files-map "\C-h" 'delete-backward-char)
-    (define-key helm-find-files-map "TAB" 'helm-execute-persistent-action))
 
   (kui/with-pkg 'helm-swoop
+    (define-key helm-swoop-map "\C-w" 'kui/backward-kill-word-or-kill-region)
     (global-set-key "\C-s" 'helm-swoop))
   )
 
