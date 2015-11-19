@@ -160,6 +160,11 @@ then
     alias t="tmux new-window"
 fi
 
+if which reattach-to-user-namespace &>/dev/null
+then
+    alias terminal-notifier='reattach-to-user-namespace terminal-notifier'
+fi
+
 eval $(dircolors)
 
 # HTTPサーバを立ち上げる
@@ -660,8 +665,7 @@ function preexec_end_timetrack() {
     local exec_time
     local message
 
-    if [[ -z "$DISPLAY" || \
-          -z "$timetrack_start" || \
+    if [[ -z "$timetrack_start" || \
           -z "$timetrack_threshold" ]]
     then return
     fi
@@ -680,8 +684,10 @@ function preexec_end_timetrack() {
 
         if which growlnotify &>/dev/null
         then echo "$message" | growlnotify -n "ZSH timetracker" --appIcon Terminal
-        elif which notify-send &>/dev/null
+        elif which notify-send &>/dev/null && [[ -z "$DISPLAY" ]]
         then notify-send --icon=terminal "Command finished" "$message"
+        elif which terminal-notifier &>/dev/null
+        then terminal-notifier -message "$message"
         fi
 
         echo $'\a'
@@ -691,7 +697,9 @@ function preexec_end_timetrack() {
     unset timetrack_command
 }
 
-if ( which growlnotify &>/dev/null || which notify-send &>/dev/null ) &&
+if ( which growlnotify &>/dev/null || \
+     which notify-send &>/dev/null || \
+     which terminal-notifier &>/dev/null ) &&
        autoload -U add-zsh-hook 2>/dev/null
 then
     add-zsh-hook preexec preexec_start_timetrack

@@ -4,6 +4,7 @@ set -eu
 
 HOMEBREW_INSTALLS=(
     git zsh curl wget coreutils findutils xz ctags gnu-sed debianutils
+    terminal-notifier reattach-to-user-namespace
 )
 UBUNTU_INSTALLS=(
     git zsh curl wget ssh build-essential xz-utils exuberant-ctags
