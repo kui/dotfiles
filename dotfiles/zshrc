@@ -562,8 +562,11 @@ bindkey '^m' do_enter
 
 #############################################################
 # fzf 関係
+export FZF_DEFAULT_OPTS="--exact --reverse"
+
 fzf-ps() {
-    local p="$(ps -xww -opid -ocommand | sed 1d | fzf-tmux | \
+    local p="$(ps -xww -opid -ocommand | sed 1d | \
+               fzf-tmux --prompt='process > ' -n2.. | \
                perl -ne '/^\s*([\d]*)\s/; print $1, " " if $1')"
     if [ -n "$p" ]; then
         LBUFFER="${LBUFFER}${p:0:-1}"
@@ -576,7 +579,7 @@ bindkey '^xp' fzf-ps
 fzf-search-file() {
     local f="$(find -L . -type f -exec sh -c "file '{}' | grep -q text" \; -print | \
                xargs -I{} bash -c "cat '{}' | sed 's|^|{}: |'" | \
-               fzf-tmux | \
+               fzf-tmux --prompt='search file > ' | \
                cut -d: -f1)"
     if [ -n "$f" ]; then
         LBUFFER="${LBUFFER}$f"
@@ -587,7 +590,7 @@ zle     -N    fzf-search-file
 bindkey '^xs' fzf-search-file
 
 fzf-find-file() {
-    local f="$(find -L . | fzf-tmux)"
+    local f="$(find -L . | fzf-tmux --prompt='find file > ')"
     LBUFFER="${LBUFFER}$f"
     zle redisplay
 }
@@ -595,7 +598,7 @@ zle     -N     fzf-find-file
 bindkey '^x^f' fzf-find-file
 
 fzf-exec() {
-    local c="$(zle -la | grep -v '^\.' | fzf-tmux)"
+    local c="$(zle -la | grep -v '^\.' | fzf-tmux --prompt='exec widget > ')"
     [ -n "$c" ] && zle "$c"
     zle redisplay
 }
@@ -603,15 +606,37 @@ zle     -N   fzf-exec
 bindkey '\ex' fzf-exec
 
 fzf-cd-history() {
-    local d="$(cdr -l | sed -r 's/^[0-9]+ +//' | fzf-tmux)"
+    local d="$(cdr -l | sed -r 's/^[0-9]+ +//' | fzf-tmux --prompt='cd hitory > ')"
     if [ -n "$d" ]; then
-        cd "$d"
-        zle reset-prompt
+        LBUFFER="cd $d"
+        zle accept-line
+    else
+        zle redisplay
     fi
-    zle redisplay
 }
 zle     -N    fzf-cd-history
 bindkey '\ei' fzf-cd-history
+
+fzf-history-widget() {
+  local selected num
+  selected=(
+      $(fc -l 1 | \
+               fzf-tmux +s --tac +m -n2..,.. \
+                        --tiebreak=index \
+                        --toggle-sort=ctrl-r \
+                        --prompt='history > '
+                        -q "${LBUFFER//$/\\$}")
+  )
+  if [ -n "$selected" ]; then
+    num=$selected[1]
+    if [ -n "$num" ]; then
+      zle vi-fetch-history -n $num
+    fi
+  fi
+  zle redisplay
+}
+zle     -N   fzf-history-widget
+bindkey '^R' fzf-history-widget
 
 #############################################################
 # 時間のかかったコマンドは、通知システムに通知する
