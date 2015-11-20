@@ -14,45 +14,30 @@
       <item>
         <name>Command+X to Command+3 (Quick Assist/Find Action)</name>
         <identifier>kui.ide.commandX</identifier>
-        <modifier_not>
-          ModifierFlag::CONTROL_L, ModifierFlag::CONTROL_R,
-          ModifierFlag::OPTION_L,  ModifierFlag::OPTION_R,
-          ModifierFlag::SHIFT_L,   ModifierFlag::SHIFT_R,
-        </modifier_not>
         <only>IDE</only>
         <autogen>
           __KeyToKey__
-          KeyCode::X, MODIFIERFLAG_EITHER_LEFT_OR_RIGHT_COMMAND,
+          KeyCode::X, MODIFIERFLAG_EITHER_LEFT_OR_RIGHT_COMMAND | ModifierFlag::NONE,
           KeyCode::KEY_3, MODIFIERFLAG_EITHER_LEFT_OR_RIGHT_COMMAND,
         </autogen>
       </item>
       <item>
         <name>Control+O to F3 (Find definition)</name>
         <identifier>kui.ide.commandO</identifier>
-        <modifier_not>
-          ModifierFlag::COMMAND_L, ModifierFlag::COMMAND_R,
-          ModifierFlag::OPTION_L,  ModifierFlag::OPTION_R,
-          ModifierFlag::SHIFT_L,   ModifierFlag::SHIFT_R,
-        </modifier_not>
         <only>IDE</only>
         <autogen>
           __KeyToKey__
-          KeyCode::O, MODIFIERFLAG_EITHER_LEFT_OR_RIGHT_CONTROL,
+          KeyCode::O, MODIFIERFLAG_EITHER_LEFT_OR_RIGHT_CONTROL | ModifierFlag::NONE,
           KeyCode::F3
         </autogen>
       </item>
       <item>
         <name>Command+I to Command+E (Search editing files)</name>
         <identifier>kui.ide.commandI</identifier>
-        <modifier_not>
-          ModifierFlag::CONTROL_L, ModifierFlag::CONTROL_R,
-          ModifierFlag::OPTION_L,  ModifierFlag::OPTION_R,
-          ModifierFlag::SHIFT_L,   ModifierFlag::SHIFT_R,
-        </modifier_not>
         <only>IDE</only>
         <autogen>
           __KeyToKey__
-          KeyCode::I, MODIFIERFLAG_EITHER_LEFT_OR_RIGHT_COMMAND,
+          KeyCode::I, MODIFIERFLAG_EITHER_LEFT_OR_RIGHT_COMMAND | ModifierFlag::NONE,
           KeyCode::E, MODIFIERFLAG_EITHER_LEFT_OR_RIGHT_COMMAND,
         </autogen>
       </item>
@@ -67,22 +52,17 @@
         <only>IDE</only>
         <autogen>
           __KeyToKey__
-          KeyCode::G, MODIFIERFLAG_EITHER_LEFT_OR_RIGHT_CONTROL,
+          KeyCode::G, MODIFIERFLAG_EITHER_LEFT_OR_RIGHT_CONTROL | ModifierFlag::NONE,
           KeyCode::ESCAPE,
         </autogen>
       </item>
       <item>
         <name>Command+/ to Control+Space (Completion)</name>
         <identifier>kui.ide.commandSlash</identifier>
-        <modifier_not>
-          ModifierFlag::CONTROL_L, ModifierFlag::CONTROL_R,
-          ModifierFlag::OPTION_L,  ModifierFlag::OPTION_R,
-          ModifierFlag::SHIFT_L,   ModifierFlag::SHIFT_R,
-        </modifier_not>
         <only>IDE</only>
         <autogen>
           __KeyToKey__
-          KeyCode::SLASH, MODIFIERFLAG_EITHER_LEFT_OR_RIGHT_COMMAND,
+          KeyCode::SLASH, MODIFIERFLAG_EITHER_LEFT_OR_RIGHT_COMMAND | ModifierFlag::NONE,
           KeyCode::SPACE, MODIFIERFLAG_EITHER_LEFT_OR_RIGHT_CONTROL,
         </autogen>
       </item>
@@ -97,7 +77,7 @@
         <only>IDE</only>
         <autogen>
           __KeyToKey__
-          KeyCode::SEMICOLON, MODIFIERFLAG_EITHER_LEFT_OR_RIGHT_COMMAND,
+          KeyCode::SEMICOLON, MODIFIERFLAG_EITHER_LEFT_OR_RIGHT_COMMAND | ModifierFlag::NONE,
           KeyCode::SLASH, MODIFIERFLAG_EITHER_LEFT_OR_RIGHT_COMMAND,
         </autogen>
       </item>
@@ -188,16 +168,10 @@
     <item>
       <name>Command+W to Command+C</name>
       <identifier>kui.commandW</identifier>
-      <modifier_not>
-        ModifierFlag::CONTROL_L, ModifierFlag::CONTROL_R,
-        ModifierFlag::OPTION_L,  ModifierFlag::OPTION_R,
-        ModifierFlag::SHIFT_L,   ModifierFlag::SHIFT_R,
-      </modifier_not>
       <not>{{EMACS_MODE_IGNORE_APPS}}</not>
-      <!-- Do not use "not filter" on changing Command+XXX -->
       <autogen>
         __KeyToKey__
-        KeyCode::W, MODIFIERFLAG_EITHER_LEFT_OR_RIGHT_COMMAND,
+        KeyCode::W, MODIFIERFLAG_EITHER_LEFT_OR_RIGHT_COMMAND | ModifierFlag::NONE,
         KeyCode::C, MODIFIERFLAG_EITHER_LEFT_OR_RIGHT_COMMAND,
       </autogen>
     </item>
@@ -208,7 +182,7 @@
       {{ EMACS_MODE_MARKSET_EXTRA }}
       <autogen>
         __KeyToKey__
-        KeyCode::W, MODIFIERFLAG_EITHER_LEFT_OR_RIGHT_COMMAND  | ModifierFlag::SHIFT_L | ModifierFlag::NONE,
+        KeyCode::W, MODIFIERFLAG_EITHER_LEFT_OR_RIGHT_COMMAND | ModifierFlag::SHIFT_L | ModifierFlag::NONE,
         KeyCode::VK_LOCK_SHIFT_L_FORCE_OFF,
         KeyCode::C, ModifierFlag::COMMAND_L,
         KeyCode::VK_CONFIG_FORCE_OFF_notsave_emacsmode_ex_controlSpace_core,
@@ -239,14 +213,9 @@
     <item>
       <name>Control+L to Command+L on Google Chrome</name>
       <identifier>remap.googleChrome.controlL</identifier>
-      <modifier_not>
-        ModifierFlag::COMMAND_L, ModifierFlag::COMMAND_R,
-        ModifierFlag::OPTION_L,  ModifierFlag::OPTION_R,
-        ModifierFlag::SHIFT_L,   ModifierFlag::SHIFT_R,
-      </modifier_not>
       <autogen>
         __KeyToKey__
-        KeyCode::L, MODIFIERFLAG_EITHER_LEFT_OR_RIGHT_CONTROL,
+        KeyCode::L, MODIFIERFLAG_EITHER_LEFT_OR_RIGHT_CONTROL | ModifierFlag::NONE,
         KeyCode::L, ModifierFlag::COMMAND_L
       </autogen>
       <only>GOOGLE_CHROME</only>
