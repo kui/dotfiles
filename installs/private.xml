@@ -27,6 +27,21 @@
         </autogen>
       </item>
       <item>
+        <name>Control+O to F3 (Find definition)</name>
+        <identifier>kui.ide.commandO</identifier>
+        <modifier_not>
+          ModifierFlag::COMMAND_L, ModifierFlag::COMMAND_R,
+          ModifierFlag::OPTION_L,  ModifierFlag::OPTION_R,
+          ModifierFlag::SHIFT_L,   ModifierFlag::SHIFT_R,
+        </modifier_not>
+        <only>IDE</only>
+        <autogen>
+          __KeyToKey__
+          KeyCode::O, MODIFIERFLAG_EITHER_LEFT_OR_RIGHT_CONTROL,
+          KeyCode::F3
+        </autogen>
+      </item>
+      <item>
         <name>Command+I to Command+E (Search editing files)</name>
         <identifier>kui.ide.commandI</identifier>
         <modifier_not>
