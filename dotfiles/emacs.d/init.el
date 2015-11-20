@@ -541,13 +541,12 @@ but if not, return nil."
   (guide-key-mode 1))
 
 (kui/with-pkg 'flycheck
-  ;; ...
   (add-hook 'after-init-hook #'global-flycheck-mode)
   (kui/with-pkg 'flycheck-pos-tip
     (setq flycheck-display-errors-function #'flycheck-pos-tip-error-messages))
 
-  (global-set-key "\M-e" 'flycheck-next-error)
-  (global-set-key "\M-E" 'flycheck-previous-error)
+  (global-set-key (kbd "C-.") 'flycheck-next-error)
+  (global-set-key (kbd "C->") 'flycheck-previous-error)
   )
 
 ;; company-mode
