@@ -479,9 +479,9 @@ but if not, return nil."
 
   (setq git-gutter:unchanged-sign " ")
 
-  (global-set-key "\C-cgn" 'git-gutter:next-diff)
-  (global-set-key "\C-cgp" 'git-gutter:previous-diff)
-  (global-set-key "\C-cgo" 'git-gutter:popup-diff)
+  (global-set-key "\C-cgn" 'git-gutter:next-hunk)
+  (global-set-key "\C-cgp" 'git-gutter:previous-hunk)
+  (global-set-key "\C-cgo" 'git-gutter:popup-hunk)
   )
 
 ;; git-blame
