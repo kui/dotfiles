@@ -15,8 +15,8 @@ source_if_exist(){
 }
 
 ## rvm
-source_if_exist "/usr/local/rvm/scripts/rvm"
-source_if_exist "$HOME/.rvm/scripts/rvm"
+source_if_exist "/usr/local/rvm/scripts/rvm" || \
+    source_if_exist "$HOME/.rvm/scripts/rvm"
 
 ## nvm
 source_if_exist "$HOME/.nvm/nvm.sh"
@@ -48,13 +48,12 @@ fi
 ##            -: シンボリックリンク先のパスを評価。
 ##            /: ディレクトリのみ残す。
 ##
-typeset -U path sudo_path ld_library_path include
 path=(
+    # ./node_modules/.bin
     $HOME/.{settings,dotfiles}/bin(N-/)
     $HOME/{.rvm,.rbenv,local,.local}/bin(N-/)
     $HOME/.nodebrew/current/bin(N-/)
     $HOME/.homebrew/bin(N-/)
-    # ./node_modules/.bin
     $GEM_HOME/bin(N-/)
     /opt/local/bin(N-/)
     $path
@@ -63,6 +62,11 @@ path=(
     /app/{script,mingw/tdm/bin,gs/bin,gs/lib}(N-/)
     /usr{/local,/usr,}/bin(N-/)
     /usr/local/kui-avconv/bin(N-/)
+)
+
+manpath=(
+    $(brew --prefix)/share/man(N-/)
+    $manpath
 )
 
 [ -z "$sudo_path" ] && typeset -xT SUDO_PATH sudo_path
@@ -94,9 +98,21 @@ fpath=(
     $HOME/.zshrc.d/zsh-completions/src(N-/)
     $fpath)
 
-if [ $TERM = "xterm" ] && infocmp xterm-256color &>/dev/null
-then
+if [ $TERM = "xterm" ] && infocmp xterm-256color &>/dev/null; then
     export TERM="xterm-256color"
+fi
+
+if which brew &>/dev/null; then
+    path=(
+        $(brew --prefix coreutils)/libexec/gnubin(N-/)
+        $path
+    )
+
+    manpath=(
+        $(brew --prefix)/share/man(N-/)
+        $(brew --prefix coreutils)/libexec/gnuman(N-/)
+        $manpath
+    )
 fi
 
 # 表示言語設定
@@ -127,25 +143,6 @@ compdef _kitchen kitchen
 
 ############################################################
 ## alias, funcction の設定
-
-# MacPorts/Homebrew coreutils aliases
-if which port &>/dev/null || which brew &>/dev/null; then
-    # coreutils
-    cmds=(base64 basename cat chcon chgrp chmod chown chroot cksum comm
-          cp csplit cut date dd df dir dircolors dirname du echo env expand
-          expr factor false fmt fold groups head hostid id install join kill
-          link ln logname md5sum mkdir mkfifo mknod mktemp mv nice nl nohup
-          nproc numfmt od paste pathchk pinky pr printenv printf ptx pwd
-          readlink realpath rm rmdir runcon seq sha1sum sha224sum sha256sum
-          sha384sum sha512sum shred shuf sleep sort split stat stdbuf stty
-          sum sync tac tail tee test timeout touch tr true truncate tsort tty
-          uname unexpand uniq unlink uptime users vdir wc who whoami yes)
-    # findutils, gsed
-    cmds=(find locate ldfind updatedb xargs sed $cmds)
-    for cmd in "${cmds[@]}"
-    do which "g$cmd" &>/dev/null && alias "$cmd=g$cmd"
-    done
-fi
 
 alias less="less -R"
 alias grep="grep --color"

@@ -3,8 +3,12 @@
 set -eu
 
 HOMEBREW_INSTALLS=(
-    git zsh curl wget coreutils findutils xz ctags gnu-sed debianutils
+    git zsh curl wget xz ctags
     terminal-notifier reattach-to-user-namespace
+    coreutils findutils debianutils binutils diffutils
+    homebrew/dupes/grep homebrew/dupes/gzip
+    gawk gnu-indent gnu-which gnu-getopt gnu-sed gnu-tar gnutls
+    watch
 )
 UBUNTU_INSTALLS=(
     git zsh curl wget ssh build-essential xz-utils exuberant-ctags
@@ -39,7 +43,7 @@ install_basics() {
             run curl -L https://github.com/Homebrew/homebrew/tarball/master | tar xz --strip 1 -C ~/.homebrew
         fi
         PATH=$HOME/.homebrew/bin:$PATH
-        run $HOME/.homebrew/bin/brew install "${HOMEBREW_INSTALLS[@]}"
+        run brew install "${HOMEBREW_INSTALLS[@]}" --with-default-names --default-names
     else
         abort "Non supported platform"
     fi
