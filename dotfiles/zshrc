@@ -608,7 +608,8 @@ zle     -N   fzf-exec
 bindkey '\ex' fzf-exec
 
 fzf-cd-history() {
-    local d="$(cdr -l | sed -r 's/^[0-9]+ +//' | fzf-tmux --prompt='cd hitory > ')"
+    local d="$(cdr -l | sed -r 's/^[0-9]+ +//' | \
+               fzf-tmux --prompt='cd hitory > ' --no-sort)"
     if [ -n "$d" ]; then
         LBUFFER="cd $d"
         zle accept-line
