@@ -229,17 +229,17 @@ if clipboard test &>/dev/null; then
 fi
 
 ## 色一覧
-color_list(){
+color_list() {
     for c in {000..015}
     do
-        echo -n "\e[38;5;${c}m $c"
-        [[ $((c%8)) -eq 7 ]] && echo
+        print -nP "%F{${c}} $c"
+        [[ $((c%8)) -eq 7 ]] && print
     done
 
     for c in {016..255}
     do
-        echo -n "\e[38;5;${c}m $c"
-        [[ $(((c-16)%6)) -eq 5 ]] && echo
+        print -nP "%F{${c}} $c"
+        [[ $(((c-16)%6)) -eq 5 ]] && print
     done
 }
 
