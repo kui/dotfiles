@@ -567,7 +567,7 @@ bindkey '^m' do_enter
 
 #############################################################
 # fzf 関係
-export FZF_DEFAULT_OPTS="--exact --reverse"
+export FZF_DEFAULT_OPTS="--exact --reverse --color=dark,fg+:82"
 
 fzf-ps() {
     local p="$(ps -xww -opid -ocommand | sed 1d | \
