@@ -71,17 +71,12 @@
         </autogen>
       </item>
       <item>
-        <name>Command+; to Command+/ (Toggle comment)</name>
+        <name>Control+; to Command+/ (Toggle comment)</name>
         <identifier>kui.ide.commandSemicolon</identifier>
-        <modifier_not>
-          ModifierFlag::CONTROL_L, ModifierFlag::CONTROL_R,
-          ModifierFlag::OPTION_L,  ModifierFlag::OPTION_R,
-          ModifierFlag::SHIFT_L,   ModifierFlag::SHIFT_R,
-        </modifier_not>
         <only>IDE</only>
         <autogen>
           __KeyToKey__
-          KeyCode::SEMICOLON, MODIFIERFLAG_EITHER_LEFT_OR_RIGHT_COMMAND | ModifierFlag::NONE,
+          KeyCode::SEMICOLON, MODIFIERFLAG_EITHER_LEFT_OR_RIGHT_CONTROL | ModifierFlag::NONE,
           KeyCode::SLASH, MODIFIERFLAG_EITHER_LEFT_OR_RIGHT_COMMAND,
         </autogen>
       </item>
