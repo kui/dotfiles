@@ -143,6 +143,50 @@
     </item>
 
     <item>
+      <name>Google Chrome</name>
+      <item>
+        <name>Control+L to Command+L on Google Chrome</name>
+        <identifier>kui.googleChrome.controlL</identifier>
+        <autogen>
+          __KeyToKey__
+          KeyCode::L, MODIFIERFLAG_EITHER_LEFT_OR_RIGHT_CONTROL | ModifierFlag::NONE,
+          KeyCode::L, ModifierFlag::COMMAND_L
+        </autogen>
+        <only>GOOGLE_CHROME</only>
+      </item>
+
+      <item>
+        <name>Control+T to Command+T on Google Chrome</name>
+        <identifier>kui.googleChrome.controlT</identifier>
+        <modifier_not>
+          ModifierFlag::COMMAND_L, ModifierFlag::COMMAND_R,
+          ModifierFlag::OPTION_L,  ModifierFlag::OPTION_R,
+        </modifier_not>
+        <autogen>
+          __KeyToKey__
+          KeyCode::T, MODIFIERFLAG_EITHER_LEFT_OR_RIGHT_CONTROL,
+          KeyCode::T, ModifierFlag::COMMAND_L
+        </autogen>
+        <only>GOOGLE_CHROME</only>
+      </item>
+
+      <item>
+        <name>Control+R to Command+R on Google Chrome</name>
+        <identifier>kui.googleChrome.controlR</identifier>
+        <modifier_not>
+        ModifierFlag::COMMAND_L, ModifierFlag::COMMAND_R,
+        ModifierFlag::OPTION_L,  ModifierFlag::OPTION_R,
+        </modifier_not>
+        <autogen>
+          __KeyToKey__
+          KeyCode::R, MODIFIERFLAG_EITHER_LEFT_OR_RIGHT_CONTROL,
+          KeyCode::R, ModifierFlag::COMMAND_L
+        </autogen>
+        <only>GOOGLE_CHROME</only>
+      </item>
+    </item>
+
+    <item>
       <name>Thinkpad Keyboard</name>
       <devicevendordef>
         <vendorname>LENOVO</vendorname>
@@ -207,47 +251,6 @@
         KeyCode::F, MODIFIERFLAG_EITHER_LEFT_OR_RIGHT_COMMAND,
         KeyCode::CURSOR_RIGHT, ModifierFlag::OPTION_L,
       </autogen>
-    </item>
-
-    <item>
-      <name>Control+L to Command+L on Google Chrome</name>
-      <identifier>remap.googleChrome.controlL</identifier>
-      <autogen>
-        __KeyToKey__
-        KeyCode::L, MODIFIERFLAG_EITHER_LEFT_OR_RIGHT_CONTROL | ModifierFlag::NONE,
-        KeyCode::L, ModifierFlag::COMMAND_L
-      </autogen>
-      <only>GOOGLE_CHROME</only>
-    </item>
-
-    <item>
-      <name>Control+T to Command+T on Google Chrome</name>
-      <identifier>remap.googleChrome.controlT</identifier>
-      <modifier_not>
-        ModifierFlag::COMMAND_L, ModifierFlag::COMMAND_R,
-        ModifierFlag::OPTION_L,  ModifierFlag::OPTION_R,
-      </modifier_not>
-      <autogen>
-        __KeyToKey__
-        KeyCode::T, MODIFIERFLAG_EITHER_LEFT_OR_RIGHT_CONTROL,
-        KeyCode::T, ModifierFlag::COMMAND_L
-      </autogen>
-      <only>GOOGLE_CHROME</only>
-    </item>
-
-    <item>
-      <name>Control+R to Command+R on Google Chrome</name>
-      <identifier>remap.googleChrome.controlR</identifier>
-      <modifier_not>
-        ModifierFlag::COMMAND_L, ModifierFlag::COMMAND_R,
-        ModifierFlag::OPTION_L,  ModifierFlag::OPTION_R,
-      </modifier_not>
-      <autogen>
-        __KeyToKey__
-        KeyCode::R, MODIFIERFLAG_EITHER_LEFT_OR_RIGHT_CONTROL,
-        KeyCode::R, ModifierFlag::COMMAND_L
-      </autogen>
-      <only>GOOGLE_CHROME</only>
     </item>
   </item>
 </root>
