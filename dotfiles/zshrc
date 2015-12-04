@@ -627,7 +627,7 @@ fzf-history-widget() {
                fzf-tmux +s --tac +m -n2..,.. \
                         --tiebreak=index \
                         --toggle-sort=ctrl-r \
-                        --prompt='history > '
+                        --prompt='history > ' \
                         -q "${LBUFFER//$/\\$}")
   )
   if [ -n "$selected" ]; then
