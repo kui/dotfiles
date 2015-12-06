@@ -20,6 +20,7 @@ ads.rubiconproject.com
 ads.yahoo.com
 adsvids.com
 ai.yimg.jp
+aladdin.genieesspv.jp
 anz.rd.rakuten.co.jp
 ard.yahoo.co.jp
 as.dc.impact-ad.jp
@@ -74,11 +75,13 @@ j.one.impact-ad.jp
 j.socdm.com
 jp-ads.mediaforge.com
 js.ad-stir.com
+js.gsspcln.jp
 js.moatads.com
 k.one.impact-ad.jp
 kauli.socdm.com
 l.one.impact-ad.jp
 m.one.impact-ad.jp
+mediad2.jp
 n.one.impact-ad.jp
 o.one.impact-ad.jp
 o.yieldsquare.com
@@ -115,6 +118,7 @@ stat.vidcore.tv
 static.jp.as.criteo.net
 sync.ad-stir.com
 sync.fout.jp
+sync.mathtag.com
 sync.mathtag.com
 sync.shinobi.jp
 t.one.impact-ad.jp
