@@ -12,5 +12,7 @@
 [alias]
 	co = checkout
 	st = status
+	s = status
+	c = commit
 [push]
 	default = simple
