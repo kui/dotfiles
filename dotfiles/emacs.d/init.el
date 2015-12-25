@@ -53,6 +53,9 @@
   (setq ns-command-modifier   'meta
         ns-alternate-modifier 'super))
 
+;; disable electric-pair-mode
+(setq electric-pair-mode nil)
+
 ;; ロックファイル(.#で始まるファイル) を無効化
 (setq create-lockfiles nil)
 
