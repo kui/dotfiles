@@ -65,7 +65,7 @@ path=(
 )
 
 manpath=(
-    $(brew --prefix)/share/man(N-/)
+    $(which brew &>/dev/null && echo "$(brew --prefix)/share/man(N-/)")
     $manpath
 )
 
