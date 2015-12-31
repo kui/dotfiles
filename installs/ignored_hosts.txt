@@ -68,9 +68,11 @@ ib.adnxs.com
 image.ias.rakuten.co.jp
 img.adplan-ds.com
 img.ak.impact-ad.jp
+img01.mediad2.jp
 imp.asahi.com
 j.microad.net
 j.microad.net
+cs.gssprt.jp
 j.one.impact-ad.jp
 j.socdm.com
 jp-ads.mediaforge.com
