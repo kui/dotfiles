@@ -148,26 +148,26 @@ end
 # settings per window class (or title)
 
 # through all key inputs if terminal applications
-window(:through, :class => /^(?:gnome-terminal|roxterm|sakura|clusterssh|xterm)$/)
+window(:through, :class => /^(?:gnome-terminal|roxterm|sakura|clusterssh|xterm)$/i)
 
 # through all key inputs if emacs
 window(:through, :class => /^emacs\d*$/i)
 
 # through all key inputs if virtual box
-window(:through, :class => /^VirtualBox$/)
+window(:through, :class => /^VirtualBox$/i)
 window(:through, :name  => / - Oracle VM VirtualBox$/)
 
 # through all key inputs if emacs
 window(:through, :class => /^Redcar$/)
 
 # add new bind_key to default binds
-window(@default_bind_resolver, :class => /google-chrome/) do
+window(@default_bind_resolver, :class => /google-chrome/i) do
   # search
   bind_key [KEY_LEFTCTRL, KEY_S], [KEY_LEFTCTRL, KEY_F]
 end
 
 # add new bind_key to default binds
-window(@default_bind_resolver, :class => /Eclipse/) do
+window(@default_bind_resolver, :class => /Eclipse/i) do
   #bind_key [KEY_LEFTCTRL, KEY_TAB], [KEY_LEFTSHIFT, KEY_LEFTCTRL, KEY_E]
 
   bind_key [KEY_LEFTCTRL, KEY_K], [KEY_LEFTCTRL, KEY_K]
