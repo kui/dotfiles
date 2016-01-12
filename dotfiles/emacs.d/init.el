@@ -805,13 +805,7 @@ but if not, return nil."
   (add-to-list 'auto-mode-alist '("\\.builder\\'" . ruby-mode)))
 (kui/after-loaded "ruby-mode"
   (setq ruby-deep-indent-paren nil)
-
-  (defun kui/ruby-init ()
-    (flycheck-mode)
-    (message "hoge")
-    (electric-pair-mode t)
-    (electric-indent-mode t))
-  (add-hook 'ruby-mode-hook 'kui/ruby-init)
+  (add-hook 'ruby-mode-hook 'flycheck-mode)
 
   (kui/with-pkg 'robe
     (add-hook 'ruby-mode-hook 'robe-mode)
@@ -936,6 +930,11 @@ but if not, return nil."
     (set (make-local-variable 'indent-tabs-mode) nil)
     (set (make-local-variable 'c-basic-offset) 4))
   (add-hook 'groovy-mode-hook 'kui/set-groovy-indent))
+
+;; hcl-mode
+(kui/with-lib "hcl-mode"
+  (add-to-list 'auto-mode-alist '("\\.tf\\'" . hcl-mode))
+  (add-to-list 'auto-mode-alist '("\\.tfvars\\'" . hcl-mode)))
 
 ;; haml-mode
 (kui/with-lib "haml-mode"
