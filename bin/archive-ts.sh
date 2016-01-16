@@ -1,4 +1,5 @@
 #!/bin/bash
+# -*- coding:utf-8-unix; mode:sh; -*-
 
 set -u
 
@@ -14,6 +15,16 @@ CONVERT="./convert-mp4.sh"
 main() {
     local m2ts
     for m2ts in "$BASE_DIR"{,/**}/*.m2ts; do
+        if [[ ! -e "$m2ts" ]]
+        then continue
+        fi
+
+        local new_m2ts="$(normalize_file_name "$m2ts")"
+        if [[ "$m2ts" != "$new_m2ts" ]]; then
+            mv -v "$m2ts" "$new_m2ts"
+            m2ts="$new_m2ts"
+        fi
+
         local mp4="$(get_mp4_name "$m2ts")"
         local log="$(get_log_name "$m2ts")"
 
@@ -25,10 +36,6 @@ main() {
         then continue
         fi
 
-        if [[ ! -e "$m2ts" ]]
-        then continue
-        fi
-
         archive "$m2ts" 2>&1 | tee -a "$log"
         if [[ ${PIPESTATUS[0]} -ne 0 ]]
         then break
@@ -37,6 +44,10 @@ main() {
     done
 
     rm -frv "$TMP"
+}
+
+normalize_file_name() {
+    sed 's/〜/~/g' <<<"$*"
 }
 
 archive() {
