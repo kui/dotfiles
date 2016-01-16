@@ -2,10 +2,14 @@
 
 set -u
 
+cd $(dirname "$0")
+
+export PATH=/usr/local/bin:/usr/bin:/bin
+
 BASE_DIR="/var/share/tv_recorded"
 TMP="${TMP-/tmp/av-archive}"
-SPLIT="split-ts.sh"
-CONVERT="convert-mp4.sh"
+SPLIT="./split-ts.sh"
+CONVERT="./convert-mp4.sh"
 
 main() {
     local m2ts
@@ -47,7 +51,7 @@ archive() {
 
     mkdir -pv "$tmpdir"
 
-    # wait 2 micro sec each file read
+    # wait some micro secs each file read
     time "$SPLIT" -OUT "$tmpdir" -WAIT,3 "$m2ts"
 
     ls -S "$tmpdir"/* | tail -n +2 | xargs rm -fv
