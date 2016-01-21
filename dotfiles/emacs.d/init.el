@@ -805,7 +805,11 @@ but if not, return nil."
   (add-to-list 'auto-mode-alist '("\\.builder\\'" . ruby-mode)))
 (kui/after-loaded "ruby-mode"
   (setq ruby-deep-indent-paren nil)
-  (add-hook 'ruby-mode-hook 'flycheck-mode)
+  (defun kui/ruby-init ()
+    (flycheck-mode)
+    ;; (electric-pair-mode t)
+    (electric-indent-mode t))
+  (add-hook 'ruby-mode-hook 'kui/ruby-init)
 
   (kui/with-pkg 'robe
     (add-hook 'ruby-mode-hook 'robe-mode)
