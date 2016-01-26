@@ -765,23 +765,23 @@ but if not, return nil."
 (define-key lisp-interaction-mode-map "\C-cdf" 'describe-function)
 (define-key lisp-interaction-mode-map "\C-cdv" 'describe-variable)
 
+;; http://emacs-jp.github.io/programming/golang.html
 (kui/with-lib "go-mode"
   (kui/with-pkg 'go-autocomplete)
 
   (defun kui/go-init ()
-    (set (make-variable-buffer-local 'tab-width) 4))
-  (add-hook 'go-mode-hook 'kui/go-init)
-  (add-hook 'before-save-hook 'gofmt-before-save)
+    (set (make-variable-buffer-local 'tab-width) 4)
+    (set (make-variable-buffer-local 'whitespace-style)
+         '(face tab-mark tabs)))
 
-  ;; http://emacs-jp.github.io/programming/golang.html
-  ;; define helm-go-source
   (kui/with-pkg 'helm
     (defvar kui/helm-go-source
       '((name . "Helm Go")
         (candidates . (lambda ()
                         (cons "builtin" (go-packages))))
-        (action . (("Show document" . godoc)
-                   ("Import package" . kui/helm-go-import-add)))))
+        (action . (("Import package" . kui/helm-go-import-add)
+                   ("Show document" . godoc)
+                   ))))
     (defun kui/helm-go-import-add (candidate)
       (dolist (package (helm-marked-candidates))
         (go-import-add current-prefix-arg package)))
@@ -790,6 +790,8 @@ but if not, return nil."
       (helm :sources '(kui/helm-go-source) :buffer "*helm go*")))
 
   (kui/after-loaded 'go-mode
+    (add-hook 'go-mode-hook 'kui/go-init)
+    (add-hook 'before-save-hook 'gofmt-before-save)
     (define-key go-mode-map "\C-o" 'godef-jump)
     (define-key go-mode-map "\C-O" 'pop-tag-mark)))
 
@@ -1041,14 +1043,14 @@ but if not, return nil."
      '(whitespace-tab
        ((((background dark))
          ;; :background "#373b41"
-         :background "#272b31"
-         :foreground "#666666"
+         :background nil
+         :foreground "#333344"
          )))
      '(show-paren-match
        ((((background dark))
          :inherit nil
          :weight ultra-bold
-         :background "#332244"
+         :background "#222255"
          :foreground nil))))
 
     (unless window-system
