@@ -710,8 +710,8 @@ but if not, return nil."
           ;; lines-tail ;; 長すぎる行のうち whitespace-line-column 以降部分をハイライト
           tabs
           tab-mark
-          ;; space-before-tab
-          ;; space-after-tab
+          space-before-tab
+          space-after-tab
           ))
 
   ;; デフォルトで有効にする。
@@ -762,6 +762,32 @@ but if not, return nil."
 (define-key lisp-interaction-mode-map "\C-cfl" 'find-library)
 (define-key lisp-interaction-mode-map "\C-cdf" 'describe-function)
 (define-key lisp-interaction-mode-map "\C-cdv" 'describe-variable)
+
+(kui/with-lib "go-mode"
+  (kui/with-pkg 'go-autocomplete)
+
+  (defun kui/go-init ()
+    (set (make-variable-buffer-local 'tab-width) 4))
+  (add-hook 'go-mode-hook 'kui/go-init)
+  (add-hook 'before-save-hook 'gofmt-before-save)
+
+  ;; http://emacs-jp.github.io/programming/golang.html
+  ;; define helm-go-source
+  (kui/with-pkg 'helm
+    (defvar kui/helm-go-source
+      '((name . "Helm Go")
+        (candidates . (lambda ()
+                        (cons "builtin" (go-packages))))
+        (action . (("Show document" . godoc)
+                   ("Import package" . kui/helm-go-import-add)))))
+    (defun kui/helm-go-import-add (candidate)
+      (dolist (package (helm-marked-candidates))
+        (go-import-add current-prefix-arg package)))
+    (defun kui/helm-go ()
+      (interactive)
+      (helm :sources '(kui/helm-go-source) :buffer "*helm go*")))
+  (define-key go-mode-map "\C-o" 'godef-jump)
+  (define-key go-mode-map "\C-O" 'pop-tag-mark))
 
 (kui/with-pkg 'markdown-mode
   (defun kui/markdown-init ()
@@ -1008,6 +1034,12 @@ but if not, return nil."
      '(hl-line
        ((((background dark))
          :background "#112244")))
+     '(whitespace-tab
+       ((((background dark))
+         ;; :background "#373b41"
+         :background "#272b31"
+         :foreground "#666666"
+         )))
      '(show-paren-match
        ((((background dark))
          :inherit nil

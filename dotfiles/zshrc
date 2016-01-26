@@ -40,6 +40,10 @@ fi
 [[ -n "${JAVA_HOME}" ]] && export JAVA_HOME
 
 ############################################################
+# go
+export GOPATH="$HOME/golang"
+
+############################################################
 # パスの設定
 ## (N-/): 存在しないディレクトリは登録しない。
 ##    パス(...): ...という条件にマッチするパスのみ残す。
@@ -55,6 +59,7 @@ path=(
     $HOME/.nodebrew/current/bin(N-/)
     $HOME/.homebrew/bin(N-/)
     $GEM_HOME/bin(N-/)
+    $GOPATH/bin
     /opt/local/bin(N-/)
     $path
     /usr/local/heroku/bin(N-/)
