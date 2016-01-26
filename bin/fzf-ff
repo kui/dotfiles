@@ -1,0 +1,29 @@
+#!/bin/bash
+
+while true; do
+    o="$(find -L "$PWD" 2>/dev/null | fzf-tmux --multi --prompt="find file > " --expect 'ctrl-l,alt-l')"
+    count=$(tail -n +2 <<<"$o" | wc -l)
+    if [ $count -eq 0 ]; then
+        exit 1
+    fi
+
+    expect="$(sed -ne '1p' <<<"$o")"
+    case "$expect" in
+        '')
+            tail -n +2 <<<"$o"
+            exit
+            ;;
+        ctrl-l)
+            cd ..
+            continue
+            ;;
+        alt-l)
+            cd "$(dirname "$(sed -ne '2p' <<<"$o")")"
+            continue
+            ;;
+        *)
+            echo error >&2
+            exit 1
+            ;;
+    esac
+done

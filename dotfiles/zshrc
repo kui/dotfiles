@@ -597,7 +597,7 @@ zle     -N    fzf-search-file
 bindkey '^xs' fzf-search-file
 
 fzf-find-file() {
-    local f="$(find -L . | fzf-tmux --prompt='find file > ')"
+    local f="$(fzf-ff)"
     LBUFFER="${LBUFFER}$f"
     zle redisplay
 }
