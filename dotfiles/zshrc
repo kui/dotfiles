@@ -63,6 +63,7 @@ path=(
     /opt/local/bin(N-/)
     $path
     /usr/local/heroku/bin(N-/)
+    /usr/local/go/bin(N-/)
     /usr/local/{rvm,rbenv}/bin(N-/)
     /app/{script,mingw/tdm/bin,gs/bin,gs/lib}(N-/)
     /usr{/local,/usr,}/bin(N-/)

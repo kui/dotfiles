@@ -158,10 +158,10 @@
 
 Example:
 
-	(kui/pop-as-alist '(:a :b) '(:a 1 :b 2 :c 3))
-	;; => ((:a . 1) (:b . 2))
-	(kui/pop-as-alist '(:a :b) '(:d 1 :e 2 :a 3 :b 4))
-	;; => nil"
+    (kui/pop-as-alist '(:a :b) '(:a 1 :b 2 :c 3))
+    ;; => ((:a . 1) (:b . 2))
+    (kui/pop-as-alist '(:a :b) '(:d 1 :e 2 :a 3 :b 4))
+    ;; => nil"
   (let ((first (nth 0 seq)))
     (if (cl-find first keys)
         (cons `(,(nth 0 seq) . ,(nth 1 seq))
@@ -202,17 +202,17 @@ See also `kui/with-pkg'.
 
 Examples:
 
-	(when (kui/package-require 'git-gutter)
-	  (global-git-gutter-mode t))
+    (when (kui/package-require 'git-gutter)
+      (global-git-gutter-mode t))
 
-	(when (kui/package-require 'auto-complete-config
-	                           :packagename 'auto-complete)
-	  (ac-config-default)
-	  (global-auto-complete-mode t))
+    (when (kui/package-require 'auto-complete-config
+                               :packagename 'auto-complete)
+      (ac-config-default)
+      (global-auto-complete-mode t))
 
-	(when (kui/package-require 'typescript-mode
-	                           :filename \"TypeScript\")
-	  (add-hook 'typescript-mode-hook (lambda () ... )))"
+    (when (kui/package-require 'typescript-mode
+                               :filename \"TypeScript\")
+      (add-hook 'typescript-mode-hook (lambda () ... )))"
   (let* ((opts (kui/pop-as-alist '(:file :package :throwerror) args))
          (fl (cdr (assoc :file opts)))
          (pkg (or (cdr (assoc :package opts)) feature))
@@ -234,17 +234,17 @@ Examples:
 
 Examples:
 
-	(kui/with-pkg 'git-gutter
-	  (global-git-gutter-mode t))
+    (kui/with-pkg 'git-gutter
+      (global-git-gutter-mode t))
 
-	(kui/with-pkg 'auto-complete-config
-	  :packagename 'auto-complete
-	  (ac-config-default)
-	  (global-auto-complete-mode t))
+    (kui/with-pkg 'auto-complete-config
+      :packagename 'auto-complete
+      (ac-config-default)
+      (global-auto-complete-mode t))
 
-	(kui/with-pkg 'typescript-mode
-	  :filename \"TypeScript\"
-	  (add-hook 'typescript-mode-hook (lambda () ... )))"
+    (kui/with-pkg 'typescript-mode
+      :filename \"TypeScript\"
+      (add-hook 'typescript-mode-hook (lambda () ... )))"
   (let* ((opts (kui/pop-as-alist '(:file :package) args))
          (fname (cdr (assoc :file opts)))
          (pname (cdr (assoc :package opts)))
@@ -692,7 +692,8 @@ but if not, return nil."
     (define-key helm-map "\C-h" 'delete-backward-char)
     (define-key helm-map "\C-w" 'kui/backward-kill-word-or-kill-region)
     (define-key helm-map "\C-u" 'kui/backward-kill-line)
-    (define-key helm-map "TAB" 'helm-execute-persistent-action)
+    (define-key helm-map "TAB" 'helm-execute-persistent-action))
+  (kui/after-loaded 'helm-find-files
     (define-key helm-find-files-map "\M-l" 'helm-execute-persistent-action))
 
   (kui/with-pkg 'helm-swoop
@@ -787,8 +788,10 @@ but if not, return nil."
     (defun kui/helm-go ()
       (interactive)
       (helm :sources '(kui/helm-go-source) :buffer "*helm go*")))
-  (define-key go-mode-map "\C-o" 'godef-jump)
-  (define-key go-mode-map "\C-O" 'pop-tag-mark))
+
+  (kui/after-loaded 'go-mode
+    (define-key go-mode-map "\C-o" 'godef-jump)
+    (define-key go-mode-map "\C-O" 'pop-tag-mark)))
 
 (kui/with-pkg 'markdown-mode
   (defun kui/markdown-init ()
