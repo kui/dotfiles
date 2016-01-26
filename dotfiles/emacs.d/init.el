@@ -692,7 +692,8 @@ but if not, return nil."
     (define-key helm-map "\C-h" 'delete-backward-char)
     (define-key helm-map "\C-w" 'kui/backward-kill-word-or-kill-region)
     (define-key helm-map "\C-u" 'kui/backward-kill-line)
-    (define-key helm-map "TAB" 'helm-execute-persistent-action))
+    (define-key helm-map "TAB" 'helm-execute-persistent-action)
+    (define-key helm-find-files-map "\M-l" 'helm-execute-persistent-action))
 
   (kui/with-pkg 'helm-swoop
     (define-key helm-swoop-map "\C-w" 'kui/backward-kill-word-or-kill-region)
