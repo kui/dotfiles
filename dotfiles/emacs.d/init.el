@@ -681,7 +681,6 @@ but if not, return nil."
   (global-set-key "\C-xa" 'helm-apropos)
   (global-set-key "\C-x\C-f" 'helm-find-files)
   (global-set-key "\C-xb" 'helm-buffers-list)
-  ;; (global-set-key "\C-o" 'helm-buffers-list)
   (global-set-key "\M-o" 'helm-imenu)
   (global-set-key "\C-o" 'helm-imenu)
   (global-set-key "\M-i" 'helm-buffers-list)
@@ -792,8 +791,8 @@ but if not, return nil."
     (kui/with-pkg 'go-autocomplete)
     (add-hook 'go-mode-hook 'kui/go-init)
     (add-hook 'before-save-hook 'gofmt-before-save)
-    (define-key go-mode-map "\C-o" 'godef-jump)
-    (define-key go-mode-map "\C-O" 'pop-tag-mark))
+    (define-key go-mode-map "\M-." 'godef-jump)
+    (define-key go-mode-map "\M-," 'pop-tag-mark))
   )
 
 (kui/with-pkg 'markdown-mode
