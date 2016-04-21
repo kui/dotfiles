@@ -582,7 +582,8 @@ fzf-ps() {
     fi
 }
 zle     -N    fzf-ps
-bindkey '^xp' fzf-ps
+[[ -x "$(which fzf-tmux)" ]] && \
+    bindkey '^xp' fzf-ps
 
 fzf-search-file() {
     local f="$(find -L . -type f -exec sh -c "file '{}' | grep -q text" \; -print | \
@@ -595,7 +596,8 @@ fzf-search-file() {
     fi
 }
 zle     -N    fzf-search-file
-bindkey '^xs' fzf-search-file
+[[ -x "$(which fzf-tmux)" ]] && \
+    bindkey '^xs' fzf-search-file
 
 fzf-find-file() {
     local f="$(fzf-ff)"
@@ -603,7 +605,8 @@ fzf-find-file() {
     zle redisplay
 }
 zle     -N     fzf-find-file
-bindkey '^x^f' fzf-find-file
+[[ -x "$(which fzf-tmux)" ]] && \
+    bindkey '^x^f' fzf-find-file
 
 fzf-exec() {
     local c="$(zle -la | grep -v '^\.' | fzf-tmux --prompt='exec widget > ')"
@@ -611,7 +614,8 @@ fzf-exec() {
     zle redisplay
 }
 zle     -N   fzf-exec
-bindkey '\ex' fzf-exec
+[[ -x "$(which fzf-tmux)" ]] && \
+    bindkey '\ex' fzf-exec
 
 fzf-cd-history() {
     local d="$(cdr -l | sed -r 's/^[0-9]+ +//' | \
@@ -624,7 +628,8 @@ fzf-cd-history() {
     fi
 }
 zle     -N    fzf-cd-history
-bindkey '\ei' fzf-cd-history
+[[ -x "$(which fzf-tmux)" ]] && \
+    bindkey '\ei' fzf-cd-history
 
 fzf-history-widget() {
   local selected num
@@ -645,7 +650,8 @@ fzf-history-widget() {
   zle redisplay
 }
 zle     -N   fzf-history-widget
-bindkey '^R' fzf-history-widget
+[[ -x "$(which fzf-tmux)" ]] && \
+    bindkey '^R' fzf-history-widget
 
 #############################################################
 # 時間のかかったコマンドは、通知システムに通知する
