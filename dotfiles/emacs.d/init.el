@@ -681,7 +681,6 @@ but if not, return nil."
   (global-set-key "\C-xa" 'helm-apropos)
   (global-set-key "\C-x\C-f" 'helm-find-files)
   (global-set-key "\C-xb" 'helm-buffers-list)
-  ;; (global-set-key "\C-o" 'helm-buffers-list)
   (global-set-key "\M-o" 'helm-imenu)
   (global-set-key "\C-o" 'helm-imenu)
   (global-set-key "\M-i" 'helm-buffers-list)
@@ -768,12 +767,6 @@ but if not, return nil."
 ;; http://emacs-jp.github.io/programming/golang.html
 (kui/with-lib "go-mode"
   (kui/with-pkg 'go-autocomplete)
-
-  (defun kui/go-init ()
-    (set (make-variable-buffer-local 'tab-width) 4)
-    (set (make-variable-buffer-local 'whitespace-style)
-         '(face tab-mark tabs)))
-
   (kui/with-pkg 'helm
     (defvar kui/helm-go-source
       '((name . "Helm Go")
@@ -789,11 +782,18 @@ but if not, return nil."
       (interactive)
       (helm :sources '(kui/helm-go-source) :buffer "*helm go*")))
 
-  (kui/after-loaded 'go-mode
+  (defun kui/go-init ()
+    (set (make-variable-buffer-local 'tab-width) 4)
+    (set (make-variable-buffer-local 'whitespace-style)
+         '(face tab-mark tabs)))
+
+  (kui/after-loaded "go-mode"
+    (kui/with-pkg 'go-autocomplete)
     (add-hook 'go-mode-hook 'kui/go-init)
     (add-hook 'before-save-hook 'gofmt-before-save)
-    (define-key go-mode-map "\C-o" 'godef-jump)
-    (define-key go-mode-map "\C-O" 'pop-tag-mark)))
+    (define-key go-mode-map "\M-." 'godef-jump)
+    (define-key go-mode-map "\M-," 'pop-tag-mark))
+  )
 
 (kui/with-pkg 'markdown-mode
   (defun kui/markdown-init ()

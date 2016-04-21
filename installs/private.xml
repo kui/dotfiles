@@ -31,6 +31,26 @@
         </autogen>
       </item>
       <item>
+        <name>Command+. to F3 (Find definition)</name>
+        <identifier>kui.ide.commandDot</identifier>
+        <only>IDE</only>
+        <autogen>
+          __KeyToKey__
+          KeyCode::O, MODIFIERFLAG_EITHER_LEFT_OR_RIGHT_CONTROL | ModifierFlag::NONE,
+          KeyCode::DOT
+        </autogen>
+      </item>
+      <item>
+        <name>Command+, to Command+[ (Back)</name>
+        <identifier>kui.ide.commandOpenBracket</identifier>
+        <only>IDE</only>
+        <autogen>
+          __KeyToKey__
+          KeyCode::O, MODIFIERFLAG_EITHER_LEFT_OR_RIGHT_CONTROL | ModifierFlag::NONE,
+          KeyCode::BRACKET_LEFT
+        </autogen>
+      </item>
+      <item>
         <name>Command+I to Command+E (Search editing files)</name>
         <identifier>kui.ide.commandI</identifier>
         <only>IDE</only>
