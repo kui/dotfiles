@@ -5,6 +5,7 @@ a.scorecardresearch.com
 a.scorecardresearch.com
 a.socdm.com
 a.yieldsquare.com
+ad-api-v01.uliza.jp
 ad-stir.com
 ad.ad-stir.com
 ad.adlantis.jp
@@ -20,6 +21,7 @@ ads.rubiconproject.com
 ads.yahoo.com
 adsvids.com
 ai.yimg.jp
+aka-uae-dl.uliza.jp
 aladdin.genieesspv.jp
 anz.rd.rakuten.co.jp
 ard.yahoo.co.jp
