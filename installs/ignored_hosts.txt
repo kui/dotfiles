@@ -20,12 +20,14 @@ ads.pubmatic.com
 ads.rubiconproject.com
 ads.yahoo.com
 adsvids.com
+afs.adjust-net.jp
 ai.yimg.jp
 aka-uae-dl.uliza.jp
 aladdin.genieesspv.jp
 anz.rd.rakuten.co.jp
 ard.yahoo.co.jp
 as.dc.impact-ad.jp
+as.oe.impact-ad.jp
 b.iogous.com
 b.one.impact-ad.jp
 b.scorecardresearch.com
@@ -79,6 +81,7 @@ j.microad.net
 j.one.impact-ad.jp
 j.socdm.com
 jp-ads.mediaforge.com
+jp3ast-cdn.goldspotmedia.com
 js.ad-stir.com
 js.gsspcln.jp
 js.moatads.com
