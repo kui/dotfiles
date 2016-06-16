@@ -19,6 +19,7 @@ ads.nicovideo.jp
 ads.pubmatic.com
 ads.rubiconproject.com
 ads.yahoo.com
+adserver.adtechjp.com
 adsvids.com
 afs.adjust-net.jp
 ai.yimg.jp
@@ -81,6 +82,7 @@ j.microad.net
 j.one.impact-ad.jp
 j.socdm.com
 jp-ads.mediaforge.com
+jp.at.atwola.com
 jp3ast-cdn.goldspotmedia.com
 js.ad-stir.com
 js.gsspcln.jp
