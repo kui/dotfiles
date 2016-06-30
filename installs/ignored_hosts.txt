@@ -9,6 +9,7 @@ ad-api-v01.uliza.jp
 ad-stir.com
 ad.ad-stir.com
 ad.adlantis.jp
+ad.doubleclick.net
 ad.fout.jp
 ad.maist.jp
 ad.yieldmanager.com
@@ -21,6 +22,7 @@ ads.rubiconproject.com
 ads.yahoo.com
 adserver.adtechjp.com
 adsvids.com
+advg.jp
 afs.adjust-net.jp
 ai.yimg.jp
 aka-uae-dl.uliza.jp
@@ -50,6 +52,7 @@ cdn.adsafeprotected.com
 cdn.adsrv247.com
 cdn.apvdr.com
 cdn.cxense.com
+cdn.smartcanvas.net
 cdn.teads.tv
 cdn.vidible.tv
 cloud.lokaplatform.com
@@ -58,6 +61,7 @@ d.href.asia
 d.one.impact-ad.jp
 d.socdm.com
 ds.advg.jp
+dsp.advg.jp
 e.one.impact-ad.jp
 e.socdm.com
 f.one.impact-ad.jp
@@ -88,11 +92,13 @@ js.ad-stir.com
 js.gsspcln.jp
 js.moatads.com
 k.one.impact-ad.jp
+k.smartcanvas.net
 kauli.socdm.com
 l.one.impact-ad.jp
 m.one.impact-ad.jp
 mediad2.jp
 n.one.impact-ad.jp
+na.ads.yahoo.com
 o.one.impact-ad.jp
 o.yieldsquare.com
 optimized-by.rubiconproject.com
@@ -112,6 +118,7 @@ rs.adapf.com
 s.f1.impact-ad.jp
 s.flite.com
 s.one.impact-ad.jp
+s.yimg.com
 s0.2mdn.net
 s1.2mdn.net
 s2.2mdn.net
@@ -124,6 +131,7 @@ s8.2mdn.net
 s9.2mdn.net
 secure.adnxs.com
 sin1.g.adnxs.com
+smartcanvas.net
 spad.i-mobile.co.jp
 spdeliver.i-mobile.co.jp
 spnet5.i-mobile.co.jp
