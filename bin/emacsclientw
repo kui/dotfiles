@@ -92,7 +92,7 @@ def get_progress_char(c):
 class ServerNamePrinter:
     def run(self, args):
         server = get_server()
-        print(server.name)
+        print(server.name())
 
 class EmacsclientInvoker:
     def run(self, args):
