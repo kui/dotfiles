@@ -137,6 +137,7 @@ spdeliver.i-mobile.co.jp
 spnet5.i-mobile.co.jp
 ssp.send.microad.jp
 stat.vidcore.tv
+static.affiliate.rakuten.co.jp
 static.jp.as.criteo.net
 sync.ad-stir.com
 sync.fout.jp
@@ -147,6 +148,7 @@ t.one.impact-ad.jp
 t.zqtk.net
 tags.mathtag.com
 tg.socdm.com
+thumbnail.image.rakuten.co.jp
 tpc.googlesyndication.com
 u.one.impact-ad.jp
 v.one.impact-ad.jp
@@ -154,6 +156,7 @@ vsc.send.microad.jp
 w.one.impact-ad.jp
 www.googleadservices.com
 x.one.impact-ad.jp
+xml.affiliate.rakuten.co.jp
 y.one.impact-ad.jp
 yads.yahoo.co.jp
 z.one.impact-ad.jp
