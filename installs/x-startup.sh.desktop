@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Exec=/home/kui/.dotfiles/installs/x-startup.sh
+Hidden=false
+NoDisplay=false
+X-GNOME-Autostart-enabled=true
+Name[ja]=スタートアップスクリプト
+Name=Startup script
+Comment[ja]=
+Comment=
