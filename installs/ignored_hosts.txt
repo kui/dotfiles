@@ -9,6 +9,7 @@ ad-api-v01.uliza.jp
 ad-stir.com
 ad.ad-stir.com
 ad.adlantis.jp
+ad.dmm.com
 ad.doubleclick.net
 ad.fout.jp
 ad.maist.jp
@@ -28,6 +29,7 @@ ai.yimg.jp
 aka-uae-dl.uliza.jp
 aladdin.genieesspv.jp
 anz.rd.rakuten.co.jp
+aqua.dmm.co.jp
 ard.yahoo.co.jp
 as.dc.impact-ad.jp
 as.oe.impact-ad.jp
@@ -106,6 +108,7 @@ otapict.com
 p.flite.com
 p.one.impact-ad.jp
 pagead2.googlesyndication.com
+pics.dmm.com
 pixel.mathtag.com
 productsearch.ubuntu.com
 pubads.g.doubleclick.net
