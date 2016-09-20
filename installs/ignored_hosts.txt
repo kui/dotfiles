@@ -20,6 +20,7 @@ ads.adjust-net.jp
 ads.nicovideo.jp
 ads.pubmatic.com
 ads.rubiconproject.com
+ads.tersertude.com
 ads.yahoo.com
 adserver.adtechjp.com
 adsvids.com
@@ -29,6 +30,7 @@ ai.yimg.jp
 aka-uae-dl.uliza.jp
 aladdin.genieesspv.jp
 anz.rd.rakuten.co.jp
+ap.lijit.com
 aqua.dmm.co.jp
 ard.yahoo.co.jp
 as.dc.impact-ad.jp
@@ -132,6 +134,7 @@ s6.2mdn.net
 s7.2mdn.net
 s8.2mdn.net
 s9.2mdn.net
+sdk.streamrail.com
 secure.adnxs.com
 sin1.g.adnxs.com
 smartcanvas.net
