@@ -112,6 +112,7 @@ p.one.impact-ad.jp
 pagead2.googlesyndication.com
 pics.dmm.com
 pixel.mathtag.com
+player.sbs.co.kr
 productsearch.ubuntu.com
 pubads.g.doubleclick.net
 q.flite.com
