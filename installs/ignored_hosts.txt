@@ -29,6 +29,7 @@ afs.adjust-net.jp
 ai.yimg.jp
 aka-uae-dl.uliza.jp
 aladdin.genieesspv.jp
+an.cmertv.com
 anz.rd.rakuten.co.jp
 ap.lijit.com
 aqua.dmm.co.jp
