@@ -9,6 +9,7 @@ ad-api-v01.uliza.jp
 ad-stir.com
 ad.ad-stir.com
 ad.adlantis.jp
+ad.adriver.ru
 ad.dmm.com
 ad.doubleclick.net
 ad.fout.jp
@@ -21,6 +22,7 @@ ads.nicovideo.jp
 ads.pubmatic.com
 ads.rubiconproject.com
 ads.tersertude.com
+ads.tersertude.com
 ads.yahoo.com
 adserver.adtechjp.com
 adsvids.com
@@ -29,6 +31,7 @@ afs.adjust-net.jp
 ai.yimg.jp
 aka-uae-dl.uliza.jp
 aladdin.genieesspv.jp
+an.cmertv.com
 anz.rd.rakuten.co.jp
 ap.lijit.com
 aqua.dmm.co.jp
