@@ -918,9 +918,11 @@ but if not, return nil."
     (kui/flycheck-set-node-modules-bin 'javascript-jshint "jshint")
     (kui/flycheck-set-node-modules-bin 'javascript-eslint "eslint")
     ;; disable jshint if eslint can be used
-    (when (flycheck-may-use-checker 'javascript-eslint)
-      (message "disale jshint on flycheck")
-      (flycheck-disable-checker 'javascript-jshint)))
+    ;;   commented out because current version flycheck dose NOT work right
+    ;; (when (flycheck-may-use-checker 'javascript-eslint)
+    ;;   (message "disale jshint on flycheck")
+    ;;   (flycheck-disable-checker 'javascript-jshint))
+    )
   (add-hook 'js-mode-hook 'kui/flycheck-init-js)
   (add-hook 'js2-mode-hook 'kui/flycheck-init-js))
 (kui/after-loaded "js"
