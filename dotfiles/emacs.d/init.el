@@ -94,7 +94,7 @@
 (defvar kui/max-colmun-number (/ 1000 (frame-char-width))) ;; 1000 px
 
 ;; マーク範囲をハイライト
-(setq-default transient-mark-mode t)
+(setq transient-mark-mode t)
 
 ;; 現在の行をハイライト
 (global-hl-line-mode)
@@ -543,11 +543,14 @@ but if not, return nil."
 
 (kui/with-pkg 'flycheck
   (add-hook 'after-init-hook #'global-flycheck-mode)
-  (kui/with-pkg 'flycheck-pos-tip
-    (setq flycheck-display-errors-function #'flycheck-pos-tip-error-messages))
 
-  (global-set-key (kbd "C-.") 'flycheck-next-error)
-  (global-set-key (kbd "C->") 'flycheck-previous-error)
+  ;; Do not use flycheck-pos-tip, it seems not to work right on Mac
+  ;;(kui/with-pkg 'flycheck-pos-tip)
+
+  (push '(flycheck-error-list-mode :position :bottom :height 20 :dedicated t)
+        popwin:special-display-config)
+
+  (global-set-key (kbd "M-e") 'flycheck-list-errors)
   )
 
 ;; company-mode
@@ -1030,7 +1033,7 @@ but if not, return nil."
  '(hl-line
    ((((background light))
      :background "#eeeeff"))))
-(when (featurep 'git-gutter)
+(kui/with-lib "git-gutter"
   (custom-set-faces
    '(git-gutter-fr:added ((t (:inherit (fringe git-gutter:added)))))
    '(git-gutter-fr:deleted ((t (:inherit (fringe git-gutter:deleted)))))
