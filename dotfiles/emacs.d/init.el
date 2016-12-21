@@ -94,7 +94,7 @@
 (defvar kui/max-colmun-number (/ 1000 (frame-char-width))) ;; 1000 px
 
 ;; マーク範囲をハイライト
-(setq-default transient-mark-mode t)
+(setq transient-mark-mode t)
 
 ;; 現在の行をハイライト
 (global-hl-line-mode)
@@ -123,6 +123,9 @@
 
 ;; goto-line を実行
 (define-key ctl-x-map "l" 'goto-line)
+
+;; 直前のカーソル位置に戻る
+(global-set-key "\M-[" 'pop-global-mark)
 
 ;; -------------------------------------------------------------------------
 ;; 自作関数
@@ -479,12 +482,7 @@ but if not, return nil."
 ;; git-gutter
 (kui/with-pkg 'git-gutter
   (global-git-gutter-mode t)
-
-  (setq git-gutter:unchanged-sign " ")
-
-  (global-set-key "\C-cgn" 'git-gutter:next-hunk)
-  (global-set-key "\C-cgp" 'git-gutter:previous-hunk)
-  (global-set-key "\C-cgo" 'git-gutter:popup-hunk)
+  (kui/with-pkg 'git-gutter-fringe)
   )
 
 ;; git-blame
@@ -545,11 +543,14 @@ but if not, return nil."
 
 (kui/with-pkg 'flycheck
   (add-hook 'after-init-hook #'global-flycheck-mode)
-  (kui/with-pkg 'flycheck-pos-tip
-    (setq flycheck-display-errors-function #'flycheck-pos-tip-error-messages))
 
-  (global-set-key (kbd "C-.") 'flycheck-next-error)
-  (global-set-key (kbd "C->") 'flycheck-previous-error)
+  ;; Do not use flycheck-pos-tip, it seems not to work right on Mac
+  ;;(kui/with-pkg 'flycheck-pos-tip)
+
+  (push '(flycheck-error-list-mode :position :bottom :height 20 :dedicated t)
+        popwin:special-display-config)
+
+  (global-set-key (kbd "M-e") 'flycheck-list-errors)
   )
 
 ;; company-mode
@@ -918,9 +919,11 @@ but if not, return nil."
     (kui/flycheck-set-node-modules-bin 'javascript-jshint "jshint")
     (kui/flycheck-set-node-modules-bin 'javascript-eslint "eslint")
     ;; disable jshint if eslint can be used
-    (when (flycheck-may-use-checker 'javascript-eslint)
-      (message "disale jshint on flycheck")
-      (flycheck-disable-checker 'javascript-jshint)))
+    ;;   commented out because current version flycheck dose NOT work right
+    ;; (when (flycheck-may-use-checker 'javascript-eslint)
+    ;;   (message "disale jshint on flycheck")
+    ;;   (flycheck-disable-checker 'javascript-jshint))
+    )
   (add-hook 'js-mode-hook 'kui/flycheck-init-js)
   (add-hook 'js2-mode-hook 'kui/flycheck-init-js))
 (kui/after-loaded "js"
@@ -1024,72 +1027,25 @@ but if not, return nil."
     (add-hook 'kill-buffer-hook 'tss--delete-process t))
   )
 
-;; -------------------------------------------------------------------------
-;; 色とか
-(kui/with-pkg 'color-theme
-  (color-theme-initialize)
-
-  (kui/with-pkg 'color-theme-sanityinc-tomorrow
-    (load-theme 'sanityinc-tomorrow-night t)
-    (custom-set-faces
-     '(highlight
-       ((((background dark))
-         :upperline t
-         :underline t
-         :background "#441133")))
-     '(hl-line
-       ((((background dark))
-         :background "#112244")))
-     '(whitespace-tab
-       ((((background dark))
-         ;; :background "#373b41"
-         :background nil
-         :foreground "#333344"
-         )))
-     '(show-paren-match
-       ((((background dark))
-         :inherit nil
-         :weight ultra-bold
-         :background "#222255"
-         :foreground nil))))
-
-    (unless window-system
-      (custom-set-faces
-       '(mode-line
-         ((((background dark))
-           :background "#444444")))
-       '(highlight
-         ((((background dark))
-           :background "#262626"
-           :inherit nil))))))
-  )
-
-(when (featurep 'helm)
+;; ;; -------------------------------------------------------------------------
+;; ;; 色とか
+(custom-set-faces
+ '(hl-line
+   ((((background light))
+     :background "#eeeeff"))))
+(kui/with-lib "git-gutter"
   (custom-set-faces
-   '(helm-buffer-directory
-     ((((background dark))
-       :foreground "#33ff33")))
-   '(helm-ff-directory
-     ((((background dark))
-       :foreground "#33ff33")))
-   '(helm-selection
-     ((t
-       :inherit 'highlight
-       :weight bold)))))
-
-(when (featurep 'git-gutter)
-  (dolist (f '(git-gutter:unchanged git-gutter:modified
-               git-gutter:added git-gutter:deleted))
-    (custom-set-faces `(,f ((((background dark))
-                             :background "#333300"
-                             :inverse-video nil)
-                            (((background light))
-                             :backgorund "#ffff99"
-                             :inverse-video nil))))))
+   '(git-gutter-fr:added ((t (:inherit (fringe git-gutter:added)))))
+   '(git-gutter-fr:deleted ((t (:inherit (fringe git-gutter:deleted)))))
+   '(git-gutter-fr:modified ((t (:inherit (fringe git-gutter:modified)))))
+   ))
 
 (when window-system
   ;; カーソルの色
-  (set-cursor-color "green")
+  ;; (set-cursor-color "geeen")
+
+  ;; カーソルの形
+  (setq cursor-type 'bar)
 
   ;; ツールバーの表示
   (tool-bar-mode -1)

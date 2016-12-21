@@ -57,11 +57,13 @@ cdn.ad.maist.jp
 cdn.adnxs.com
 cdn.adsafeprotected.com
 cdn.adsrv247.com
+cdn.amp.live
 cdn.apvdr.com
 cdn.cxense.com
 cdn.smartcanvas.net
 cdn.teads.tv
 cdn.vidible.tv
+choices.truste.com
 cloud.lokaplatform.com
 cs.gssprt.jp
 d.href.asia
@@ -83,12 +85,14 @@ h.socdm.com
 i.ad-v.jp
 i.one.impact-ad.jp
 i.socdm.com
+i2ad.jp
 ib.adnxs.com
 image.ias.rakuten.co.jp
 img.adplan-ds.com
 img.ak.impact-ad.jp
 img01.mediad2.jp
 imp.asahi.com
+insight.adsrvr.org
 j.microad.net
 j.microad.net
 j.one.impact-ad.jp
@@ -109,6 +113,7 @@ n.one.impact-ad.jp
 na.ads.yahoo.com
 o.one.impact-ad.jp
 o.yieldsquare.com
+openxjapan-d.openx.net
 optimized-by.rubiconproject.com
 otapict.com
 p.flite.com
@@ -118,6 +123,7 @@ pics.dmm.com
 pixel.mathtag.com
 player.sbs.co.kr
 productsearch.ubuntu.com
+proparm.jp
 pubads.g.doubleclick.net
 q.flite.com
 q.one.impact-ad.jp
@@ -147,6 +153,7 @@ spad.i-mobile.co.jp
 spdeliver.i-mobile.co.jp
 spnet5.i-mobile.co.jp
 ssp.send.microad.jp
+stab.thench.net
 stat.vidcore.tv
 static.affiliate.rakuten.co.jp
 static.jp.as.criteo.net
@@ -160,6 +167,7 @@ t.zqtk.net
 tags.mathtag.com
 tg.socdm.com
 thumbnail.image.rakuten.co.jp
+tokfb.adsrvr.org
 tpc.googlesyndication.com
 u.one.impact-ad.jp
 v.one.impact-ad.jp
