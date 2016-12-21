@@ -479,12 +479,7 @@ but if not, return nil."
 ;; git-gutter
 (kui/with-pkg 'git-gutter
   (global-git-gutter-mode t)
-
-  (setq git-gutter:unchanged-sign " ")
-
-  (global-set-key "\C-cgn" 'git-gutter:next-hunk)
-  (global-set-key "\C-cgp" 'git-gutter:previous-hunk)
-  (global-set-key "\C-cgo" 'git-gutter:popup-hunk)
+  (kui/with-pkg 'git-gutter-fringe)
   )
 
 ;; git-blame
@@ -1026,72 +1021,25 @@ but if not, return nil."
     (add-hook 'kill-buffer-hook 'tss--delete-process t))
   )
 
-;; -------------------------------------------------------------------------
-;; 色とか
-(kui/with-pkg 'color-theme
-  (color-theme-initialize)
-
-  (kui/with-pkg 'color-theme-sanityinc-tomorrow
-    (load-theme 'sanityinc-tomorrow-night t)
-    (custom-set-faces
-     '(highlight
-       ((((background dark))
-         :upperline t
-         :underline t
-         :background "#441133")))
-     '(hl-line
-       ((((background dark))
-         :background "#112244")))
-     '(whitespace-tab
-       ((((background dark))
-         ;; :background "#373b41"
-         :background nil
-         :foreground "#333344"
-         )))
-     '(show-paren-match
-       ((((background dark))
-         :inherit nil
-         :weight ultra-bold
-         :background "#222255"
-         :foreground nil))))
-
-    (unless window-system
-      (custom-set-faces
-       '(mode-line
-         ((((background dark))
-           :background "#444444")))
-       '(highlight
-         ((((background dark))
-           :background "#262626"
-           :inherit nil))))))
-  )
-
-(when (featurep 'helm)
-  (custom-set-faces
-   '(helm-buffer-directory
-     ((((background dark))
-       :foreground "#33ff33")))
-   '(helm-ff-directory
-     ((((background dark))
-       :foreground "#33ff33")))
-   '(helm-selection
-     ((t
-       :inherit 'highlight
-       :weight bold)))))
-
+;; ;; -------------------------------------------------------------------------
+;; ;; 色とか
+(custom-set-faces
+ '(hl-line
+   ((((background light))
+     :background "#eeeeff"))))
 (when (featurep 'git-gutter)
-  (dolist (f '(git-gutter:unchanged git-gutter:modified
-               git-gutter:added git-gutter:deleted))
-    (custom-set-faces `(,f ((((background dark))
-                             :background "#333300"
-                             :inverse-video nil)
-                            (((background light))
-                             :backgorund "#ffff99"
-                             :inverse-video nil))))))
+  (custom-set-faces
+   '(git-gutter-fr:added ((t (:inherit (fringe git-gutter:added)))))
+   '(git-gutter-fr:deleted ((t (:inherit (fringe git-gutter:deleted)))))
+   '(git-gutter-fr:modified ((t (:inherit (fringe git-gutter:modified)))))
+   ))
 
 (when window-system
   ;; カーソルの色
-  (set-cursor-color "green")
+  ;; (set-cursor-color "geeen")
+
+  ;; カーソルの形
+  (setq cursor-type 'bar)
 
   ;; ツールバーの表示
   (tool-bar-mode -1)
