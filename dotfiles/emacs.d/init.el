@@ -310,6 +310,13 @@ but if not, return nil."
                             ""
                             str))
 
+(defun kui/face-at-point (pos)
+  "Print face at POS."
+  (interactive "d")
+  (let ((face (or (get-char-property pos 'read-face-name)
+                  (get-char-property pos 'face))))
+    (if face (message "Face: %s" face) (message "No face at %d" pos))))
+
 ;; -------------------------------------------------------------------------
 ;; 便利な感じのマイナーモード
 
@@ -362,7 +369,7 @@ but if not, return nil."
   (kui/append-to-list 'popwin:special-display-config
     '(direx:direx-mode :position :left :width 40 :dedicated t))
   (defun kui/jump-to-project-directory-other-window-if-in-project ()
-    "Open directory tree from project root"
+    "Open directory tree from project root."
     (interactive)
     (if (direx-project:find-project-root-noselect (or buffer-file-name default-directory))
         (direx-project:jump-to-project-root-other-window)
@@ -828,7 +835,8 @@ but if not, return nil."
                              "Inconsolata-12"
                              "Monospace-12")))
     (message "Use font: %s" font)
-    (if font (set-default-font font)))
+    (when font
+      (set-default-font font ":weight=medium")))
 
   ;; ウィンドウサイズを画面に揃える（精度は微妙）
   (set-frame-size
