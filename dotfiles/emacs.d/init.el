@@ -722,10 +722,18 @@ but if not, return nil."
                (flycheck-may-use-checker 'javascript-jslint))
       (message "disale jshint on flycheck")
       (flycheck-disable-checker 'javascript-jshint))
-    )
+    (when (executable-find "flow")
+      (use-package flycheck-flow :ensure t)))
+
   (add-hook 'js-mode-hook 'kui/flycheck-init-js)
   (when (featurep 'js2-mode)
-    (add-hook 'js2-mode-hook 'kui/flycheck-init-js)))
+    (add-hook 'js2-mode-hook 'kui/flycheck-init-js))
+  )
+(defun kui/eslint-fix (file)
+  "Execute eslint --fix FILE."
+  (iteractive)
+  (shell-command (concat "eslint --fix " (buffer-file-name)))
+  (revert-buffer t t t))
 
 (use-package html-mode
   :no-require t
