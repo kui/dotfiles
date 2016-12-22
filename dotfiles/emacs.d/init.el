@@ -680,8 +680,8 @@ but if not, return nil."
       ))
   (add-hook 'coffee-mode-hook
             (lambda ()
-               (set (make-local-variable 'indent-line-function)
-                    'kui/coffee-indent-line)))
+              (set (make-local-variable 'indent-line-function)
+                   'kui/coffee-indent-line)))
   )
 
 (use-package coffee-mode
@@ -705,7 +705,7 @@ but if not, return nil."
   :config
   (js2-mode-hide-warnings-and-errors)
   (add-to-list 'auto-mode-alist '("\\.js\\'"  . js2-mode)))
-(use-package "flycheck"
+(use-package flycheck
   :config
   (defun kui/use-node-modules-bin ()
     (let* ((local-path (kui/chomp-end (shell-command-to-string "npm bin"))))
@@ -722,13 +722,18 @@ but if not, return nil."
 
   (add-hook 'js-mode-hook 'kui/flycheck-init-js)
   (when (featurep 'js2-mode)
-    (add-hook 'js2-mode-hook 'kui/flycheck-init-js))
-  )
+    (add-hook 'js2-mode-hook 'kui/flycheck-init-js)))
 (defun kui/eslint-fix (file)
   "Execute eslint --fix FILE."
   (iteractive)
   (shell-command (concat "eslint --fix " (buffer-file-name)))
   (revert-buffer t t t))
+
+(use-package typescript
+  :no-require t
+  :config
+  (kui/add-to-list-if-exist 'ac-modes 'typescript-mode)
+  )
 
 (use-package html-mode
   :no-require t
@@ -793,21 +798,6 @@ but if not, return nil."
     (when (featurep 'flycheck)
       (add-hook 'flycheck-mode-hook 'flycheck-rust-setup)
       (add-hook 'rust-mode-hook 'flycheck-mode)))
-  )
-
-(use-package typescript
-  :no-require t
-  :config
-  (kui/add-to-list-if-exist 'ac-modes 'typescript-mode)
-  (use-package tts
-    :ensure t
-    :config
-    (setq tss-popup-help-key "C-:"
-          tss-jump-to-definition-key "M-."
-          tss-implement-definition-key "M-,")
-    (tss-config-default)
-    (add-hook 'typescript-mode-hook 'tss-setup-current-buffer t)
-    (add-hook 'kill-buffer-hook 'tss--delete-process t))
   )
 
 ;; -------------------------------------------------------------------------
