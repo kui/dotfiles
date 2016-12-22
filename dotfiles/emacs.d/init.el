@@ -1,19 +1,31 @@
-;; -*- mode: lisp-interaction; syntax: elisp; coding: utf-8-unix -*-
+;; init.el --- kui configs -*- coding: utf-8-unix -*-
+;;; Commentary:
+;; nyan nyan
+;;; Code:
 (message "Start init.el %s" (current-time-string))
 (defvar kui/init-start-time (float-time))
 
 (require 'cl-lib)
 
-;; パッケージ管理
-(require 'package)
-(add-to-list 'package-archives
-             '("melpa" . "http://melpa.milkbox.net/packages/") t)
-(add-to-list 'package-archives
-             '("marmalade" . "http://marmalade-repo.org/packages/"))
-(package-initialize)
+(put 'kui/append-to-list 'lisp-indent-function 1)
+(defmacro kui/append-to-list (list &rest elements)
+  "Add all to LIST.  ELEMENTS is a list of added element."
+  `(dolist (item (list ,@elements))
+     (add-to-list ,list item)))
 
-(unless package-archive-contents
-  (package-refresh-contents))
+(kui/append-to-list 'load-path
+  (locate-user-emacs-file "site-lisp"))
+
+(require 'package)
+(kui/append-to-list 'package-archives
+  '("melpa" . "http://melpa.milkbox.net/packages/")
+  '("marmalade" . "http://marmalade-repo.org/packages/"))
+(package-initialize)
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+
+(require 'use-package)
 
 ;; 言語設定は環境変数に依存
 (set-language-environment "Japanese")
@@ -30,10 +42,8 @@
 ;; (global-auto-revert-mode 1)
 
 ;; 自動保存ファイルの保存先ディレクトリ
-(defconst emacs-bk-dir
-  (concat temporary-file-directory
-          "emacs-bk-" (number-to-string (user-uid)) "/"))
-(mkdir emacs-bk-dir t) ;; TODO do mkdir recursively
+(defconst emacs-bk-dir "~/.emacs-bk/")
+(mkdir emacs-bk-dir t)
 
 ;; 自動保存機能
 (setq auto-save-default t
@@ -130,143 +140,6 @@
 ;; -------------------------------------------------------------------------
 ;; 自作関数
 
-;; pkg-alist から pkg-name のバージョンを取り出す
-(defun kui/package-get-vers (pkg-name pkg-alist)
-  "Return version of PKG-NAME in PKG-ALIST"
-  (let ((pkg-desc (car (cdr (assoc pkg-name pkg-alist)))))
-    (if pkg-desc (package-desc-version pkg-desc))))
-
-;; インストール済みの pkg-name のバージョン
-(defun kui/package-get-activated-vers (pkg-name)
-  "Return activated version of PKG-NAME"
-  (kui/package-get-vers pkg-name package-alist))
-
-;; アーカイブにある最新の pkg-name のバージョン
-(defun kui/package-get-latest-vers (pkg-name)
-  "Return latest version of PKG-NAME in archives"
-  (kui/package-get-vers pkg-name package-archive-contents))
-
-;; pkg-name のアップデートがある時は t を返す
-(defun kui/package-update-available-p (pkg-name)
-  "Return t if PKG-NAME's update is available."
-  (let ((installed-ver (kui/package-get-activated-vers pkg-name))
-        (latest-ver (kui/package-get-latest-vers pkg-name)))
-    (if latest-ver
-        (version-list-< installed-ver latest-ver)
-      (message "Cannot get latest version of package %s" pkg-name)
-      nil)))
-
-(defun kui/pop-as-alist (keys seq)
-  "Pop head elements of SEQ as alist which has KEYS.
-
-Example:
-
-    (kui/pop-as-alist '(:a :b) '(:a 1 :b 2 :c 3))
-    ;; => ((:a . 1) (:b . 2))
-    (kui/pop-as-alist '(:a :b) '(:d 1 :e 2 :a 3 :b 4))
-    ;; => nil"
-  (let ((first (nth 0 seq)))
-    (if (cl-find first keys)
-        (cons `(,(nth 0 seq) . ,(nth 1 seq))
-              (kui/pop-as-alist keys (nthcdr 2 seq)))
-      nil)))
-
-;; インストール済みでアップデート可能なパッケージをリストアップ
-(defun kui/package-update-available-package-list ()
-  "Return package list which have updates."
-  (unless package--initialized (package-initialize t))
-  (unless package-archive-contents (package-refresh-contents))
-  (remove-if (lambda (pname) (not (kui/package-update-available-p pname)))
-             package-activated-list))
-
-;; アップデート可能なインストール済みパッケージ全てをアップデート
-(defun kui/package-update-all-package (&optional non-interactive)
-  "Update all package which is update-available with y-or-n interaction.
-if NON-INTERACTIVE is non-nil, update all package without interaction."
-  (interactive)
-  (unless package--initialized (package-initialize t))
-  (unless package-archive-contents (package-refresh-contents))
-  (let ((pkg-list (kui/package-update-available-package-list)))
-    (if (not pkg-list)
-        (message "No update available package")
-      (dolist (pkg-name pkg-list)
-        (if (y-or-n-p (format "update package?: %s" pkg-name))
-            (package-install pkg-name)))
-      (package-initialize))))
-
-;; インストールされていないパッケージを require した時に、
-;; 自動でインストールしたあとに require してくれる
-(put 'kui/package-require 'lisp-indent-function 1)
-(defun kui/package-require (feature &rest args)
-  "Install and require FEATURE with `package'. return non-nil,
-if (requie future) success.
-
-See also `kui/with-pkg'.
-
-Examples:
-
-    (when (kui/package-require 'git-gutter)
-      (global-git-gutter-mode t))
-
-    (when (kui/package-require 'auto-complete-config
-                               :packagename 'auto-complete)
-      (ac-config-default)
-      (global-auto-complete-mode t))
-
-    (when (kui/package-require 'typescript-mode
-                               :filename \"TypeScript\")
-      (add-hook 'typescript-mode-hook (lambda () ... )))"
-  (let* ((opts (kui/pop-as-alist '(:file :package :throwerror) args))
-         (fl (cdr (assoc :file opts)))
-         (pkg (or (cdr (assoc :package opts)) feature))
-         (err (cdr (assoc :throwerror opts))))
-    (message "%s: feature=%s, file=%s, pacakge=%s, throwerror=%s"
-             "kui/package-require" feature fl pkg err)
-    (condition-case e
-        (let ()
-          (unless (package-installed-p pkg) (package-install pkg))
-          (require feature fl))
-      (error (if err (error (cadr e))
-               (message "Error on %s: %s"
-                        "kui/package-require" (cadr e))
-               nil)))))
-
-(put 'kui/with-pkg 'lisp-indent-function 1)
-(defmacro kui/with-pkg (feature &rest args)
-  "Install `package' and require FRETURE. Execute BODY, If FEATURE was found.
-
-Examples:
-
-    (kui/with-pkg 'git-gutter
-      (global-git-gutter-mode t))
-
-    (kui/with-pkg 'auto-complete-config
-      :packagename 'auto-complete
-      (ac-config-default)
-      (global-auto-complete-mode t))
-
-    (kui/with-pkg 'typescript-mode
-      :filename \"TypeScript\"
-      (add-hook 'typescript-mode-hook (lambda () ... )))"
-  (let* ((opts (kui/pop-as-alist '(:file :package) args))
-         (fname (cdr (assoc :file opts)))
-         (pname (cdr (assoc :package opts)))
-         (body (nthcdr (* 2 (length opts)) args)))
-    `(when (kui/package-require ,feature :file ,fname :package ,pname) ,@body)))
-
-(put 'kui/with-lib 'lisp-indent-function 1)
-(defmacro kui/with-lib (file &rest body)
-  "Execute BODY if FILE can be loaded as library.
-This macro does not load FILE. So, you cannot set variables in FILE.
-Use `kui/after-loaded'."
-  `(when (locate-library ,file) ,@body))
-
-;; 24.4 以降なら with-eval-after-loaded で同じことができる
-(put 'kui/after-loaded 'lisp-indent-function 1)
-(defmacro kui/after-loaded (file &rest body)
-  "Execute BODY after the FILE loading"
-  `(eval-after-load ,file (lambda () ,@body)))
-
 ;; このファイル(init.el)を開く
 (defun kui/find-init-file ()
   "Edit init file.
@@ -285,6 +158,7 @@ Switch to a buffer visiting init file."
 
 ;; C-w をもう少し賢く
 (defun kui/backward-kill-word-or-kill-region ()
+  "Better `backward-kill-word'."
   (interactive)
   (if (or (not transient-mark-mode) (region-active-p))
       (kill-region (region-beginning) (region-end))
@@ -301,8 +175,8 @@ Switch to a buffer visiting init file."
 ;; インデント先頭時は行頭移動
 ;; 行頭時は何もしない （要するに eclipse 風）
 (defun kui/move-beginning-of-line ()
-  "back-to-indentation but move-beginning-of-line if point is in indentation
-or nothing if point is in BoL"
+  "`back-to-indentation' but execute `move-beginning-of-line' \
+if point is in indentation or nothing if point is in BoL."
   (interactive)
   (unless (= (point) (point-at-bol))
     (let ((old-point (point)))
@@ -313,7 +187,7 @@ or nothing if point is in BoL"
 
 ;; 現在の行をコメントアウト
 (defun kui/comment-or-uncomment-current-line ()
-  "comment or uncomment current line"
+  "Comment or uncomment current line."
   (interactive)
   (comment-or-uncomment-region (line-beginning-position)
                                (line-end-position)))
@@ -321,8 +195,8 @@ or nothing if point is in BoL"
 ;; region ある時は、そのリージョンをコメントアウト
 ;; region ない時は、現在行をコメントアウト
 (defun kui/comment-or-uncomment ()
-  "comment or uncomment region, but if region is not active, comment or \
-uncomment the current line"
+  "Comment or uncomment region, but if region is not active, comment or \
+uncomment the current line."
   (interactive)
   (if (or (not transient-mark-mode) (region-active-p))
       (comment-or-uncomment-region (region-beginning) (region-end))
@@ -331,7 +205,7 @@ uncomment the current line"
 
 ;; マジックコメント挿入
 (defun kui/insert-magic-comment ()
-  "insert magic comment with current coding & major-mode"
+  "Insert magic comment with current coding & `major-mode'."
   (interactive)
   (let* ((coding (if buffer-file-coding-system
                      (symbol-name buffer-file-coding-system)))
@@ -353,14 +227,14 @@ uncomment the current line"
 
 ;; 確認なしでバッファの削除
 (defun kui/kill-buffer-without-interaction ()
-  "Kill the current buffer without interaction"
+  "Kill the current buffer without interaction."
   (interactive)
   (kill-buffer nil))
 (global-set-key "\C-xk" 'kui/kill-buffer-without-interaction)
 
 ;; フルスクリーン状態をトグル
 (defun kui/toggle-fullscreen ()
-  "Toggle full screen"
+  "Toggle full screen."
   (interactive)
   (cond
    ((eq window-system 'x) ;; when x window system
@@ -398,8 +272,7 @@ Return nil if not found BNAME buffer."
 
 ;; *scratch* バッファに切り替え（消してしまっていたら作成）
 (defun kui/switch-to-scratch-buffer ()
-  "switch to *scratch*.
-create *scratch* if it did not exists"
+  "Switch to *scratch*.  create *scratch* if it did not exists."
   (interactive)
   (if (kui/find-buffer-by-name "*scratch*")
       (switch-to-buffer "*scratch*")
@@ -407,25 +280,25 @@ create *scratch* if it did not exists"
     (insert initial-scratch-message)))
 
 (defun kui/active-minor-mode-p (mode)
-  "Return MODE if MODE was activate on the current buffer,
+  "Return MODE if MODE was activate on the current buffer, \
 but if not, return nil."
   (not (and (boundp mode)
             (symbol-value mode)
             (fboundp (or (get mode :minor-mode-function) mode)))))
 
 (defun kui/current-minor-modes ()
-  "Return minor modes on the current buffer"
+  "Return minor modes on the current buffer."
   (remove-if 'kui/active-minor-mode-p
              minor-mode-list))
 
 (defun kui/find-font (&rest fonts)
-  "Return an existing font which was find at first"
+  "Return an existing font which was find at first in FONTS."
   (cl-find-if (lambda (f)
-             (find-font (font-spec :name f)))
-           fonts))
+                (find-font (font-spec :name f)))
+              fonts))
 
 (defun kui/revert-buffer ()
-  "Execute `revert-buffer' without confimations if it was not edited"
+  "Execute `revert-buffer' without confimations if it was not edited."
   (interactive)
   (if (not (buffer-modified-p))
       (let ()
@@ -437,130 +310,119 @@ but if not, return nil."
 
 ;; これ相当のもの、最初からありそうな気がする
 (defun kui/try-symbol-value (symbol &optional fallback-value)
+  "Return `symbol-value' if the SYMBOL dosenot exists, or Return FALLBACK-VALUE."
   (condition-case err (symbol-value symbol) (error fallback-value)))
 
 (defun kui/add-to-list-if-exist (list-var element &optional append compare-fn)
-  "Add ELEMENT to LIST-VAR if LIST-VAR is defined as a appendable value"
+  "Execute (add-to-list LIST-VAR ELEMENT APPEND COMPARE-FN), if LIST-VAR was defined as an appendable value."
   (let ((v (kui/try-symbol-value list-var)))
     (if (consp v)
         (add-to-list list-var element append compare-fn))))
 
-(defun kui/parent-directory (path &optional num)
-  (let ((num (if num num 1)))
-    (if (<= num 0)
-        path
-      (file-name-directory
-       (directory-file-name (kui/parent-directory path (- num 1)))))))
-
-(defun kui/traverse-parents-for (filename &optional dirname)
-  "Find FILENAME from parent directories of the current buffer file or DIRNAME"
-  (if dirname
-      (let ((path (concat (file-name-as-directory dirname) filename)))
-        (if (file-exists-p path)
-            path
-          (if (string= "/" dirname)
-              nil
-            (kui/traverse-parents-for filename
-                                      (file-name-directory
-                                       (directory-file-name dirname)))
-            )))
-    (kui/traverse-parents-for filename
-                              (file-name-directory buffer-file-name))))
+(defun kui/chomp-end (str)
+  "Chomp tailing whitespace from STR."
+  (replace-regexp-in-string (rx (* (any " \t\n")) eos)
+                            ""
+                            str))
 
 ;; -------------------------------------------------------------------------
 ;; 便利な感じのマイナーモード
 
+;; マイナーモードは必ずインストールする
+(setq use-package-always-ensure t)
+
 ;; 対応する括弧のハイライト
-(kui/with-pkg 'paren
+(use-package paren
+  :config
   (show-paren-mode 1)
   (setq show-paren-style 'mixed))
 
 ;; 環境変数をシェルからインポート
-(kui/with-pkg 'exec-path-from-shell
+(use-package exec-path-from-shell
+  :config
   (exec-path-from-shell-initialize))
 
-;; git-gutter
-(kui/with-pkg 'git-gutter
+;; git の変更行を表示
+(use-package git-gutter
+  :config
   (global-git-gutter-mode t)
-  (kui/with-pkg 'git-gutter-fringe)
+  (use-package git-gutter-fringe) ;; fringe を使って表示
   )
 
 ;; git-blame
-(kui/with-pkg 'git-blame
-  ;; ...
-  )
-
-;; popup
-(kui/with-pkg 'popup
-  ;; ...
-  )
+;; (use-package git-blame)
 
 ;; popwin
-(kui/with-pkg 'popwin
-  (setq
-   ;; display-buffer の置き換え
-   display-buffer-function 'popwin:display-buffer
-
-   ;; popwin がでてくる場所のデフォルト値
-   ;; popwin:popup-window-position 'right
-   )
-  (add-to-list 'popwin:special-display-config
-               '("*Buffer List*" :position :bottom :height 20 :dedicated t :tail t))
+(use-package popwin
+  :config
+  (popwin-mode)
+  (kui/append-to-list 'popwin:special-display-config
+    '("*Buffer List*" :position :bottom :height 20 :dedicated t :tail t)
+    )
   )
 
-;; direx
-(when (and (kui/package-require 'direx)
-           (featurep 'popwin))
-  (push '(direx:direx-mode :position :left :width 40 :dedicated t)
-        popwin:special-display-config)
-
-  (require 'direx-project)
+;; プロジェクトルートからディレクトリ表示
+(use-package direx-project
+  :ensure direx
+  :config
+  (kui/append-to-list 'popwin:special-display-config
+    '(direx:direx-mode :position :left :width 40 :dedicated t))
   (defun kui/jump-to-project-directory-other-window-if-in-project ()
+    "Open directory tree from project root"
     (interactive)
     (if (direx-project:find-project-root-noselect (or buffer-file-name default-directory))
         (direx-project:jump-to-project-root-other-window)
       (direx:jump-to-directory-other-window)))
-
   (global-set-key (kbd "M-j") 'kui/jump-to-project-directory-other-window-if-in-project)
   )
 
 ;; editorconfig
-(kui/with-pkg 'editorconfig
+(use-package editorconfig
+  :config
   (editorconfig-mode 1)
   )
 
-;; gude-key
-(kui/with-pkg 'guide-key
+;; 2ストロークキーのプレフィックスキーを入力したときの次のキー一覧表示
+(use-package guide-key
+  :config
+  (guide-key-mode 1)
   (setq
    guide-key/guide-key-sequence '("M-t" "C-c" "C-x RET" "C-x C-h" "C-x r" "M-m")
    guide-key/popup-window-position 'bottom
    guide-key/polling-time 0.5
-   guide-key/popup-if-super-key-sequence t
    guide-key/recursive-key-sequence-flag t
    )
+  )
 
-  (guide-key-mode 1))
-
-(kui/with-pkg 'flycheck
+;; スタイルやシンタックスチェックする
+(use-package flycheck
+  :defer t
+  :init
   (add-hook 'after-init-hook #'global-flycheck-mode)
 
+  :config
   ;; Do not use flycheck-pos-tip, it seems not to work right on Mac
   ;;(kui/with-pkg 'flycheck-pos-tip)
 
-  (push '(flycheck-error-list-mode :position :bottom :height 20 :dedicated t)
-        popwin:special-display-config)
+  (setq-default flycheck-emacs-lisp-load-path 'inherit)
 
+  (kui/append-to-list 'popwin:special-display-config
+    '(flycheck-error-list-mode :position :bottom :height 20 :dedicated t))
   (global-set-key (kbd "M-e") 'flycheck-list-errors)
   )
 
-;; company-mode
-(kui/with-pkg 'company
-
+;; 補完
+(use-package company
+  :defer t
+  :init
+  ;; 現状使わなくなってしまったのでロードするタイミングなし
+  :config
   (setq company-global-modes nil
         ;; 自動補完を有効
         company-auto-complete t
         ;; 補完リスト表示字数
-        company-minimum-prefix-length 2)
+        company-minimum-prefix-length 2
+        )
 
   ;; 補完開始
   (define-key company-mode-map "\M-/" 'company-complete)
@@ -572,13 +434,13 @@ but if not, return nil."
   (define-key company-active-map "\C-h" (lambda ()
                                           (interactive)
                                           (company-abort)
-                                          (delete-backward-char 1)))
+                                          (delete-char 1)))
   )
 
-;; auto-complete-mode
-(kui/with-pkg 'auto-complete-config
-  :package 'auto-complete
-
+;; 補完
+(use-package auto-complete-config
+  :ensure auto-complete
+  :config
   (ac-config-default)
 
   ;; ac-modes に登録されてるメジャーモード時に ac 発動
@@ -609,100 +471,33 @@ but if not, return nil."
   ;; (ac-show-menu-immediately-on-auto-complete t)
   )
 
-(kui/after-loaded "flymake"
-  (kui/with-pkg 'popup
-
-    ;; flymake 現在行のエラーをpopup.elのツールチップで表示する
-    ;; https://gist.github.com/292827
-    (defvar flymake-display-err-delay 1
-      "delay to display flymake error message ")
-    (defvar flymake-display-err-timer nil
-      "timer for flymake-display-err-menu-for-current-line")
-    (defvar flymake-display-err-before-line nil)
-    (defvar flymake-display-err-before-colmun nil)
-    (defun flymake-display-err-menu-for-current-line ()
-      (interactive)
-      (let* ((line-no (line-number-at-pos))
-             (line-err-info-list
-              (nth 0 (flymake-find-err-info flymake-err-info line-no))))
-        (when (and (flymake-display-err-check-moved line-no (current-column))
-                   line-err-info-list)
-          (setq flymake-display-err-before-line-no line-no)
-          (let* ((count (length line-err-info-list))
-                 (menu-item-text nil))
-            (while (> count 0)
-              (setq menu-item-text
-                    (flymake-ler-text (nth (1- count) line-err-info-list)))
-              (let* ((file (flymake-ler-file (nth (1- count)
-                                                  line-err-info-list)))
-                     (line (flymake-ler-line (nth (1- count)
-                                                  line-err-info-list))))
-                (if file
-                    (setq menu-item-text
-                          (concat menu-item-text " - " file "("
-                                  (format "%d" line) ")"))))
-              (setq count (1- count))
-              (if (> count 0) (setq menu-item-text (concat menu-item-text "\n")))
-              )
-            (popup-tip menu-item-text)))))
-
-    (defun flymake-display-err-check-moved (cur-line cur-col)
-      (let* ((is-not-moved (and flymake-display-err-before-line
-                                flymake-display-err-before-colmun
-                                (= cur-line flymake-display-err-before-line)
-                                (= cur-col flymake-display-err-before-colmun))))
-        (setq flymake-display-err-before-line cur-line
-              flymake-display-err-before-colmun cur-col)
-        (not is-not-moved)))
-
-    (unless flymake-display-err-timer
-      (setq flymake-display-err-timer
-            (run-with-idle-timer flymake-display-err-delay t
-                                 'flymake-display-err-menu-for-current-line)))
-
-    ;; (global-set-key "\M-e"
-    ;;                 '(lambda ()
-    ;;                    (interactive)
-    ;;                    (message "next error")
-    ;;                    (flymake-goto-next-error)
-    ;;                    (flymake-display-err-menu-for-current-line)))
-    ;; (global-set-key "\M-E"
-    ;;                 '(lambda ()
-    ;;                    (interactive)
-    ;;                    (message "prev error")
-    ;;                    (flymake-goto-prev-error)
-    ;;                    (flymake-display-err-menu-for-current-line)))
-    ))
-
-(kui/with-pkg 'helm
+(use-package helm
+  :bind (("C-x C-f" . helm-find-files)
+         ("C-x a" . helm-apropos)
+         ("C-x b" . helm-buffers-list)
+         ("M-i" . helm-buffers-list)
+         ("M-o" . helm-imenu)
+         ("C-o" . helm-imenu)
+         ("C-s" . helm-occur)
+         ("M-x" . helm-M-x))
+  :bind (:map helm-map
+              ("C-h" . delete-backward-char)
+              ("C-w" . kui/backward-kill-word-or-kill-region)
+              ("C-u" . kui/backward-kill-line)
+              ("TAB" . helm-execute-persistent-action))
+  :config
   (setq
-   helm-ff-transformer-show-only-basename nil
-   helm-buffer-max-length 20)
+   ;; helm-buffer-max-length 20
+   )
 
-  (global-set-key "\C-xa" 'helm-apropos)
-  (global-set-key "\C-x\C-f" 'helm-find-files)
-  (global-set-key "\C-xb" 'helm-buffers-list)
-  (global-set-key "\M-o" 'helm-imenu)
-  (global-set-key "\C-o" 'helm-imenu)
-  (global-set-key "\M-i" 'helm-buffers-list)
-  (global-set-key "\C-s" 'helm-occur)
-  (global-set-key "\M-x" 'helm-M-x)
-
-  (kui/after-loaded 'helm
-    (define-key helm-map "\C-h" 'delete-backward-char)
-    (define-key helm-map "\C-w" 'kui/backward-kill-word-or-kill-region)
-    (define-key helm-map "\C-u" 'kui/backward-kill-line)
-    (define-key helm-map "TAB" 'helm-execute-persistent-action))
-  (kui/after-loaded 'helm-find-files
-    (define-key helm-find-files-map "\M-l" 'helm-execute-persistent-action))
-
-  (kui/with-pkg 'helm-swoop
-    (define-key helm-swoop-map "\C-w" 'kui/backward-kill-word-or-kill-region)
-    (global-set-key "\C-s" 'helm-swoop))
+  (use-package helm-swoop
+    :bind ("C-s" . helm-swoop)
+    :bind (:map helm-swoop-map
+                ("C-w" . kui/backward-kill-word-or-kill-region)))
   )
 
-;; whitespace-mode
-(kui/with-pkg 'whitespace
+(use-package whitespace
+  :config
   ;; n 列以上はハイライトで警告
   ;; (setq whitespace-line-column 90)
 
@@ -721,54 +516,57 @@ but if not, return nil."
   (setq whitespace-action '(auto-cleanup))
   (defun kui/whitespace-auto-cleanup-enable ()
     (interactive)
-    (set (make-local-variable 'whitespace-action) '(auto-cleanup)))
+    (setq-local whitespace-action '(auto-cleanup)))
   (defun kui/whitespace-auto-cleanup-disable ()
     (interactive)
-    (set (make-local-variable 'whitespace-action) nil))
-  )
-
-;; gnu global (gtags)
-(kui/with-lib "gtag"
-  (global-set-key "\M-tg" nil)
-  (global-set-key "\M-tgt" 'gtags-find-tag)
-  (global-set-key "\M-tgr" 'gtags-find-rtag)
-  (global-set-key "\M-tgs" 'gtags-find-symbol)
-  (global-set-key "\M-tgv" 'gtags-find-symbol)
-  (global-set-key "\M-tgf" 'gtags-find-file)
-  (global-set-key "\M-tgb" 'gtags-pop-stack)
-  (global-set-key "\M-tgp" 'gtags-pop-stack)
+    (setq-local whitespace-action nil))
   )
 
 ;; ctag-update.el 自動で TAGS アップデートしてくれる
-(kui/with-pkg 'ctags-update
+(use-package ctags-update
+  :config
   (set 'ctags-update-command
        (kui/find-if-executable '("ctags-exuberant"
                                  "exuberant-ctags"
                                  "ctags")))
   )
 
-(kui/with-pkg 'multiple-cursors
+;; 一度に複数のカーソルを操作
+(use-package multiple-cursors
+  :bind (("M-m n" . mc/mark-next-like-this)
+         ("M-m p" . mc/mark-previous-like-this)
+         ("M-m a" . mc/mark-all-like-this)
+         ("M-m i" . mc/mark-more-like-this-extended))
+  :init
   (multiple-cursors-mode)
-  (global-set-key "\M-mn" 'mc/mark-next-like-this)
-  (global-set-key "\M-mp" 'mc/mark-previous-like-this)
-  (global-set-key "\M-ma" 'mc/mark-all-like-this)
-  (global-set-key "\M-mi" 'mc/mark-more-like-this-extended)
   )
 
 ;; -------------------------------------------------------------------------
 ;; メジャーモードの設定や読み込み
 
-;; lisp-interaction-mode の設定
-(define-key lisp-interaction-mode-map "\C-cff" 'find-function)
-(define-key lisp-interaction-mode-map "\C-cfv" 'find-variable)
-(define-key lisp-interaction-mode-map "\C-cfl" 'find-library)
-(define-key lisp-interaction-mode-map "\C-cdf" 'describe-function)
-(define-key lisp-interaction-mode-map "\C-cdv" 'describe-variable)
+;; メジャーモードのインストールはオプショナル
+(setq use-package-always-ensure nil)
+
+(use-package emacs-lisp-mode
+  :no-require t
+  :bind (:map emacs-lisp-mode-map
+              ("C-c f f" . find-function)
+              ("C-c f v" . find-variable)
+              ("C-c f l" . find-library)
+              ("C-c d f" . describe-function)
+              ("C-c d v" . describe-variable))
+  )
 
 ;; http://emacs-jp.github.io/programming/golang.html
-(kui/with-lib "go-mode"
-  (kui/with-pkg 'go-autocomplete)
-  (kui/with-pkg 'helm
+(use-package go-mode
+  :no-require t
+  :bind (:map go-mode-map
+              ("M-." . godef-jump)
+              ("M-," . pop-tag-mark))
+  :config
+  (use-package go-autocomplete :ensure t)
+  (use-package helm
+    :config
     (defvar kui/helm-go-source
       '((name . "Helm Go")
         (candidates . (lambda ()
@@ -782,35 +580,31 @@ but if not, return nil."
     (defun kui/helm-go ()
       (interactive)
       (helm :sources '(kui/helm-go-source) :buffer "*helm go*")))
-
   (defun kui/go-init ()
-    (set (make-variable-buffer-local 'tab-width) 4)
-    (set (make-variable-buffer-local 'whitespace-style)
-         '(face tab-mark tabs)))
-
-  (kui/after-loaded "go-mode"
-    (kui/with-pkg 'go-autocomplete)
-    (add-hook 'go-mode-hook 'kui/go-init)
-    (add-hook 'before-save-hook 'gofmt-before-save)
-    (define-key go-mode-map "\M-." 'godef-jump)
-    (define-key go-mode-map "\M-," 'pop-tag-mark))
+    (setq-local tab-width 4)
+    (setq-local whitespace-style '(face tab-mark tabs)))
+  (add-hook 'go-mode-hook 'kui/go-init)
+  (add-hook 'before-save-hook 'gofmt-before-save)
   )
 
-(kui/with-pkg 'markdown-mode
+(use-package markdown-mode
+  :no-require t
+  :ensure t ;; *scratch* で使うため
+  :config
   (defun kui/markdown-init ()
-    ;; (set (make-variable-buffer-local 'indent-tabs-mode) nil)
-    (set (make-variable-buffer-local 'tab-width) 4)
-    (set (make-variable-buffer-local 'whitespace-style)
-         '(;; faceを使って視覚化する。
-           face
-           ;; タブ
-           tabs
-           tab-mark
-           ;; タブの前にあるスペース
-           space-before-tab
-           ;; タブの後にあるスペース
-           space-after-tab
-           ))
+    ;; (setq-local indent-tabs-mode nil)
+    (setq-local tab-width 4)
+    (setq-local whitespace-style
+                '(;; faceを使って視覚化する。
+                  face
+                  ;; タブ
+                  tabs
+                  tab-mark
+                  ;; タブの前にあるスペース
+                  space-before-tab
+                  ;; タブの後にあるスペース
+                  space-after-tab
+                  ))
     (electric-indent-local-mode -1))
   (add-hook 'markdown-mode-hook 'kui/markdown-init)
 
@@ -819,24 +613,17 @@ but if not, return nil."
    ;; *scratch* の major-mode
    initial-major-mode 'markdown-mode
    ;; *scratch* の初期文字列
-   initial-scratch-message "Scratch\n========\n\n")
+   initial-scratch-message "Scratch\n========\n\n"
+   )
   )
 
-;; shell-script-mode
-(add-to-list 'auto-mode-alist '("\\.zsh\\'" . shell-script-mode))
-
-;; yaml-mode
-(kui/with-lib "yaml-mode"
-  ;; ...
-  )
-
-;; ruby-mode
-(kui/with-lib "ruby-mode"
-  (add-to-list 'auto-mode-alist '("\\.gemspec\\'" . ruby-mode))
-  (add-to-list 'auto-mode-alist '("/config\\.ru\\'" . ruby-mode))
-  (add-to-list 'auto-mode-alist '("\\(Rake\\|Gem\\|Thor\\|Berks\\|Vagrant\\)file\\'" . ruby-mode))
-  (add-to-list 'auto-mode-alist '("\\.builder\\'" . ruby-mode)))
-(kui/after-loaded "ruby-mode"
+(use-package ruby-mode
+  :no-require t
+  :mode "\\.gemspec\\'"
+  :mode "/config\\.ru\\'"
+  :mode "\\(Rake\\|Gem\\|Thor\\|Berks\\|Vagrant\\)file\\'"
+  :mode "\\.builder\\'"
+  :config
   (setq ruby-deep-indent-paren nil)
   (defun kui/ruby-init ()
     (flycheck-mode)
@@ -844,7 +631,9 @@ but if not, return nil."
     (electric-indent-mode t))
   (add-hook 'ruby-mode-hook 'kui/ruby-init)
 
-  (kui/with-pkg 'robe
+  (use-package robe
+    :ensure t
+    :config
     (add-hook 'ruby-mode-hook 'robe-mode)
     (add-hook 'robe-mode-hook 'ac-robe-setup))
 
@@ -852,19 +641,25 @@ but if not, return nil."
              (kui/package-require 'rbenv))
     (add-hook 'ruby-mode-hook 'global-rbenv-mode))
 
-  (kui/with-pkg 'ruby-block
+  (use-package ruby-block
+    :ensure t
+    :config
     (setq ruby-block-highlight-toggle 'overlay)
     (add-hook 'ruby-mode-hook '(lambda () (ruby-block-mode t))))
   )
 
-;; coffee-mode
-(kui/with-lib "coffee"
-  (kui/add-to-list-if-exist 'ac-modes 'coffee-mode)
-  (kui/with-pkg 'col-highlight
-    (add-hook 'coffee-mode-hook 'column-highlight-mode)))
-(kui/after-loaded "coffee"
+(use-package coffee-mode
+  :no-require t
+  :config
   (setq coffee-tab-width 2)
   (setq coffee-debug-mode t)
+
+  (kui/add-to-list-if-exist 'ac-modes 'coffee-mode)
+
+  (use-package col-highlight
+    :ensure t
+    :config
+    (add-hook 'coffee-mode-hook 'column-highlight-mode))
 
   ;; flymake
   ;; (when (and (kui/package-require 'flymake-coffeescript)
@@ -894,51 +689,53 @@ but if not, return nil."
                     'kui/coffee-indent-line)))
   )
 
-;; css-mode
-(setq css-indent-offset 2)
-(kui/add-to-list-if-exist 'ac-modes 'css-mode)
+(use-package coffee-mode
+  :no-require t
+  :config
+  (setq css-indent-offset 2)
+  (kui/add-to-list-if-exist 'ac-modes 'css-mode)
+  )
 
-;; scss-mode
-(kui/with-lib "scss-mode"
+(use-package scss-mode
+  :no-require t
+  :config
   (setq scss-compile-at-save nil))
 
-;; javascript
-(defun kui/find-node-modules-bin (binname)
-  "Find executable file named BINNAME from the node_modules directory"
-  (let* ((moddir (kui/traverse-parents-for "node_modules"))
-         (bin (if moddir (format "%s/.bin/%s" moddir binname))))
-    (if (file-executable-p bin) bin)))
-(kui/with-lib "flycheck"
-  (defun kui/flycheck-set-node-modules-bin (checker binname)
-    (let* ((bin (kui/find-node-modules-bin binname)))
-      (when bin
-        (message "auto-detect %s: %s" binname bin)
-        (flycheck-set-checker-executable checker bin))))
-  (defun kui/flycheck-init-js ()
-    ;; use jshint/eslint in node_modules/.bin
-    (kui/flycheck-set-node-modules-bin 'javascript-jshint "jshint")
-    (kui/flycheck-set-node-modules-bin 'javascript-eslint "eslint")
-    ;; disable jshint if eslint can be used
-    ;;   commented out because current version flycheck dose NOT work right
-    ;; (when (flycheck-may-use-checker 'javascript-eslint)
-    ;;   (message "disale jshint on flycheck")
-    ;;   (flycheck-disable-checker 'javascript-jshint))
-    )
-  (add-hook 'js-mode-hook 'kui/flycheck-init-js)
-  (add-hook 'js2-mode-hook 'kui/flycheck-init-js))
-(kui/after-loaded "js"
+(use-package js-mode
+  :no-require t
+  :config
   (setq js-indent-level 2))
-(kui/with-pkg 'js2-mode
+(use-package js2-mode
+  :no-require t
+  :config
   (js2-mode-hide-warnings-and-errors)
   (add-to-list 'auto-mode-alist '("\\.js\\'"  . js2-mode)))
+(use-package "flycheck"
+  :config
+  (defun kui/use-node-modules-bin ()
+    (let* ((local-path (kui/chomp-end (shell-command-to-string "npm bin"))))
+      (setq-local exec-path (cons local-path exec-path))))
+  (defun kui/flycheck-init-js ()
+    (kui/use-node-modules-bin)
+    ;; Disable jshint if eslint enabled
+    (when (and (flycheck-may-use-checker 'javascript-eslint)
+               (flycheck-may-use-checker 'javascript-jslint))
+      (message "disale jshint on flycheck")
+      (flycheck-disable-checker 'javascript-jshint))
+    )
+  (add-hook 'js-mode-hook 'kui/flycheck-init-js)
+  (when (featurep 'js2-mode)
+    (add-hook 'js2-mode-hook 'kui/flycheck-init-js)))
 
-;; html-mode
-(kui/add-to-list-if-exist 'ac-modes 'html-mode)
+(use-package html-mode
+  :no-require t
+  :config
+  (kui/add-to-list-if-exist 'ac-modes 'html-mode))
 
-;; multi-web-mode
-(kui/with-lib "multi-web-mode"
-  (add-to-list 'auto-mode-alist '("\\.html\\'" . multi-web-mode)))
-(kui/after-loaded "multi-web-mode"
+(use-package multi-web-mode
+  :no-require t
+  ;; :mode "\\.html?\\'"
+  :config
   (setq mweb-default-major-mode 'html-mode)
   (setq mweb-tags '((php-mode "<\\?php\\|<\\? \\|<\\?=" "\\?>")
                     (js-mode "<script>" "</script>")
@@ -949,76 +746,59 @@ but if not, return nil."
   (multi-web-global-mode 1)
   )
 
-;; web-mode
-(kui/with-lib "web-mode"
-  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+(use-package web-mode
+  :no-require t
+  :mode "\\.html?\\'"
+  :config
   (kui/add-to-list-if-exist 'ac-modes 'web-mode)
-  (defun config-web-mode ()
-    (setq web-mode-markup-indent-offset 2
-          web-mode-css-indent-offset 2
-          web-mode-code-indent-offset 2
-          web-mode-style-padding 0
-          web-mode-script-padding 0))
-  (add-hook 'web-mode-hook 'config-web-mode))
+  (setq web-mode-markup-indent-offset 2
+        web-mode-css-indent-offset 2
+        web-mode-code-indent-offset 2
+        web-mode-style-padding 0
+        web-mode-script-padding 0)
+  )
 
-;; groovy-mode
-(kui/with-lib "groovy-mode"
-  (add-to-list 'auto-mode-alist '("\\.gradle\\'" . groovy-mode))
+(use-package groovy-mode
+  :no-require t
+  :mode "\\.gradle\\'"
+  :config
   (kui/add-to-list-if-exist 'ac-modes 'groovy-mode)
   (defun kui/set-groovy-indent ()
     (set (make-local-variable 'indent-tabs-mode) nil)
     (set (make-local-variable 'c-basic-offset) 4))
-  (add-hook 'groovy-mode-hook 'kui/set-groovy-indent))
-
-;; hcl-mode
-(kui/with-lib "hcl-mode"
-  (add-to-list 'auto-mode-alist '("\\.tf\\'" . hcl-mode))
-  (add-to-list 'auto-mode-alist '("\\.tfvars\\'" . hcl-mode)))
-
-;; haml-mode
-(kui/with-lib "haml-mode"
-  (kui/add-to-list-if-exist 'ac-modes 'haml-mode))
-
-;; rust-mode
-(kui/after-loaded "rust-mode"
-
-  ;; (defun kui/flycheck-rust-crate-bin ()
-  ;;   (if (save-excursion (search-forward-regexp "fn\\s-+main\\s-*(\\s-*)" nil nil))
-  ;;       (setq flycheck-rust-crate-type "bin")))
-  ;; (add-hook 'flycheck-mode-hook 'kui/flycheck-rust-crate-bin)
-
-  ;; flycheck for Cargo
-  (kui/with-pkg 'flycheck-rust
-    (kui/after-loaded "flycheck"
-      (add-hook 'flycheck-mode-hook 'flycheck-rust-setup))
-    (add-hook 'rust-mode-hook 'flycheck-mode))
-
-  ;; racer(Code Completion)
-  (let* ((racer-path (executable-find "racer"))
-         (racer-path (if racer-path (file-chase-links racer-path 100)))
-         (racer-dir (if racer-path (kui/parent-directory racer-path 3)))
-         (racer-load-path (if racer-dir (concat racer-dir "editors")))
-         (rust-path (getenv "RUST_SRC_PATH")))
-    (when (and racer-dir rust-path)
-      (add-to-list 'load-path racer-load-path)
-      (when (require 'racer nil t)
-        (setq racer-rust-src-path rust-path
-              racer-cmd racer-path))))
+  (add-hook 'groovy-mode-hook 'kui/set-groovy-indent)
   )
 
-(kui/after-loaded "typescript"
+(use-package hcl-mode
+  :no-require t
+  :mode "\\.tf\\'"
+  :mode "\\.tfvars\\'")
+
+(use-package haml-mode
+  :no-require t
+  :config
+  (kui/add-to-list-if-exist 'ac-modes 'haml-mode)
+  )
+
+(use-package rust-mode
+  :no-require t
+  :config
+  ;; flycheck for Cargo
+  (use-package flycheck-rust
+    :ensure t
+    :config
+    (when (featurep 'flycheck)
+      (add-hook 'flycheck-mode-hook 'flycheck-rust-setup)
+      (add-hook 'rust-mode-hook 'flycheck-mode)))
+  )
+
+(use-package typescript
+  :no-require t
+  :config
   (kui/add-to-list-if-exist 'ac-modes 'typescript-mode)
-
-  ;; (kui/with-pkg 'flycheck
-  ;;   (flycheck-define-checker typescript
-  ;;     "A TypeScript syntax checker using tsc command."
-  ;;     :command ("tsc" "--module" "commonjs" "--out" "/dev/null" source)
-  ;;     :error-patterns
-  ;;     ((error line-start (file-name) "(" line "," column "): error " (message) line-end))
-  ;;     :modes typescript-mode)
-  ;;   (add-to-list 'flycheck-checkers 'typescript))
-
-  (kui/with-pkg 'tss
+  (use-package tts
+    :ensure t
+    :config
     (setq tss-popup-help-key "C-:"
           tss-jump-to-definition-key "M-."
           tss-implement-definition-key "M-,")
@@ -1027,13 +807,11 @@ but if not, return nil."
     (add-hook 'kill-buffer-hook 'tss--delete-process t))
   )
 
-;; ;; -------------------------------------------------------------------------
-;; ;; 色とか
+;; -------------------------------------------------------------------------
+;; 見た目
 (custom-set-faces
- '(hl-line
-   ((((background light))
-     :background "#eeeeff"))))
-(kui/with-lib "git-gutter"
+ '(hl-line ((((background light)) :background "#eeeeff"))))
+(when (featurep 'git-gutter)
   (custom-set-faces
    '(git-gutter-fr:added ((t (:inherit (fringe git-gutter:added)))))
    '(git-gutter-fr:deleted ((t (:inherit (fringe git-gutter:deleted)))))
@@ -1070,3 +848,4 @@ but if not, return nil."
 
 (message "End init.el %s" (current-time-string))
 (message "Elapsed time: %s sec" (- (float-time) kui/init-start-time))
+;;; init.el ends here
