@@ -238,41 +238,6 @@ uncomment the current line."
   "Find and Return first executable command in SEQ."
   (cl-find-if 'executable-find seq))
 
-(defun kui/find-buffer-if (func)
-  "Return buffer if FUNC return non-nil.
-Return nil if FUNC did not return non-nil with any buffer."
-  (cl-find-if func (buffer-list)))
-
-;; bname って名前のバッファを返す。そんなバッファ無い時は nil。
-(defun kui/find-buffer-by-name (bname)
-  "Return buffer named BNAME.
-Return nil if not found BNAME buffer."
-  (kui/find-buffer-if
-   (lambda (b) (string-equal bname (buffer-name b)))))
-;; (kui/find-buffer-by-name "*scratch*")
-
-(defun kui/find-buffer-by-name-regexp (bname-regexp)
-  "Return buffer named a name matched BNAME-REGEXP.
-Return nil if not found BNAME buffer."
-  (kui/find-buffer-if
-   (lambda (b) (string-match-p bname-regexp (buffer-name b)))))
-
-;; *scratch* バッファに切り替え（消してしまっていたら作成）
-(defun kui/switch-to-scratch-buffer ()
-  "Switch to *scratch*.  create *scratch* if it did not exists."
-  (interactive)
-  (if (kui/find-buffer-by-name "*scratch*")
-      (switch-to-buffer "*scratch*")
-    (switch-to-buffer "*scratch*")
-    (insert initial-scratch-message)))
-
-(defun kui/active-minor-mode-p (mode)
-  "Return MODE if MODE was activate on the current buffer, \
-but if not, return nil."
-  (not (and (boundp mode)
-            (symbol-value mode)
-            (fboundp (or (get mode :minor-mode-function) mode)))))
-
 (defun kui/current-minor-modes ()
   "Return minor modes on the current buffer."
   (remove-if 'kui/active-minor-mode-p
@@ -299,6 +264,40 @@ but if not, return nil."
 (defun kui/try-symbol-value (symbol &optional fallback-value)
   "Return `symbol-value' if the SYMBOL dosenot exists, or Return FALLBACK-VALUE."
   (condition-case err (symbol-value symbol) (error fallback-value)))
+
+(defun kui/find-buffer-if (func)
+  "Return buffer if FUNC return non-nil.
+Return nil if FUNC did not return non-nil with any buffer."
+  (cl-find-if func (buffer-list)))
+
+;; bname って名前のバッファを返す。そんなバッファ無い時は nil。
+(defun kui/find-buffer-by-name (bname)
+  "Return buffer named BNAME.
+Return nil if not found BNAME buffer."
+  (kui/find-buffer-if
+   (lambda (b) (string-equal bname (buffer-name b)))))
+;; (kui/find-buffer-by-name "*scratch*")
+
+(defun kui/find-buffer-by-name-regexp (bname-regexp)
+  "Return buffer named a name matched BNAME-REGEXP.
+Return nil if not found BNAME buffer."
+  (kui/find-buffer-if
+   (lambda (b) (string-match-p bname-regexp (buffer-name b)))))
+
+(defun kui/switch-to-scratch-buffer ()
+  "Switch to *scratch*.  create *scratch* if it did not exists."
+  (interactive)
+  (if (kui/find-buffer-by-name "*scratch*")
+      (switch-to-buffer "*scratch*")
+    (switch-to-buffer "*scratch*")
+    (insert initial-scratch-message)))
+
+(defun kui/active-minor-mode-p (mode)
+  "Return MODE if MODE was activate on the current buffer, \
+but if not, return nil."
+  (not (and (boundp mode)
+            (kui/try-symbol-value mode)
+            (fboundp (or (get mode :minor-mode-function) mode)))))
 
 (defun kui/add-to-list-if-exist (list-var element &optional append compare-fn)
   "Execute (add-to-list LIST-VAR ELEMENT APPEND COMPARE-FN), if LIST-VAR was defined as an appendable value."
