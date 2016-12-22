@@ -321,7 +321,7 @@ but if not, return nil."
 (use-package auto-save-buffers
   :ensure nil
   :config
-  (run-with-idle-timer 0.5 t 'auto-save-buffers)
+  (run-with-idle-timer 1 t 'auto-save-buffers)
   )
 
 ;; 対応する括弧のハイライト
@@ -338,6 +338,8 @@ but if not, return nil."
 ;; git の変更行を表示
 (use-package git-gutter
   :config
+  (when window-system
+    (add-to-list 'git-gutter:update-hooks 'focus-in-hook))
   (global-git-gutter-mode t)
   (use-package git-gutter-fringe) ;; fringe を使って表示
   )
