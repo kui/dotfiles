@@ -245,8 +245,7 @@ uncomment the current line."
 
 (defun kui/find-font (&rest fonts)
   "Return an existing font which was find at first in FONTS."
-  (cl-find-if (lambda (f)
-                (find-font (font-spec :name f)))
+  (cl-find-if (lambda (f) (find-font (font-spec :name f)))
               fonts))
 
 (defun kui/revert-buffer ()
@@ -825,9 +824,10 @@ but if not, return nil."
   (set-scroll-bar-mode nil)
 
   ;; フォントの指定
-  (let ((font (kui/find-font "Ricty-11"
-                             "Inconsolata-11"
-                             "Monospace-11")))
+  (let ((font (kui/find-font "Ricty-12"
+                             "Inconsolata-12"
+                             "Monospace-12")))
+    (message "Use font: %s" font)
     (if font (set-default-font font)))
 
   ;; ウィンドウサイズを画面に揃える（精度は微妙）
