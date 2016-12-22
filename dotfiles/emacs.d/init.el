@@ -32,31 +32,17 @@
 (prefer-coding-system 'utf-8)
 (set-default-coding-systems 'utf-8-unix)
 
-;; dired などでマルチバイト文字が化ける
+;; dired などでマルチバイト文字が化ける対策
 (setq default-file-name-coding-system 'utf-8-unix)
 
 ;; meadow 向けの設定
 ;; (if (string-equal system-type "windows-nt") (let () ))
 
 ;; git checkout によるファイル変更などに追従する
-;; (global-auto-revert-mode 1)
+(global-auto-revert-mode 1)
 
-;; 自動保存ファイルの保存先ディレクトリ
-(defconst emacs-bk-dir "~/.emacs-bk/")
-(mkdir emacs-bk-dir t)
-
-;; 自動保存機能
-(setq auto-save-default t
-      ;; 自動保存に関する情報
-      auto-save-list-file-name (expand-file-name "~/.emacs-auto-save-list")
-      ;; 自動保存する打鍵回数
-      auto-save-interval 50
-      ;; 自動保存する時間
-      auto-save-timeout 10
-      ;; 自動保存ファイルの保存先
-      backup-directory-alist `((".*" . ,emacs-bk-dir))
-      auto-save-file-name-transforms `((".*" ,emacs-bk-dir t))
-      auto-save-list-file-prefix emacs-bk-dir)
+;; 自動バックアップは無効化
+(setq auto-save-default nil)
 
 ;; http://emacsformacosx.com/ 向け設定
 (when (string= window-system "ns")
@@ -330,6 +316,13 @@ but if not, return nil."
 
 ;; マイナーモードは必ずインストールする
 (setq use-package-always-ensure t)
+
+;; 自動保存
+(use-package auto-save-buffers
+  :ensure nil
+  :config
+  (run-with-idle-timer 0.5 t 'auto-save-buffers)
+  )
 
 ;; 対応する括弧のハイライト
 (use-package paren
@@ -831,7 +824,7 @@ but if not, return nil."
   ;; (set-cursor-color "geeen")
 
   ;; カーソルの形
-  (setq cursor-type 'bar)
+  (setq-default cursor-type 'bar)
 
   ;; ツールバーの表示
   (tool-bar-mode -1)
