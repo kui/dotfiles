@@ -143,7 +143,6 @@ Switch to a buffer visiting init file."
         (find-alternate-file (concat "/sudo::" file-name))
       (error "Cannot get a file name"))))
 
-;; C-w をもう少し賢く
 (defun kui/backward-kill-word-or-kill-region ()
   "Better `backward-kill-word'."
   (interactive)
@@ -158,29 +157,69 @@ Switch to a buffer visiting init file."
   (kill-line (- 1 arg)))
 (global-set-key "\C-u" 'kui/backward-kill-line)
 
-;; インデント先頭に移動
-;; インデント先頭時は行頭移動
-;; 行頭時は何もしない （要するに eclipse 風）
 (defun kui/move-beginning-of-line ()
   "`back-to-indentation' but execute `move-beginning-of-line' \
 if point is in indentation or nothing if point is in BoL."
   (interactive)
-  (unless (= (point) (point-at-bol))
-    (let ((old-point (point)))
-      (back-to-indentation)
-      (if (= old-point (point))
-          (move-beginning-of-line nil)))))
+  (let ((old-point (point)))
+    (back-to-indentation)
+    (if (= old-point (point))
+        (move-beginning-of-line nil))))
 (global-set-key "\C-a" 'kui/move-beginning-of-line)
 
-;; 現在の行をコメントアウト
+(defun kui/move-to-right-mergin ()
+  "Move forward until non-whitespaces."
+  (interactive)
+  (when (memq (char-after) '(?\t ?\s))
+    (forward-char)
+    (kui/move-to-right-mergin)))
+
+(put 'kui/delete-char-like-idea 'interactive-only 'delete-char)
+(defun kui/delete-char-like-idea (n &optional killflag)
+  "Delete the previous N characters (following if N is negative).
+Optional second arg KILLFLAG, if non-nil, means to kill (save in
+kill ring) instead of delete."
+  (interactive "p\nP")
+  (unless (integerp n)
+    (signal 'wrong-type-argument (list 'integerp n)))
+  (cond
+   ;; If a region is active, kill or delete it.
+   ((and (use-region-p)
+         delete-active-region
+         (= n 1))
+    (if (eq delete-active-region 'kill)
+        (kill-region (region-beginning) (region-end) 'region)
+      (funcall region-extract-function 'delete-only)))
+
+   ;; In Overwrite mode, maybe untabify while deleting
+   ((null (or (null overwrite-mode)
+              (<= n 0)
+              (memq (char-before) '(?\t ?\n))
+              (eobp)
+              (eq (char-after) ?\n)))
+    (let ((ocol (current-column)))
+      (delete-char (- n) killflag)
+      (save-excursion
+        (insert-char ?\s (- ocol (current-column)) nil))))
+
+   ;; If cursor left chars are only whitespaces chars, delete all
+   ((and (= n 1)
+         (string-match-p "\\`[\t ]*\r?\n[\t ]*\\'"
+                         (buffer-substring-no-properties (point-at-eol 0)
+                                                         (point))))
+    (kui/move-to-right-mergin)
+    (delete-char (- (point-at-eol 0) (point)) killflag))
+
+   ;; Otherwise, do simple deletion.
+   (t (delete-char (- n) killflag))))
+(global-set-key "\C-h" 'kui/delete-char-like-idea)
+
 (defun kui/comment-or-uncomment-current-line ()
   "Comment or uncomment current line."
   (interactive)
   (comment-or-uncomment-region (line-beginning-position)
                                (line-end-position)))
 
-;; region ある時は、そのリージョンをコメントアウト
-;; region ない時は、現在行をコメントアウト
 (defun kui/comment-or-uncomment ()
   "Comment or uncomment region, but if region is not active, comment or \
 uncomment the current line."
@@ -212,14 +251,12 @@ uncomment the current line."
           (newline))
       (message "Error: both current coding and major-mode are nil."))))
 
-;; 確認なしでバッファの削除
 (defun kui/kill-buffer-without-interaction ()
   "Kill the current buffer without interaction."
   (interactive)
   (kill-buffer nil))
 (global-set-key "\C-xk" 'kui/kill-buffer-without-interaction)
 
-;; フルスクリーン状態をトグル
 (defun kui/toggle-fullscreen ()
   "Toggle full screen."
   (interactive)
@@ -233,7 +270,6 @@ uncomment the current line."
 (global-set-key [M-return] 'kui/toggle-fullscreen)
 (global-set-key [f11] 'kui/toggle-fullscreen)
 
-;; 実行可能なコマンドを返す
 (defun kui/find-if-executable (seq)
   "Find and Return first executable command in SEQ."
   (cl-find-if 'executable-find seq))
@@ -269,7 +305,6 @@ uncomment the current line."
 Return nil if FUNC did not return non-nil with any buffer."
   (cl-find-if func (buffer-list)))
 
-;; bname って名前のバッファを返す。そんなバッファ無い時は nil。
 (defun kui/find-buffer-by-name (bname)
   "Return buffer named BNAME.
 Return nil if not found BNAME buffer."
