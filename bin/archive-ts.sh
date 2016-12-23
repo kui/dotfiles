@@ -47,7 +47,11 @@ main() {
 }
 
 normalize_file_name() {
-    sed 's/〜/~/g' <<<"$*"
+    sed 's/〜/~/g' <<<"$*" | \
+    sed 's/⁉/!?/g' | \
+    sed 's/‼/!!/g' | \
+    sed 's/[♯＃]/#/g' | \
+    sed 's/♥//g'
 }
 
 archive() {
