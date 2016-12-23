@@ -346,6 +346,16 @@ but if not, return nil."
                   (get-char-property pos 'face))))
     (if face (message "Face: %s" face) (message "No face at %d" pos))))
 
+(defun kui/keep-column-with-space (orig-func &rest args)
+  "Keep column position after ORIG-FUNC running with ARGS.
+This function should be :around advice function."
+  (let* ((col (current-column))
+         (result (apply orig-func args)))
+    (move-to-column col t)
+    (set-buffer-modified-p nil)
+    result))
+(advice-add 'delete-trailing-whitespace :around 'kui/keep-column-with-space)
+
 ;; -------------------------------------------------------------------------
 ;; 便利な感じのマイナーモード
 
@@ -356,7 +366,12 @@ but if not, return nil."
 (use-package auto-save-buffers
   :ensure nil
   :config
-  (run-with-idle-timer 1 t 'auto-save-buffers)
+
+  ;; (setq auto-save-buffers-active-p nil)
+  (run-with-idle-timer 0.5 t 'auto-save-buffers)
+
+  ;; 自動保存前後でカラム位置を保存する
+  (advice-add 'auto-save-buffers :around 'kui/keep-column-with-space)
   )
 
 ;; 対応する括弧のハイライト
@@ -412,6 +427,13 @@ but if not, return nil."
 (use-package editorconfig
   :config
   (editorconfig-mode 1)
+
+  ;; whitespace-mode が有効なときは delete-trailing-whitespace は実行しない
+  (defun kui/execute-if-non-ws-mode (orig-func &rest args)
+    (unless (or (bound-and-true-p global-whitespace-mode)
+                (bound-and-true-p whitespace-mode))
+      (apply orig-func args)))
+  (advice-add 'delete-trailing-whitespace :around 'kui/execute-if-non-ws-mode)
   )
 
 ;; 2ストロークキーのプレフィックスキーを入力したときの次のキー一覧表示
@@ -534,9 +556,12 @@ but if not, return nil."
   ;; (setq whitespace-line-column 90)
 
   (setq whitespace-style
-        '(face ;; faceを使って視覚化する。
-          trailing ;; 行末の空白
-          ;; lines-tail ;; 長すぎる行のうち whitespace-line-column 以降部分をハイライト
+        '(;; faceを使って視覚化する。
+          face
+          ;; 行末の空白
+          trailing
+          ;; 長すぎる行をハイライト
+          ;; lines-tail
           tabs
           tab-mark
           space-before-tab
@@ -546,12 +571,21 @@ but if not, return nil."
   ;; デフォルトで有効にする。
   (global-whitespace-mode 1)
   (setq whitespace-action '(auto-cleanup))
-  (defun kui/whitespace-auto-cleanup-enable ()
-    (interactive)
-    (setq-local whitespace-action '(auto-cleanup)))
-  (defun kui/whitespace-auto-cleanup-disable ()
-    (interactive)
-    (setq-local whitespace-action nil))
+
+  ;; カラム位置を保存
+  (advice-add 'whitespace-cleanup :around 'kui/keep-column-with-space)
+
+  ;; 移動したら直前の行を cleanup
+  (defvar last-line-num 0)
+  (defun kui/clean-if-line-move ()
+    (unless (eq (line-number-at-pos) last-line-num)
+      (save-excursion
+        (goto-char (point-min))
+        (forward-line (- last-line-num 1))
+        (whitespace-cleanup-region (point-at-bol)
+                                   (point-at-eol)))
+      (setq last-line-num (line-number-at-pos))))
+  (add-hook 'post-command-hook 'kui/clean-if-line-move)
   )
 
 ;; ctag-update.el 自動で TAGS アップデートしてくれる
@@ -621,7 +655,6 @@ but if not, return nil."
 
 (use-package markdown-mode
   :no-require t
-  :ensure t ;; *scratch* で使うため
   :config
   (defun kui/markdown-init ()
     ;; (setq-local indent-tabs-mode nil)
@@ -639,14 +672,6 @@ but if not, return nil."
                   ))
     (electric-indent-local-mode -1))
   (add-hook 'markdown-mode-hook 'kui/markdown-init)
-
-  ;; *scratch* 関連を更新
-  (setq
-   ;; *scratch* の major-mode
-   initial-major-mode 'markdown-mode
-   ;; *scratch* の初期文字列
-   initial-scratch-message "Scratch\n========\n\n"
-   )
   )
 
 (use-package ruby-mode
