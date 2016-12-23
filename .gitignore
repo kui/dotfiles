@@ -15,3 +15,5 @@ TAGS
 /dotfiles/emacs.d/session.*
 /dotfiles/emacs.d/auto-save-list
 /dotfiles/emacs.d/.mc-lists.el
+/dotfiles/emacs.d/*.eld
+/dotfiles/emacs.d/eshell

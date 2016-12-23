@@ -40,6 +40,10 @@ fi
 [[ -n "${JAVA_HOME}" ]] && export JAVA_HOME
 
 ############################################################
+# go
+export GOPATH="$HOME/golang"
+
+############################################################
 # パスの設定
 ## (N-/): 存在しないディレクトリは登録しない。
 ##    パス(...): ...という条件にマッチするパスのみ残す。
@@ -55,9 +59,11 @@ path=(
     $HOME/.nodebrew/current/bin(N-/)
     $HOME/.homebrew/bin(N-/)
     $GEM_HOME/bin(N-/)
+    $GOPATH/bin
     /opt/local/bin(N-/)
     $path
     /usr/local/heroku/bin(N-/)
+    /usr/local/go/bin(N-/)
     /usr/local/{rvm,rbenv}/bin(N-/)
     /app/{script,mingw/tdm/bin,gs/bin,gs/lib}(N-/)
     /usr{/local,/usr,}/bin(N-/)
@@ -103,14 +109,15 @@ if [ $TERM = "xterm" ] && infocmp xterm-256color &>/dev/null; then
 fi
 
 if which brew &>/dev/null; then
+    coreutils_path=$(brew --prefix coreutils)
     path=(
-        $(brew --prefix coreutils)/libexec/gnubin(N-/)
+        ${coreutils_path}/libexec/gnubin(N-/)
         $path
     )
 
     manpath=(
         $(brew --prefix)/share/man(N-/)
-        $(brew --prefix coreutils)/libexec/gnuman(N-/)
+        ${coreutils_path}/libexec/gnuman(N-/)
         $manpath
     )
 fi
@@ -576,7 +583,8 @@ fzf-ps() {
     fi
 }
 zle     -N    fzf-ps
-bindkey '^xp' fzf-ps
+[[ -x "$(which fzf-tmux)" ]] && \
+    bindkey '^xp' fzf-ps
 
 fzf-search-file() {
     local f="$(find -L . -type f -exec sh -c "file '{}' | grep -q text" \; -print | \
@@ -589,15 +597,17 @@ fzf-search-file() {
     fi
 }
 zle     -N    fzf-search-file
-bindkey '^xs' fzf-search-file
+[[ -x "$(which fzf-tmux)" ]] && \
+    bindkey '^xs' fzf-search-file
 
 fzf-find-file() {
-    local f="$(find -L . | fzf-tmux --prompt='find file > ')"
+    local f="$(fzf-ff)"
     LBUFFER="${LBUFFER}$f"
     zle redisplay
 }
 zle     -N     fzf-find-file
-bindkey '^x^f' fzf-find-file
+[[ -x "$(which fzf-tmux)" ]] && \
+    bindkey '^x^f' fzf-find-file
 
 fzf-exec() {
     local c="$(zle -la | grep -v '^\.' | fzf-tmux --prompt='exec widget > ')"
@@ -605,7 +615,8 @@ fzf-exec() {
     zle redisplay
 }
 zle     -N   fzf-exec
-bindkey '\ex' fzf-exec
+[[ -x "$(which fzf-tmux)" ]] && \
+    bindkey '\ex' fzf-exec
 
 fzf-cd-history() {
     local d="$(cdr -l | sed -r 's/^[0-9]+ +//' | \
@@ -618,7 +629,8 @@ fzf-cd-history() {
     fi
 }
 zle     -N    fzf-cd-history
-bindkey '\ei' fzf-cd-history
+[[ -x "$(which fzf-tmux)" ]] && \
+    bindkey '\ei' fzf-cd-history
 
 fzf-history-widget() {
   local selected num
@@ -639,7 +651,8 @@ fzf-history-widget() {
   zle redisplay
 }
 zle     -N   fzf-history-widget
-bindkey '^R' fzf-history-widget
+[[ -x "$(which fzf-tmux)" ]] && \
+    bindkey '^R' fzf-history-widget
 
 #############################################################
 # 時間のかかったコマンドは、通知システムに通知する
