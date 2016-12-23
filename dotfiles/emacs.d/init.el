@@ -44,6 +44,7 @@
 ;; 自動バックアップは無効化
 (setq auto-save-default nil
       auto-save-list-file-prefix nil)
+(setq make-backup-files nil)
 
 ;; http://emacsformacosx.com/ 向け設定
 (when (string= window-system "ns")
