@@ -168,13 +168,6 @@ if point is in indentation or nothing if point is in BoL."
         (move-beginning-of-line nil))))
 (global-set-key "\C-a" 'kui/move-beginning-of-line)
 
-(defun kui/move-to-right-mergin ()
-  "Move forward until non-whitespaces."
-  (interactive)
-  (when (memq (char-after) '(?\t ?\s))
-    (forward-char)
-    (kui/move-to-right-mergin)))
-
 (put 'kui/delete-char-like-idea 'interactive-only 'delete-char)
 (defun kui/delete-char-like-idea (n &optional killflag)
   "Delete the previous N characters (following if N is negative).
@@ -208,7 +201,7 @@ kill ring) instead of delete."
          (string-match-p "\\`[\t ]*\r?\n[\t ]*\\'"
                          (buffer-substring-no-properties (point-at-eol 0)
                                                          (point))))
-    (kui/move-to-right-mergin)
+    (if (looking-at "[\t ]+") (goto-char (match-end 0)))
     (delete-char (- (point-at-eol 0) (point)) killflag))
 
    ;; Otherwise, do simple deletion.
