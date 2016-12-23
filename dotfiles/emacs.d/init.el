@@ -198,10 +198,10 @@ kill ring) instead of delete."
 
    ;; If cursor left chars are only whitespaces chars, delete all
    ((and (= n 1)
-         (string-match-p "\\`[\t ]*\r?\n[\t ]*\\'"
+         (string-match-p "\\`\\s-*\r?\n\\s-*\\'"
                          (buffer-substring-no-properties (point-at-eol 0)
                                                          (point))))
-    (if (looking-at "[\t ]+") (goto-char (match-end 0)))
+    (if (looking-at "\\s-+") (goto-char (match-end 0)))
     (delete-char (- (point-at-eol 0) (point)) killflag))
 
    ;; Otherwise, do simple deletion.
