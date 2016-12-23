@@ -373,9 +373,11 @@ but if not, return nil."
   (setq show-paren-style 'mixed))
 
 ;; 環境変数をシェルからインポート
-(use-package exec-path-from-shell
-  :config
-  (exec-path-from-shell-initialize))
+;; シェルから環境変数が引き継がれない環境向け
+(when (memq window-system '(ns mac))
+  (use-package exec-path-from-shell
+    :config
+    (exec-path-from-shell-initialize)))
 
 ;; git の変更行を表示
 (use-package git-gutter
