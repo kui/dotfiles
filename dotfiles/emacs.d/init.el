@@ -227,23 +227,25 @@ uncomment the current line."
 (defun kui/insert-magic-comment ()
   "Insert magic comment with current coding & `major-mode'."
   (interactive)
-  (let* ((coding (if buffer-file-coding-system
-                     (symbol-name buffer-file-coding-system)))
-         (mode (if major-mode
-                   (replace-regexp-in-string "-mode\\'" ""
-                                             (symbol-name major-mode))))
-
-         (magic-comment (format "-*- %s%s-*-"
-                                (if coding (format "coding:%s; " coding) "")
-                                (if mode (format "mode:%s; " mode) ""))))
-    (if (or coding mode)
-        (let ()
-          (goto-char (point-min))
-          (if (looking-at "^#!") (beginning-of-line 2))
-          (insert magic-comment)
-          (comment-region (line-beginning-position) (line-end-position))
-          (newline))
-      (message "Error: both current coding and major-mode are nil."))))
+  (if (or major-mode buffer-file-coding-system)
+      (let* ((mode (if major-mode
+                       (concat "mode:%s;"
+                               (replace-regexp-in-string
+                                "-mode\\'" ""
+                                (symbol-name major-mode)))))
+             (coding (if buffer-file-coding-system
+                         (format "coding:%s;"
+                                 (symbol-name buffer-file-coding-system))))
+             (entries (cl-remove nil (list mode coding)))
+             (magic-comment (concat "-*- "
+                                    (string-join entries " ")
+                                    " -*-")))
+        (goto-char (point-min))
+        (if (looking-at "^#!") (beginning-of-line 2))
+        (insert magic-comment)
+        (comment-region (line-beginning-position) (line-end-position))
+        (newline))
+    (message "Do nothing")))
 
 (defun kui/kill-buffer-without-interaction ()
   "Kill the current buffer without interaction."
@@ -455,14 +457,13 @@ This function should be :around advice function."
 ;; スタイルやシンタックスチェックする
 (use-package flycheck
   :defer t
-  :init
-  (add-hook 'after-init-hook #'global-flycheck-mode)
-
   :config
   ;; Do not use flycheck-pos-tip, it seems not to work right on Mac
   ;;(kui/with-pkg 'flycheck-pos-tip)
 
   (setq-default flycheck-emacs-lisp-load-path 'inherit)
+
+  (global-flycheck-mode)
 
   (kui/append-to-list 'popwin:special-display-config
     '(flycheck-error-list-mode :position :bottom :height 20 :dedicated t))
@@ -784,10 +785,11 @@ This function should be :around advice function."
     ;; Disable jshint if eslint enabled
     (when (and (flycheck-may-use-checker 'javascript-eslint)
                (flycheck-may-use-checker 'javascript-jslint))
-      (message "Disable jshint on flycheck")
+      (message "Disable jshint checker of flycheck")
       (flycheck-disable-checker 'javascript-jshint))
     (when (executable-find "flow")
-      (use-package flycheck-flow :ensure t)))
+      (use-package flycheck-flow :ensure t))
+    )
 
   (add-hook 'js-mode-hook 'kui/flycheck-init-js)
   (when (featurep 'js2-mode)
