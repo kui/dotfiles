@@ -362,6 +362,8 @@ This function should be :around advice function."
 ;; マイナーモードは必ずインストールする
 (setq use-package-always-ensure t)
 
+(use-package diminish)
+
 ;; 自動保存
 (use-package auto-save-buffers
   :ensure nil
@@ -389,6 +391,7 @@ This function should be :around advice function."
 
 ;; git の変更行を表示
 (use-package git-gutter
+  :diminish git-gutter-mode
   :config
   (when window-system
     (add-to-list 'git-gutter:update-hooks 'focus-in-hook))
@@ -438,6 +441,7 @@ This function should be :around advice function."
 
 ;; 2ストロークキーのプレフィックスキーを入力したときの次のキー一覧表示
 (use-package guide-key
+  :diminish guide-key-mode
   :config
   (guide-key-mode 1)
   (setq
@@ -493,6 +497,7 @@ This function should be :around advice function."
 
 ;; 補完
 (use-package auto-complete-config
+  :diminish auto-complete-mode
   :ensure auto-complete
   :config
   (ac-config-default)
@@ -551,6 +556,8 @@ This function should be :around advice function."
   )
 
 (use-package whitespace
+  :diminish whitespace-mode
+  :diminish global-whitespace-mode
   :config
   ;; n 列以上はハイライトで警告
   ;; (setq whitespace-line-column 90)
@@ -777,7 +784,7 @@ This function should be :around advice function."
     ;; Disable jshint if eslint enabled
     (when (and (flycheck-may-use-checker 'javascript-eslint)
                (flycheck-may-use-checker 'javascript-jslint))
-      (message "disale jshint on flycheck")
+      (message "Disable jshint on flycheck")
       (flycheck-disable-checker 'javascript-jshint))
     (when (executable-find "flow")
       (use-package flycheck-flow :ensure t)))
