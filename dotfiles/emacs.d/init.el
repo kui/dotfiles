@@ -887,7 +887,8 @@ This function should be :around advice function."
   (set-scroll-bar-mode nil)
 
   ;; フォントの指定
-  (let ((font (kui/find-font "Ricty-12"
+  (let ((font (kui/find-font "Myrica M-12"
+                             "Ricty-12"
                              "Inconsolata-12"
                              "Monospace-12")))
     (message "Use font: %s" font)
