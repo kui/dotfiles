@@ -777,20 +777,18 @@ This function should be :around advice function."
   (add-to-list 'auto-mode-alist '("\\.js\\'"  . js2-mode)))
 (use-package flycheck
   :config
-  (defun kui/use-node-modules-bin ()
-    (let* ((local-path (kui/chomp-end (shell-command-to-string "npm bin"))))
-      (setq-local exec-path (cons local-path exec-path))))
   (defun kui/flycheck-init-js ()
-    (kui/use-node-modules-bin)
-    ;; Disable jshint if eslint enabled
-    (when (and (flycheck-may-use-checker 'javascript-eslint)
-               (flycheck-may-use-checker 'javascript-jslint))
-      (message "Disable jshint checker of flycheck")
-      (flycheck-disable-checker 'javascript-jshint))
+    ;; Add "node_modules/.bin" to exec-path
+    (let* ((local-path (kui/chomp-end (shell-command-to-string "npm bin"))))
+      (setq-local exec-path (cons local-path exec-path)))
+    ;; flowtype が使える時は、flow チェッカーのあとに元のチェッカー（eslint など）を動かす
     (when (executable-find "flow")
-      (use-package flycheck-flow :ensure t))
+      (let ((orig-ckr (flycheck-get-checker-for-buffer)))
+        (use-package flycheck-flow :ensure t)
+        (flycheck-select-checker 'javascript-flow)
+        (if orig-ckr
+            (flycheck-add-next-checker 'javascript-flow orig-ckr))))
     )
-
   (add-hook 'js-mode-hook 'kui/flycheck-init-js)
   (when (featurep 'js2-mode)
     (add-hook 'js2-mode-hook 'kui/flycheck-init-js)))
