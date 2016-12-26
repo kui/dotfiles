@@ -766,32 +766,35 @@ This function should be :around advice function."
   :config
   (setq scss-compile-at-save nil))
 
-(use-package js-mode
+(use-package js
   :no-require t
   :config
-  (setq js-indent-level 2))
+  (setq js-indent-level 2)
+  (add-hook 'js-mode-hook 'kui/flycheck-init-js))
 (use-package js2-mode
   :no-require t
   :config
   (js2-mode-hide-warnings-and-errors)
-  (add-to-list 'auto-mode-alist '("\\.js\\'"  . js2-mode)))
-(use-package flycheck
-  :config
-  (defun kui/flycheck-init-js ()
-    ;; Add "node_modules/.bin" to exec-path
-    (let* ((local-path (kui/chomp-end (shell-command-to-string "npm bin"))))
-      (setq-local exec-path (cons local-path exec-path)))
-    ;; flowtype が使える時は、flow チェッカーのあとに元のチェッカー（eslint など）を動かす
-    (when (executable-find "flow")
-      (let ((orig-ckr (flycheck-get-checker-for-buffer)))
-        (use-package flycheck-flow :ensure t)
-        (flycheck-select-checker 'javascript-flow)
-        (if orig-ckr
-            (flycheck-add-next-checker 'javascript-flow orig-ckr))))
+  (add-hook 'js2-mode-hook 'kui/flycheck-init-js))
+(defun kui/flycheck-init-js ()
+  "`js-mode'/`js2-mode' で実行されるフック."
+  ;; "プロジェクトルート/node_modules/.bin" を実行パスに追加
+  (let* ((local-path (kui/chomp-end (shell-command-to-string "npm bin"))))
+    (setq-local exec-path (cons local-path exec-path)))
+  (when (and (executable-find "flow")
+             (featurep 'flycheck))
+    (use-package flycheck-flow
+      :ensure t
+      :config
+      ;; flow によるチェックは優先度下位
+      (setq flycheck-checkers (cl-remove 'javascript-flow flycheck-checkers))
+      (add-to-list 'flycheck-checkers 'javascript-flow t)
+      ;; 本来のチェッカーの次にチェーンして flow が起動するように設定
+      (let ((c (flycheck-get-checker-for-buffer)))
+        (when c (flycheck-add-next-checker c 'javascript-flow)))
+      )
     )
-  (add-hook 'js-mode-hook 'kui/flycheck-init-js)
-  (when (featurep 'js2-mode)
-    (add-hook 'js2-mode-hook 'kui/flycheck-init-js)))
+  )
 (defun kui/eslint-fix (file)
   "Execute eslint --fix FILE."
   (iteractive)
