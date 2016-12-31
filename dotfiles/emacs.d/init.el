@@ -702,8 +702,9 @@ This function should be :around advice function."
     (add-hook 'ruby-mode-hook 'robe-mode)
     (add-hook 'robe-mode-hook 'ac-robe-setup))
 
-  (when (and (executable-find "rbenv")
-             (kui/package-require 'rbenv))
+  (use-package rbenv
+    :ensure t
+    :config
     (add-hook 'ruby-mode-hook 'global-rbenv-mode))
 
   (use-package ruby-block
