@@ -14,16 +14,6 @@ source_if_exist(){
     source "$1"
 }
 
-## rvm
-source_if_exist "/usr/local/rvm/scripts/rvm" || \
-    source_if_exist "$HOME/.rvm/scripts/rvm"
-
-## nvm
-source_if_exist "$HOME/.nvm/nvm.sh"
-
-# fzf
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
 readlink_f() {
     python -c "import os; print(os.path.realpath('$1'))"
 }
@@ -69,6 +59,8 @@ path=(
     /usr{/local,/usr,}/bin(N-/)
     /usr/local/kui-avconv/bin(N-/)
 )
+
+pixels-fortune
 
 manpath=(
     $(which brew &>/dev/null && echo "$(brew --prefix)/share/man(N-/)")
@@ -721,6 +713,16 @@ fi
 ! [[ -f ~/.zshrc.local ]] && touch ~/.zshrc.local
 source ~/.zshrc.local
 
+## rvm
+source_if_exist "/usr/local/rvm/scripts/rvm" || \
+    source_if_exist "$HOME/.rvm/scripts/rvm"
+
+## nvm
+source_if_exist "$HOME/.nvm/nvm.sh"
+
+# fzf
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
 ## rbenv
 if which rbenv &> /dev/null && ! which rvm &> /dev/null
 then
@@ -750,5 +752,3 @@ which npm > /dev/null 2>&1 && . <(npm completion)
 
 # racer: see installs/racer.sh
 export RUST_SRC_PATH="$HOME/.local/rust/src"
-
-pixels-fortune
