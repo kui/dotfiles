@@ -7,7 +7,8 @@ usage: $0 store
        $0 load
 "
 
-DIR='zaqwsx'
+BASE="/tmp/zaqwsx"
+DEST="$HOME/Sync/a.tar.gz.enc"
 
 main() {
     if [ ! $# -eq 1 ]; then
@@ -26,23 +27,27 @@ main() {
 }
 
 abort() {
-    (
-        printf "$@"
-        printf "\n"
-        printf "$USAGE"
+    ( printf "$@"
+      printf "\n"
+      printf "$USAGE"
     ) >&2
     exit 1
 }
 
 save() {
-    if [ ! -d "/tmp/$DIR" ]; then
+    if [ ! -d "$BASE" ]; then
         abort "Not loaded"
     fi
-    time tar -C /tmp -cz "$DIR" | gpg --yes -cao ~/Sync/a
+    cd "$BASE"
+    time tar -cz * | openssl enc -aes-256-cbc -e > "$DEST"
 }
 
 load() {
-    gpg -o- --decrypt ~/Sync/a | tar -C /tmp -xz && browse "/tmp/$DIR"
+    mkdir -vp "$BASE"
+    if ! mount | grep -qF "$BASE"; then
+        sudo mount -v -t tmpfs -o size=512m tmpfs "$BASE"
+    fi
+    time openssl enc -aes-256-cbc -d -in "$DEST" | tar -xz -C "$BASE"
 }
 
 browse() {
