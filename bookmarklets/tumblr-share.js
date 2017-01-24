@@ -1,11 +1,12 @@
 ((window, document) => {
-  let encode = window.encodeURIComponent;
+  const encode = window.encodeURIComponent;
+  const $ = document.querySelector.bind(document);
+  const $$ = document.querySelectorAll.bind(document);
   let t;
-  let url = (t=document.querySelector("link[rel=canonical]")) && t.href;
-  url = url || ((t=document.querySelector('meta[property="og:url"],meta[property="twitter:url"]')) && t.content);
+  let url = (t=$("link[rel=canonical]")) && t.href;
+  url = url || ((t=$('meta[property="og:url"],meta[property="twitter:url"]')) && t.content);
   url = url || location.href;
-  let title = (t=document.querySelector('meta[property="og:title"],meta[property="twitter:title"]')) && t.content;
-  title = title || document.title;
+  let title = document.title;
 
   let q = {
     url: encode(url),
@@ -16,7 +17,7 @@
 
   // twitter images
   let query = "#permalink-overlay [data-element-context='platform_photo_card'] img";
-  let imgs = Array.from(document.querySelectorAll(query))
+  let imgs = Array.from($$(query))
       .map(i => i.src + ":orig");
   if (imgs.length !== 0) {
     q.posttype = "photo";
