@@ -7,6 +7,8 @@
 Thumbs.db
 core
 TAGS
+node_modules
+*.bookmarklet.js
 /dotfiles/emacs.d/ac-comphist.dat
 /dotfiles/emacs.d/url
 /dotfiles/emacs.d/tramp
