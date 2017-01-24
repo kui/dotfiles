@@ -3,8 +3,11 @@ BMKS = $(patsubst %.js, %.bookmarklet.js, $(filter-out %.bookmarklet.js, $(wildc
 
 all: $(BMKS)
 
-%.bookmarklet.js: %.js
+%.bookmarklet.js: %.js node_modules
 	$(BIN)/babili < $< > $@
+
+node_modules: package.js
+	npm install
 
 .PHONY: clean
 clean:
