@@ -6,7 +6,7 @@ all: $(BMKS)
 %.bookmarklet.js: %.js node_modules
 	$(BIN)/babili < $< > $@
 
-node_modules: package.js
+node_modules: package.json
 	npm install
 
 .PHONY: clean
