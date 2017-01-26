@@ -26,4 +26,7 @@
         +Object.entries(q).map(e => e.join("=")).join("&");
   const height = screen && screen.height || 600;
   window.open(tumblr, null, `height=${height},width=540`);
+
+  const tmpWin = window.open();
+  if (tmpWin) tmpWin.close();
 })(window, document);
