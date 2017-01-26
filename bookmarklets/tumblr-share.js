@@ -22,6 +22,8 @@
     q.content = imgs.map(encode).join(",");
   }
 
-  window.open('https://www.tumblr.com/widgets/share/tool?'+Object.entries(q).map(e => e.join("=")).join("&"),
-              '_blank');
+  const tumblr = 'https://www.tumblr.com/widgets/share/tool?'
+        +Object.entries(q).map(e => e.join("=")).join("&");
+  const height = screen && screen.height || 600;
+  window.open(tumblr, null, `height=${height},width=540`);
 })(window, document);
