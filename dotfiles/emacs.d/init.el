@@ -836,7 +836,8 @@ This function should be :around advice function."
         web-mode-css-indent-offset 2
         web-mode-code-indent-offset 2
         web-mode-style-padding 0
-        web-mode-script-padding 0)
+        web-mode-script-padding 0
+        web-mode-enable-current-element-highlight t)
   )
 
 (use-package groovy-mode

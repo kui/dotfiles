@@ -1,0 +1,15 @@
+{
+  "name": "kui-bookmarklets",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "main": "tumblr-share.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Keiichiro UI",
+  "license": "ISC",
+  "devDependencies": {
+    "babili": "0.0.10"
+  }
+}
