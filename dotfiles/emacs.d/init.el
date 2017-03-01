@@ -802,9 +802,9 @@ This function should be :around advice function."
       )
     )
   )
-(defun kui/eslint-fix (file)
+(defun kui/eslint-fix ()
   "Execute eslint --fix FILE."
-  (iteractive)
+  (interactive)
   (shell-command (concat "eslint --fix " (buffer-file-name)))
   (revert-buffer t t t))
 
