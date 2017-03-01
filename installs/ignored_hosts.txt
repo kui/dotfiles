@@ -34,6 +34,8 @@ aladdin.genieesspv.jp
 an.cmertv.com
 anz.rd.rakuten.co.jp
 ap.lijit.com
+api.primecaster.net
+app-cm.co.jp
 aqua.dmm.co.jp
 ard.yahoo.co.jp
 as.dc.impact-ad.jp
@@ -58,6 +60,7 @@ cdn.adnxs.com
 cdn.adsafeprotected.com
 cdn.adsrv247.com
 cdn.amp.live
+cdn.app-cm.co.jp
 cdn.apvdr.com
 cdn.cxense.com
 cdn.smartcanvas.net
@@ -101,6 +104,7 @@ jp-ads.mediaforge.com
 jp.at.atwola.com
 jp3ast-cdn.goldspotmedia.com
 js.ad-stir.com
+js.app-cm.co.jp
 js.gsspcln.jp
 js.moatads.com
 k.one.impact-ad.jp
@@ -167,6 +171,7 @@ t.zqtk.net
 tags.mathtag.com
 tg.socdm.com
 tokfb.adsrvr.org
+tpc.googlesyndication.com
 tpc.googlesyndication.com
 u.one.impact-ad.jp
 v.one.impact-ad.jp
