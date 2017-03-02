@@ -179,7 +179,6 @@ tg.socdm.com
 tokfb.adsrvr.org
 tpc.googlesyndication.com
 trandsey.info
-tpc.googlesyndication.com
 u.one.impact-ad.jp
 v.one.impact-ad.jp
 vsc.send.microad.jp
