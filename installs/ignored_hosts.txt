@@ -25,6 +25,7 @@ ads.tersertude.com
 ads.tersertude.com
 ads.yahoo.com
 adserver.adtechjp.com
+adskpak.com
 adsvids.com
 advg.jp
 afs.adjust-net.jp
@@ -69,6 +70,7 @@ cdn.smartcanvas.net
 cdn.teads.tv
 cdn.vidible.tv
 choices.truste.com
+clicksgear.com
 cloud.lokaplatform.com
 cs.gssprt.jp
 d.href.asia
@@ -85,6 +87,7 @@ g.doubleclick.net
 g.one.impact-ad.jp
 g.socdm.com
 googleads.g.doubleclick.net
+goto.media-serving.com
 h.one.impact-ad.jp
 h.socdm.com
 i.ad-v.jp
@@ -175,11 +178,13 @@ tags.mathtag.com
 tg.socdm.com
 tokfb.adsrvr.org
 tpc.googlesyndication.com
+trandsey.info
 tpc.googlesyndication.com
 u.one.impact-ad.jp
 v.one.impact-ad.jp
 vsc.send.microad.jp
 w.one.impact-ad.jp
+www.clicksgear.com
 www.googleadservices.com
 x.one.impact-ad.jp
 xml.affiliate.rakuten.co.jp

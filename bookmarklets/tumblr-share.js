@@ -17,7 +17,7 @@
   };
 
   const contentExtractors = [
-    () => {
+    () => { // selected images
       const selection = window.getSelection();
       if (selection.rangeCount === 0) return;
 
@@ -40,8 +40,8 @@
       q.posttype = "photo";
       q.content = imgs.map(encode).join(",");
     },
-    () => {
-      const query = "#permalink-overlay [data-element-context='platform_photo_card'] img";
+    () => { // twitter images
+      const query = "#permalink-overlay .AdaptiveMedia img";
       let imgs = Array.from($$(query)).map(i => i.src + ":orig");
       if (imgs.length === 0) return;
       imgs = uniq(imgs);
