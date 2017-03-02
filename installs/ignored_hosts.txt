@@ -54,7 +54,9 @@ c.one.impact-ad.jp
 c.scorecardresearch.com
 c.socdm.com
 cas.criteo.com
+cas.hk.as.criteo.com
 cas.jp.as.criteo.com
+cat.hk.as.criteo.com
 cdn.ad.maist.jp
 cdn.adnxs.com
 cdn.adsafeprotected.com
@@ -124,6 +126,7 @@ p.flite.com
 p.one.impact-ad.jp
 pagead2.googlesyndication.com
 pics.dmm.com
+pix.hk.as.criteo.net
 pixel.mathtag.com
 player.sbs.co.kr
 productsearch.ubuntu.com
