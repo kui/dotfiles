@@ -14,7 +14,8 @@ fi
 
 if is_ubuntu; then
     run sudo apt-get build-dep emacs24 -y
-    run sudo apt-get install automake autoconf
+    run sudo apt-get install automake autoconf libtinfo-dev libjpeg-dev \
+        libpng-dev libgif-dev libtiff-dev libxaw7-dev libx11-dev
 else
     echo "Not supported platform" >&2
     exit 1
