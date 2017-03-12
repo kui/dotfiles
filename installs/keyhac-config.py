@@ -1624,3 +1624,14 @@ def configure(keymap):
         keymap_real_emacs["(243)"]  = keymap.InputKeyCommand("C-Yen") # [半角／全角] キー
         keymap_real_emacs["(244)"]  = keymap.InputKeyCommand("C-Yen") # [半角／全角] キー
         keymap_real_emacs["A-(25)"] = keymap.InputKeyCommand("C-Yen") # Alt-` キー
+
+
+    ####################################################################################################
+    ## Chrome のキーバインド
+    ####################################################################################################
+    if 1:
+        keymap_chrome = keymap.defineWindowKeymap(exe_name="chrome.exe")
+
+        # History back/forward
+        keymap_chrome["A-OpenBracket"] = "(166)"
+        keymap_chrome["A-CloseBracket"] = "(167)"
