@@ -212,7 +212,8 @@ def configure(keymap):
     scroll_key = ["M-v", "C-v"]
 
     # 表示しているウインドウの中で、一番最近までフォーカスがあったウインドウに移動するキーを指定する
-    other_window_key = "A-o"
+    #other_window_key = "A-o"
+    other_window_key = None
 
     # クリップボードリストを起動するキーを指定する
     clipboardList_key = "A-y"
@@ -221,19 +222,21 @@ def configure(keymap):
     lancherList_key = "A-l"
 
     # アクティブウィンドウを切り替えるキーの組み合わせ（前、後 の順）を指定する（複数指定可）
-    window_switching_key = [["A-p", "A-n"], ["A-Up", "A-Down"]]
+    #window_switching_key = [["A-p", "A-n"], ["A-Up", "A-Down"]]
+    window_switching_key = None
 
     # アクティブウィンドウをディスプレイ間で移動するキーの組み合わせ（前、後 の順）を指定する（複数指定可）
     # （other_window_key に割り当てている A-o との連係した利用を想定し、A-C-o を割り当てています。）
-    # window_movement_key = None # Single display
-    window_movement_key = [[None, "A-C-o"], ["A-Left", "A-Right"]] # Multi-display
+    window_movement_key = None # Single display
+    #window_movement_key = [[None, "A-C-o"], ["A-Left", "A-Right"]] # Multi-display
 
     # ウィンドウを最小化、リストアするキーの組み合わせ（リストア、最小化 の順）を指定する（複数指定可）
-    window_minimize_key = [["A-r", "A-m"]]
+    #window_minimize_key = [["A-r", "A-m"]]
+    window_minimize_key = None
 
     # 仮想デスクトップを切り替えるキーの組み合わせ（前、後 の順）を指定する（複数指定可）
-    # desktop_switching_key = None # for Windows 7 or 8.1
-    desktop_switching_key = [["A-C-p", "A-C-n"], ["A-C-Left", "A-C-Right"]] # for Windows 10
+    desktop_switching_key = None # for Windows 7 or 8.1
+    #desktop_switching_key = [["A-C-p", "A-C-n"], ["A-C-Left", "A-C-Right"]] # for Windows 10
 
     # shell_command 関数で起動するアプリケーションソフトを指定する
     # （パスが通っていない場所にあるコマンドは、絶対パスで指定してください。）
@@ -1567,8 +1570,8 @@ def configure(keymap):
 
                 listers = [
                     ["Window",  cblister_FixedPhrase(window_items)],
-                    ["App",     cblister_FixedPhrase(application_items)],
-                    ["Website", cblister_FixedPhrase(website_items)],
+                    #["App",     cblister_FixedPhrase(application_items)],
+                    #["Website", cblister_FixedPhrase(website_items)],
                     ["Other",   cblister_FixedPhrase(other_items)],
                 ]
 
