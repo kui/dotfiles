@@ -1,4 +1,4 @@
-# -*- mode: python; coding: utf-8-with-signature-dos -*-
+﻿# -*- mode: python; coding: utf-8-with-signature-dos -*-
 
 ##                          nickname: fakeymacs config
 ##
@@ -170,7 +170,7 @@ def configure(keymap):
                         "MobaXterm.exe"]      # MobaXterm
 
     # 日本語キーボードかどうかを指定する（True: 日本語キーボード、False: 英語キーボード）
-    is_japanese_keyboard = True
+    is_japanese_keyboard = False
 
     # 左右どちらの Ctrlキーを使うかを指定する（"L": 左、"R": 右）
     side_of_ctrl_key = "L"
@@ -182,7 +182,8 @@ def configure(keymap):
     use_emacs_ime_mode = True
 
     # emacs日本語入力モードを切り替える（トグルする）キーを指定する
-    toggle_emacs_ime_mode_key = "C-t"
+    # toggle_emacs_ime_mode_key = "C-t"
+    toggle_emacs_ime_mode_key = None
 
     # emacs日本語入力モードが有効なときに表示するバルーンメッセージを指定する
     # emacs_ime_mode_balloon_message = None
@@ -193,13 +194,14 @@ def configure(keymap):
 
     # IME を切り替えるキーを指定する（複数指定可）
     # toggle_input_method_key = ["C-Yen"]
-    toggle_input_method_key = ["C-Yen", "C-o"]
+    toggle_input_method_key = ["C-j"]
 
     # C-iキーを Tabキーとして使うかどうかを指定する（True: 使う、False: 使わない）
     use_ctrl_i_as_tab = True
 
     # Escキーを Metaキーとして使うかどうかを指定する（True: 使う、False: 使わない）
-    use_esc_as_meta = True
+    # use_esc_as_meta = True
+    use_esc_as_meta = False
 
     # Ctl-xプレフィックスキーに使うキーを指定する
     # （Ctl-xプレフィックスキーのモディファイアキーは、Ctrl または Alt のいずれかから指定してください）
@@ -828,8 +830,8 @@ def configure(keymap):
 
     ## 特殊文字キーの設定
     s_vkey = "(" + str(VK_SPACE) + ")"
-    define_key(keymap_emacs,        s_vkey, reset_undo(reset_counter(reset_mark(repeat(self_insert_command(       s_vkey))))))
-    define_key(keymap_emacs, "S-" + s_vkey, reset_undo(reset_counter(reset_mark(repeat(self_insert_command("S-" + s_vkey))))))
+    #define_key(keymap_emacs,        s_vkey, reset_undo(reset_counter(reset_mark(repeat(self_insert_command(       s_vkey))))))
+    #define_key(keymap_emacs, "S-" + s_vkey, reset_undo(reset_counter(reset_mark(repeat(self_insert_command("S-" + s_vkey))))))
 
     for vkey in [VK_OEM_MINUS, VK_OEM_PLUS, VK_OEM_COMMA, VK_OEM_PERIOD, VK_OEM_1, VK_OEM_2, VK_OEM_3, VK_OEM_4, VK_OEM_5, VK_OEM_6, VK_OEM_7, VK_OEM_102]:
         s_vkey = "(" + str(vkey) + ")"
@@ -865,10 +867,10 @@ def configure(keymap):
 
     ## Escキーの設定
     define_key(keymap_emacs, "C-OpenBracket C-OpenBracket", reset_undo(reset_counter(self_insert_command("Esc"))))
-    if use_esc_as_meta:
-        define_key(keymap_emacs, "Esc Esc", reset_undo(reset_counter(self_insert_command("Esc"))))
-    else:
-        define_key(keymap_emacs, "Esc", reset_undo(reset_counter(self_insert_command("Esc"))))
+    #if use_esc_as_meta:
+    #    define_key(keymap_emacs, "Esc Esc", reset_undo(reset_counter(self_insert_command("Esc"))))
+    #else:
+    #    define_key(keymap_emacs, "Esc", reset_undo(reset_counter(self_insert_command("Esc"))))
 
     ## universal-argumentキーの設定
     define_key(keymap_emacs, "C-u", universal_argument)
@@ -899,7 +901,7 @@ def configure(keymap):
     define_key(keymap_emacs, "C-e",        reset_search(reset_undo(reset_counter(mark(move_end_of_line)))))
     define_key(keymap_emacs, "M-S-Comma",  reset_search(reset_undo(reset_counter(mark(beginning_of_buffer)))))
     define_key(keymap_emacs, "M-S-Period", reset_search(reset_undo(reset_counter(mark(end_of_buffer)))))
-    define_key(keymap_emacs, "C-l",        reset_search(reset_undo(reset_counter(recenter))))
+    # define_key(keymap_emacs, "C-l",        reset_search(reset_undo(reset_counter(recenter))))
 
     define_key(keymap_emacs, "Left",     reset_search(reset_undo(reset_counter(mark(repeat(backward_char))))))
     define_key(keymap_emacs, "Right",    reset_search(reset_undo(reset_counter(mark(repeat(forward_char))))))
@@ -953,7 +955,7 @@ def configure(keymap):
     define_key(keymap_emacs, "Ctl-x o", reset_search(reset_undo(reset_counter(reset_mark(other_window)))))
 
     ## 「文字列検索 / 置換」のキー設定
-    define_key(keymap_emacs, "C-r",   reset_undo(reset_counter(reset_mark(isearch_backward))))
+    # define_key(keymap_emacs, "C-r",   reset_undo(reset_counter(reset_mark(isearch_backward))))
     define_key(keymap_emacs, "C-s",   reset_undo(reset_counter(reset_mark(isearch_forward))))
     define_key(keymap_emacs, "M-S-5", reset_search(reset_undo(reset_counter(reset_mark(query_replace)))))
 
@@ -969,8 +971,8 @@ def configure(keymap):
 
     ## 「その他」のキー設定
     define_key(keymap_emacs, "Enter",     reset_undo(reset_counter(reset_mark(repeat(newline)))))
-    define_key(keymap_emacs, "C-m",       reset_undo(reset_counter(reset_mark(repeat(newline)))))
-    define_key(keymap_emacs, "C-j",       reset_undo(reset_counter(reset_mark(newline_and_indent))))
+    # define_key(keymap_emacs, "C-m",       reset_undo(reset_counter(reset_mark(repeat(newline)))))
+    # define_key(keymap_emacs, "C-j",       reset_undo(reset_counter(reset_mark(newline_and_indent))))
     define_key(keymap_emacs, "Tab",       reset_undo(reset_counter(reset_mark(repeat(indent_for_tab_command)))))
     define_key(keymap_emacs, "C-g",       reset_search(reset_counter(reset_mark(keyboard_quit))))
     define_key(keymap_emacs, "Ctl-x C-c", reset_search(reset_undo(reset_counter(reset_mark(kill_emacs)))))
@@ -1170,7 +1172,7 @@ def configure(keymap):
         define_key(keymap_ei, "Enter", ei_newline)
         define_key(keymap_ei, "C-m",   ei_newline)
         define_key(keymap_ei, "Tab",   ei_record_func(indent_for_tab_command))
-        define_key(keymap_ei, "C-g",   ei_keyboard_quit)
+        # define_key(keymap_ei, "C-g",   ei_keyboard_quit)
 
         ## 「IME の切り替え」のキー設定（上書きされないように最後に設定する）
         if toggle_input_method_key:
@@ -1438,16 +1440,16 @@ def configure(keymap):
     define_key(keymap_lw, "A-d", delete_char)
 
     ## 「文字列検索 / 置換」のキー設定
-    define_key(keymap_lw, "C-r", lw_isearch_backward)
-    define_key(keymap_lw, "A-r", lw_isearch_backward)
+    # define_key(keymap_lw, "C-r", lw_isearch_backward)
+    # define_key(keymap_lw, "A-r", lw_isearch_backward)
 
     define_key(keymap_lw, "C-s", lw_isearch_forward)
-    define_key(keymap_lw, "A-s", lw_isearch_forward)
+    # define_key(keymap_lw, "A-s", lw_isearch_forward)
 
     ## 「その他」のキー設定
     define_key(keymap_lw, "Enter", lw_exit_search(lw_newline))
-    define_key(keymap_lw, "C-m",   lw_exit_search(lw_newline))
-    define_key(keymap_lw, "A-m",   lw_exit_search(lw_newline))
+    # define_key(keymap_lw, "C-m",   lw_exit_search(lw_newline))
+    # define_key(keymap_lw, "A-m",   lw_exit_search(lw_newline))
 
     define_key(keymap_lw, "C-g", lw_reset_search(lw_keyboard_quit))
     define_key(keymap_lw, "A-g", lw_reset_search(lw_keyboard_quit))
