@@ -883,7 +883,10 @@ This function should be :around advice function."
 ;; -------------------------------------------------------------------------
 ;; 見た目
 (custom-set-faces
- '(hl-line ((((background light)) :background "#eeeeff"))))
+ '(hl-line ((((background light)) :background "#eeeeff")
+            (((background dark))  :background "#000011")
+            ))
+ )
 (when (featurep 'git-gutter)
   (custom-set-faces
    '(git-gutter-fr:added ((t (:inherit (fringe git-gutter:added)))))
