@@ -42,14 +42,23 @@
     },
     () => { // twitter images
       const query = "#permalink-overlay .AdaptiveMedia img";
-      let imgs = Array.from($$(query)).map(i => i.src + ":orig");
+      let imgs = Array.from(document.querySelectorAll(query)).map(i => i.src + ":orig");
       if (imgs.length === 0) return;
       imgs = uniq(imgs);
       console.log("imgs", imgs);
 
       q.posttype = "photo";
-      q.content = uniq(imgs).map(encode).join(",");
+      q.content = imgs.map(encode).join(",");
     },
+    () => { // pixiv
+      let imgs = Array.from(document.querySelectorAll('img.original-image')).map(i => i.dataset["src"]);
+      if (imgs.length === 0) return;
+      imgs = uniq(imgs);
+      console.log("imgs", imgs);
+
+      q.posttype = "photo";
+      q.content = imgs.map(encode).join(",");
+    }
   ];
   contentExtractors.some((e) => {
     e();
