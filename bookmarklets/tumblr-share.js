@@ -21,8 +21,11 @@
       const selection = window.getSelection();
       if (selection.rangeCount === 0) return;
 
+      const ancestor = selection.getRangeAt(0).commonAncestorContainer;
+      if (!ancestor.querySelectorAll) return;
+
       let imgs = [];
-      for (const e of selection.getRangeAt(0).commonAncestorContainer.querySelectorAll("*")) {
+      for (const e of ancestor.querySelectorAll("*")) {
         if (!selection.containsNode(e, true)) continue;
         if (e.tagName === "IMG" && e.src) {
           imgs.push(e.src);
