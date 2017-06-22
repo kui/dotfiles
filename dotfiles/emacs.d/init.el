@@ -882,18 +882,6 @@ This function should be :around advice function."
 
 ;; -------------------------------------------------------------------------
 ;; 見た目
-(custom-set-faces
- '(hl-line ((((background light)) :background "#eeeeff")
-            (((background dark))  :background "#000011")
-            ))
- )
-(when (featurep 'git-gutter)
-  (custom-set-faces
-   '(git-gutter-fr:added ((t (:inherit (fringe git-gutter:added)))))
-   '(git-gutter-fr:deleted ((t (:inherit (fringe git-gutter:deleted)))))
-   '(git-gutter-fr:modified ((t (:inherit (fringe git-gutter:modified)))))
-   ))
-
 (when window-system
   ;; カーソルの色
   ;; (set-cursor-color "geeen")
@@ -924,6 +912,28 @@ This function should be :around advice function."
         kui/min-colmun-number)
    (/ (display-pixel-height) (frame-char-height)))
   )
+
+;; -----------------------------------
+;; Custom
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(git-gutter-fr:added ((t (:inherit (fringe git-gutter:added)))))
+ '(git-gutter-fr:deleted ((t (:inherit (fringe git-gutter:deleted)))))
+ '(git-gutter-fr:modified ((t (:inherit (fringe git-gutter:modified)))))
+ '(hl-line ((((background light)) :background "#eeeeff") (((background dark)) :background "#000011"))))
+
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   (quote
+    (multiple-cursors ctags-update helm-swoop helm auto-complete company flycheck guide-key editorconfig direx popwin git-gutter-fringe git-gutter exec-path-from-shell use-package))))
+
 
 (message "End init.el %s" (current-time-string))
 (message "Elapsed time: %s sec" (- (float-time) kui/init-start-time))
