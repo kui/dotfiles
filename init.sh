@@ -14,6 +14,8 @@ UBUNTU_INSTALLS=(
     git zsh curl wget ssh build-essential xz-utils exuberant-ctags
 )
 BASE_DIR="$HOME/.dotfiles"
+BREW_DIR="$HOME/.homebrew"
+SKIP_BREW_FILE="/tmp/skip_brew"
 
 main() {
     install_basics
@@ -42,8 +44,13 @@ install_basics() {
             run mkdir ~/.homebrew
             run curl -L https://github.com/Homebrew/homebrew/tarball/master | tar xz --strip 1 -C ~/.homebrew
         fi
-        PATH=$HOME/.homebrew/bin:$PATH
-        run brew install "${HOMEBREW_INSTALLS[@]}" --with-default-names --default-names
+        echo "$BREW_DIR"
+        cat "$SKIP_BREW_FILE" 2>/dev/null
+        export PATH=$HOME/.homebrew/bin:$PATH
+        if [[ "$(cat "$SKIP_BREW_FILE" 2>/dev/null)" != "$BREW_DIR" ]]; then
+            run brew install "${HOMEBREW_INSTALLS[@]}" --with-default-names --default-names
+            run echo "$BREW_DIR" > "$SKIP_BREW_FILE"
+        fi
     else
         abort "Non supported platform"
     fi
