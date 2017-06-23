@@ -117,6 +117,9 @@
 ;; C-h に割り当てられている関数 help-command を C-x C-h に割り当てる
 (global-set-key "\C-x\C-h" 'help-command)
 
+;; C-k で現在のバッファを kill
+(global-set-key "\M-k" 'kill-this-buffer)
+
 ;; tag のキーバインド
 (global-set-key "\M-t" nil)
 (global-set-key "\M-tt" 'find-tag)
@@ -932,7 +935,7 @@ This function should be :around advice function."
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (multiple-cursors ctags-update helm-swoop helm auto-complete company flycheck guide-key editorconfig direx popwin git-gutter-fringe git-gutter exec-path-from-shell use-package))))
+    (lua-mode multiple-cursors ctags-update helm-swoop helm auto-complete company flycheck guide-key editorconfig direx popwin git-gutter-fringe git-gutter exec-path-from-shell use-package))))
 
 
 (message "End init.el %s" (current-time-string))
