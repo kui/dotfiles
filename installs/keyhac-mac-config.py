@@ -141,6 +141,7 @@ def configure(keymap):
             try:
                 del keymap.vk_vk_map[VK_LCOMMAND]
                 del keymap.vk_vk_map[VK_LMENU]
+                send_keys("U-LCmd", "U-LAlt")()
             except KeyError:
                 pass
             return False
