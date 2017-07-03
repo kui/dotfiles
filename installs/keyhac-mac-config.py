@@ -1,4 +1,4 @@
-﻿import sys
+import sys
 import os
 import datetime
 import subprocess
@@ -60,6 +60,7 @@ def configure(keymap):
         send_keys("Shift-Alt-Left", "Cmd-X")()
 
     def backword_kill_word_or_region():
+        global is_marked
         if is_marked:
             kill_region()
         else:
@@ -75,8 +76,6 @@ def configure(keymap):
         if is_marked:
             send_keys("U-LShift")()
             is_marked = False
-        else:
-            send_keys("Esc")()
 
     set_map(global_keymap, {
         "Ctrl-F": forward_char,
