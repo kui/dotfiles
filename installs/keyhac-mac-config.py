@@ -13,6 +13,10 @@ IGNORED_APP_NAMES = [
     "com.apple.Terminal",
 ]
 
+IDE_APP_NAMES = [
+    "com.jetbrains.intellij",
+]
+
 BROWSER_APP_NAMES = [
     "com.google.Chrome",
 ]
@@ -28,6 +32,9 @@ def configure(keymap):
         app_name = get_app_name(acc)
         return not (app_name in IGNORED_APP_NAMES)
 
+    ########################################################
+    # Global
+    ########################################################
     global_keymap = keymap.defineWindowKeymap(check_func=check_ignored_app)
     global_mx_keymap = keymap.defineMultiStrokeKeymap()
     is_marked = False
@@ -105,7 +112,7 @@ def configure(keymap):
         "Ctrl-Space": mark_set,
 
         "Cmd-K": "Cmd-W",
-        "Alt-X": global_mx_keymap,
+        "Ctrl-X": global_mx_keymap,
     })
     set_map(global_mx_keymap, {
         "H": "Cmd-A",
@@ -114,9 +121,39 @@ def configure(keymap):
         "Ctrl-C": "Cmd-Q",
     })
 
+    ########################################################
+    # IDE
+    ########################################################
+    def check_ide(acc):
+        app_name = get_app_name(acc)
+        print("#", app_name)
+        return app_name in IDE_APP_NAMES
+
+    ide_keymap = keymap.defineWindowKeymap(check_func=check_ide)
+    ide_mx_keymap = keymap.defineMultiStrokeKeymap()
+    set_map(ide_keymap, {
+        "Ctrl-W": "Cmd-Delete",
+        "Cmd-X": "Cmd-3",
+        "Ctrl-W": "Cmd-Delete",
+        "Ctrl-O": "F3",
+        "Cmd-I": "Cmd-E",
+        "Ctrl-S": "Cmd-J",
+        "Ctrl-G": "Esc",
+        "Ctrl-Semicolon": "Cmd-Slash",
+        "Ctrl-X": ide_mx_keymap,
+    })
+    set_map(ide_mx_keymap, {
+        "H": "Cmd-A",
+        "Ctrl-S": "Cmd-S",
+        "Ctrl-F": "Shift-Cmd-R",
+        "Ctrl-C": "Cmd-Q",
+    })
+
+    ########################################################
+    # Web Browser
+    ########################################################
     def check_web_browser(acc):
         app_name = get_app_name(acc)
-        print("##", app_name)
         return app_name in BROWSER_APP_NAMES
 
     browser_keymap = keymap.defineWindowKeymap(check_func=check_web_browser)
@@ -131,6 +168,9 @@ def configure(keymap):
         "Cmd-Shift-Period": "Cmd-Down",
     })
 
+    ########################################################
+    # terminal app
+    ########################################################
     def check_terminal_app(acc):
         app_name = get_app_name(acc)
         if app_name == "com.apple.Terminal":
