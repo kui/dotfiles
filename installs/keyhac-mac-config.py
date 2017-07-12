@@ -83,6 +83,8 @@ def configure(keymap):
         if is_marked:
             send_keys("U-LShift")()
             is_marked = False
+        else:
+            send_keys("Esc")()
 
     set_map(global_keymap, {
         "Ctrl-F": forward_char,
@@ -129,17 +131,24 @@ def configure(keymap):
         print("#", app_name)
         return app_name in IDE_APP_NAMES
 
+    def ide_kill_region():
+        global is_marked
+        if is_marked:
+            reset_mark()
+            send_keys("Cmd-X")()
+        else:
+            send_keys("Cmd-Back")()
+
     ide_keymap = keymap.defineWindowKeymap(check_func=check_ide)
     ide_mx_keymap = keymap.defineMultiStrokeKeymap()
     set_map(ide_keymap, {
-        "Ctrl-W": "Cmd-Delete",
+        "Ctrl-W": ide_kill_region,
         "Cmd-X": "Cmd-3",
-        "Ctrl-W": "Cmd-Delete",
         "Ctrl-O": "F3",
         "Cmd-I": "Cmd-E",
         "Ctrl-S": "Cmd-J",
-        "Ctrl-G": "Esc",
         "Ctrl-Semicolon": "Cmd-Slash",
+        "Cmd-Slash": "Ctrl-Space",
         "Ctrl-X": ide_mx_keymap,
     })
     set_map(ide_mx_keymap, {
