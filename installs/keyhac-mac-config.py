@@ -28,13 +28,12 @@ def configure(keymap):
     keymap.setFont( "Osaka-Mono", 16 )
     keymap.setTheme("black")
 
-    def check_ignored_app(acc):
-        app_name = get_app_name(acc)
-        return not (app_name in IGNORED_APP_NAMES)
-
     ########################################################
     # Global
     ########################################################
+    def check_ignored_app(acc):
+        app_name = get_app_name(acc)
+        return not (app_name in IGNORED_APP_NAMES)
     global_keymap = keymap.defineWindowKeymap(check_func=check_ignored_app)
     global_mx_keymap = keymap.defineMultiStrokeKeymap()
     is_marked = False
@@ -93,6 +92,8 @@ def configure(keymap):
         "Cmd-B":  backward_word,
         "Ctrl-P": prev_line,
         "Ctrl-N": next_line,
+        "Ctrl-A": "Cmd-Left",
+        "Ctrl-E": "Cmd-Right",
 
         "Ctrl-V": "PageDown",
         "Cmd-V":  "PageUp",
@@ -100,7 +101,7 @@ def configure(keymap):
         "Ctrl-W": backword_kill_word_or_region,
         "Cmd-W":  kill_ring_save,
         "Ctrl-Y": "Cmd-V",
-        "Ctrl-K": ["Shift-End", "Cmd-X"],
+        "Ctrl-K": ["Shift-Cmd-Right", "Cmd-X"],
 
         "Ctrl-H": "Back",
         "Ctrl-D": "Delete",
@@ -190,7 +191,7 @@ def configure(keymap):
             try:
                 del keymap.vk_vk_map[VK_LCOMMAND]
                 del keymap.vk_vk_map[VK_LMENU]
-                send_keys("U-LCmd", "U-LAlt")()
+                # send_keys("U-LCmd", "U-LAlt")()
             except KeyError:
                 pass
             return False
