@@ -11,6 +11,11 @@ from ckit.ckit_const import *
 IGNORED_APP_NAMES = [
     "org.gnu.Emacs",
     "com.apple.Terminal",
+    "com.googlecode.iterm2",
+]
+
+IGNORED_WINDOW_TITLES = [
+    "Alacritty",
 ]
 
 IDE_APP_NAMES = [
@@ -19,6 +24,10 @@ IDE_APP_NAMES = [
 
 BROWSER_APP_NAMES = [
     "com.google.Chrome",
+]
+
+TERMINAL_APP_NAMES = [
+    "com.apple.Terminal"
 ]
 
 def configure(keymap):
@@ -33,7 +42,17 @@ def configure(keymap):
     ########################################################
     def check_ignored_app(acc):
         app_name = get_app_name(acc)
-        return not (app_name in IGNORED_APP_NAMES)
+        if app_name in IGNORED_APP_NAMES:
+            return False
+
+        try:
+            window_title = acc["AXTitle"]
+            if window_title in IGNORED_WINDOW_TITLES:
+                return False
+        except:
+            pass
+
+        return True
     global_keymap = keymap.defineWindowKeymap(check_func=check_ignored_app)
     global_mx_keymap = keymap.defineMultiStrokeKeymap()
     is_marked = False
@@ -63,7 +82,7 @@ def configure(keymap):
         send_keys("Cmd-C")()
 
     def backword_kill_word():
-        send_keys("Shift-Alt-Left", "Cmd-X")()
+        send_keys("Cmd-X")()
 
     def backword_kill_word_or_region():
         global is_marked
@@ -82,8 +101,6 @@ def configure(keymap):
         if is_marked:
             send_keys("U-LShift")()
             is_marked = False
-        else:
-            send_keys("Esc")()
 
     set_map(global_keymap, {
         "Ctrl-F": forward_char,
@@ -129,7 +146,6 @@ def configure(keymap):
     ########################################################
     def check_ide(acc):
         app_name = get_app_name(acc)
-        print("#", app_name)
         return app_name in IDE_APP_NAMES
 
     def ide_kill_region():
@@ -183,22 +199,9 @@ def configure(keymap):
     ########################################################
     def check_terminal_app(acc):
         app_name = get_app_name(acc)
-        if app_name == "com.apple.Terminal":
-            keymap.vk_vk_map[VK_LCOMMAND] = VK_LMENU
-            keymap.vk_vk_map[VK_LMENU] = VK_LCOMMAND
-            return True
-        else:
-            try:
-                del keymap.vk_vk_map[VK_LCOMMAND]
-                del keymap.vk_vk_map[VK_LMENU]
-                # send_keys("U-LCmd", "U-LAlt")()
-            except KeyError:
-                pass
-            return False
+        return app_name in TERMINAL_APP_NAMES
     terminal_app_keymap = keymap.defineWindowKeymap(check_func=check_terminal_app)
     set_map(terminal_app_keymap, {
-        "LAlt-Tab": "Cmd-Tab",
-        "LAlt-Space": "Cmd-Space",
     })
 
 def get_app_name(acc_elem):
