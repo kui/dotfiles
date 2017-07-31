@@ -76,12 +76,20 @@ linux_test() {
 
 darwin_copy() {
   require_command pbcopy
-  pbcopy
+  if [[ -n "$TMUX" ]]; then
+      reattach-to-user-namespace pbcopy
+  else
+      pbcopy
+  fi
 }
 
 darwin_paste() {
   require_command pbpaste
-  pbpaste
+  if [[ -n "$TMUX" ]]; then
+      reattach-to-user-namespace pbpaste
+  else
+      pbpaste
+  fi
 }
 
 darwin_test() {
