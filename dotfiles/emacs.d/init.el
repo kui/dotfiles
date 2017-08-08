@@ -918,25 +918,13 @@ This function should be :around advice function."
 
 ;; -----------------------------------
 ;; Custom
+(setq custom-file "~/.emacs-custom.el")
+
 (custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
  '(git-gutter-fr:added ((t (:inherit (fringe git-gutter:added)))))
  '(git-gutter-fr:deleted ((t (:inherit (fringe git-gutter:deleted)))))
  '(git-gutter-fr:modified ((t (:inherit (fringe git-gutter:modified)))))
  '(hl-line ((((background light)) :background "#eeeeff") (((background dark)) :background "#000011"))))
-
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   (quote
-    (ruby-block rbenv robe nginx-mode lua-mode multiple-cursors ctags-update helm-swoop helm auto-complete company flycheck guide-key editorconfig direx popwin git-gutter-fringe git-gutter exec-path-from-shell use-package))))
-
 
 (message "End init.el %s" (current-time-string))
 (message "Elapsed time: %s sec" (- (float-time) kui/init-start-time))

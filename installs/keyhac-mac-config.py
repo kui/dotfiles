@@ -2,6 +2,7 @@ import sys
 import os
 import datetime
 import subprocess
+import string
 
 import ckit
 
@@ -27,7 +28,8 @@ BROWSER_APP_NAMES = [
 ]
 
 TERMINAL_APP_NAMES = [
-    "com.apple.Terminal"
+    "com.apple.Terminal",
+    "com.googlecode.iterm2",
 ]
 
 def configure(keymap):
@@ -201,8 +203,11 @@ def configure(keymap):
         app_name = get_app_name(acc)
         return app_name in TERMINAL_APP_NAMES
     terminal_app_keymap = keymap.defineWindowKeymap(check_func=check_terminal_app)
-    set_map(terminal_app_keymap, {
-    })
+    cmd_map = {}
+    for c in list(string.ascii_uppercase):
+        cmd_map["Cmd-" + c] = ["Esc", c]
+        cmd_map["Cmd-Shift-" + c] = ["Esc", "Shift-" + c]
+    set_map(terminal_app_keymap, cmd_map)
 
 def get_app_name(acc_elem):
     return ckit.getApplicationNameByPid(acc_elem.pid)
