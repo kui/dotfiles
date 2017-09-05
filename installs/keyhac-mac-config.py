@@ -205,8 +205,8 @@ def configure(keymap):
     terminal_app_keymap = keymap.defineWindowKeymap(check_func=check_terminal_app)
     cmd_map = {}
     for c in list(string.ascii_uppercase):
-        cmd_map["Cmd-" + c] = ["Esc", c]
-        cmd_map["Cmd-Shift-" + c] = ["Esc", "Shift-" + c]
+        cmd_map["Cmd-" + c] = "Alt-" + c
+        cmd_map["Cmd-Shift-" + c] = "Alt-Shift-" + c
     set_map(terminal_app_keymap, cmd_map)
 
 def get_app_name(acc_elem):
