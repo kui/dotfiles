@@ -76,6 +76,7 @@ sudo_path=(
 
 [ -z "$ld_library_path" ] && typeset -xT LD_LIBRARY_PATH ld_library_path
 ld_library_path=(
+    $HOME/.homebrew/lib(N-/)
     /usr/local/kui-avconv/lib(N-/)
     /opt/local/lib(N-/)
     $ld_library_path
@@ -83,10 +84,12 @@ ld_library_path=(
 
 [ -z "$include" ] && typeset -xT INCLUDE include
 include=(
+    $HOME/.homebrew/include(N-/)
     /usr/local/kui-avconv/include(N-/)
     /opt/local/include
     $include
 )
+export CPATH=$INCLUDE
 
 [ -z "$fpath" ] && typeset -xT FPATH include
 fpath=(
