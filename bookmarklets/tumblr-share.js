@@ -1,6 +1,9 @@
 ((window, document) => {
   function uniq(array) {
-    return Array.from(new Set(array));
+    // Donot use Array.from() because some site overwrite it.
+    const a = [];
+    for (const e of new Set(array)) a.push(e);
+    return a;
   }
 
   const encode = window.encodeURIComponent;
