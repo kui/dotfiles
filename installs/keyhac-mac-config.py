@@ -13,6 +13,7 @@ IGNORED_APP_NAMES = [
     "org.gnu.Emacs",
     "com.apple.Terminal",
     "com.googlecode.iterm2",
+    "com.factorio",
 ]
 
 IGNORED_WINDOW_TITLES = [
