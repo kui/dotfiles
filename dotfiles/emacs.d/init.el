@@ -137,6 +137,20 @@
 ;; -------------------------------------------------------------------------
 ;; 自作関数
 
+;; 各行末コードで開き直す
+(defun kui/reopen-with-dos ()
+  "Reopen with eol code as DOS."
+  (interactive)
+  (revert-buffer-with-coding-system 'dos))
+(defun kui/reopen-with-mac ()
+  "Reopen with eol code as Mac."
+  (interactive)
+  (revert-buffer-with-coding-system 'mac))
+(defun kui/reopen-with-unix ()
+  "Reopen with eol code as Unx."
+  (interactive)
+  (revert-buffer-with-coding-system 'unix))
+
 ;; このファイル(init.el)を開く
 (defun kui/find-init-file ()
   "Edit init file.
@@ -723,54 +737,6 @@ This function should be :around advice function."
     (add-hook 'ruby-mode-hook '(lambda () (ruby-block-mode t))))
   )
 
-(use-package coffee-mode
-  :no-require t
-  :config
-  (setq coffee-tab-width 2)
-  (setq coffee-debug-mode t)
-
-  (kui/add-to-list-if-exist 'ac-modes 'coffee-mode)
-
-  (use-package col-highlight
-    :ensure t
-    :config
-    (add-hook 'coffee-mode-hook 'column-highlight-mode))
-
-  ;; flymake
-  ;; (when (and (kui/package-require 'flymake-coffeescript)
-  ;;            (executable-find flymake-coffeescript-command))
-  ;;   (add-hook 'coffee-mode-hook 'flymake-coffeescript-load))
-
-  ;; 独自インデント
-  ;; インデントの先頭に移動してからじゃないと、
-  ;; insert-tab しない
-  (defun kui/coffee-indent-line ()
-    "Indent current line as CoffeeScript."
-    (interactive)
-    (let ((old-point nil)
-          (new-point nil))
-      (save-excursion
-        (set 'old-point (point))
-        (back-to-indentation)
-        (set 'new-point (point)))
-
-      (if (< old-point new-point)
-          (back-to-indentation)
-        (coffee-indent-line))
-      ))
-  (add-hook 'coffee-mode-hook
-            (lambda ()
-              (set (make-local-variable 'indent-line-function)
-                   'kui/coffee-indent-line)))
-  )
-
-(use-package coffee-mode
-  :no-require t
-  :config
-  (setq css-indent-offset 2)
-  (kui/add-to-list-if-exist 'ac-modes 'css-mode)
-  )
-
 (use-package scss-mode
   :no-require t
   :config
@@ -782,7 +748,7 @@ This function should be :around advice function."
   (setq js-indent-level 2)
   (add-hook 'js-mode-hook 'kui/flycheck-init-js))
 (use-package js2-mode
-  :no-require t
+  :mode "\\.m?js"
   :config
   (js2-mode-hide-warnings-and-errors)
   (add-hook 'js2-mode-hook 'kui/flycheck-init-js))
@@ -821,20 +787,6 @@ This function should be :around advice function."
   :no-require t
   :config
   (kui/add-to-list-if-exist 'ac-modes 'html-mode))
-
-(use-package multi-web-mode
-  :no-require t
-  ;; :mode "\\.html?\\'"
-  :config
-  (setq mweb-default-major-mode 'html-mode)
-  (setq mweb-tags '((php-mode "<\\?php\\|<\\? \\|<\\?=" "\\?>")
-                    (js-mode "<script>" "</script>")
-                    (js-mode "<script +\\(type=\"text/javascript\"\\|language=\"javascript\"\\)>"
-                             "</script>")
-                    (css-mode "<style +type=\"text/css\"[^>]*>" "</style>")))
-  (setq mweb-filename-extensions '("php" "htm" "html" "ctp" "phtml" "php4" "php5"))
-  (multi-web-global-mode 1)
-  )
 
 (use-package web-mode
   :no-require t
