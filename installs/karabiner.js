@@ -622,6 +622,7 @@ const config = {
             modifiers: { mandatory: [ 'control' ] }
           },
           to: [
+            { key_code: 'escape' },
             {
               set_variable: {
                 name: 'mark_mode',
