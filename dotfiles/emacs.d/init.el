@@ -750,7 +750,7 @@ This function should be :around advice function."
 (use-package js2-mode
   :mode "\\.m?js"
   :config
-  (js2-mode-hide-warnings-and-errors)
+  ;;(js2-mode-hide-warnings-and-errors)
   (add-hook 'js2-mode-hook 'kui/flycheck-init-js))
 (defun kui/flycheck-init-js ()
   "`js-mode'/`js2-mode' で実行されるフック."
@@ -774,7 +774,7 @@ This function should be :around advice function."
 (defun kui/eslint-fix ()
   "Execute eslint --fix FILE."
   (interactive)
-  (shell-command (concat "eslint --fix " (buffer-file-name)))
+  (shell-command (concat "npx eslint --fix " (buffer-file-name)))
   (revert-buffer t t t))
 
 (use-package typescript
