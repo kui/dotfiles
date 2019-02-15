@@ -152,12 +152,8 @@ def configure(keymap):
         return app_name in IDE_APP_NAMES
 
     def ide_kill_region():
-        global is_marked
-        if is_marked:
-            reset_mark()
-            send_keys("Cmd-X")()
-        else:
-            send_keys("Cmd-Back")()
+        reset_mark()
+        send_keys("Cmd-X")()
 
     ide_keymap = keymap.defineWindowKeymap(check_func=check_ide)
     ide_mx_keymap = keymap.defineMultiStrokeKeymap()
