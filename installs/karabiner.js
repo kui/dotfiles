@@ -273,6 +273,18 @@ const config = {
           type: 'basic',
           conditions: ideConditions,
           from: {
+            key_code: 'o',
+            modifiers: {
+              mandatory: [ 'control' ],
+              optional: [ 'any' ]
+            },
+          },
+          to: [{ key_code: 'f3' }]
+        },
+        {
+          type: 'basic',
+          conditions: ideConditions,
+          from: {
             key_code: 's',
             modifiers: {
               mandatory: [ 'control' ],
