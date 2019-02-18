@@ -61,12 +61,13 @@ const markModeConditions = [
   },
   ...baseConditions
 ];
-const cxModeConditions = [
-  {
+const cxModeCondition = {
     type: 'variable_if',
     name: 'c_x_mode',
     value: 1,
-  },
+};
+const cxModeBaseConditions = [
+  cxModeCondition,
   ...baseConditions
 ];
 
@@ -311,6 +312,32 @@ const config = {
             modifiers: [ 'control' ],
           }]
         },
+        {
+          type: 'basic',
+          conditions: [
+            ...ideConditions,
+            cxModeCondition
+          ],
+          from: {
+            key_code: 'f',
+            modifiers: {
+              mandatory: [ 'control' ],
+              optional: [ 'any' ]
+            },
+          },
+          to: [
+            {
+              key_code: 'r',
+              modifiers: [ 'shift', 'command' ],
+            },
+            {
+              set_variable: {
+                name: 'c_x_mode',
+                value: 0
+              }
+            },
+          ]
+        },
       ]
     },
 
@@ -526,7 +553,7 @@ const config = {
         },
         {
           type: 'basic',
-          conditions: cxModeConditions,
+          conditions: cxModeBaseConditions,
           from: {
             key_code: 'h',
           },
@@ -545,7 +572,7 @@ const config = {
         },
         {
           type: 'basic',
-          conditions: cxModeConditions,
+          conditions: cxModeBaseConditions,
           from: {
             key_code: 's',
             modifiers: {
@@ -567,7 +594,7 @@ const config = {
         },
         {
           type: 'basic',
-          conditions: cxModeConditions,
+          conditions: cxModeBaseConditions,
           from: {
             key_code: 'f',
             modifiers: {
@@ -589,7 +616,7 @@ const config = {
         },
         {
           type: 'basic',
-          conditions: cxModeConditions,
+          conditions: cxModeBaseConditions,
           from: {
             key_code: 'c',
             modifiers: {
@@ -611,7 +638,7 @@ const config = {
         },
         {
           type: 'basic',
-          conditions: cxModeConditions,
+          conditions: cxModeBaseConditions,
           from: {
             any: 'key_code',
           },
