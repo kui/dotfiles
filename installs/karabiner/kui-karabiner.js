@@ -7,60 +7,6 @@ const Modes = {
   Mark: 2,
 };
 
-function conditionsGroup(conditions, manipulators) {
-  return manipulators.map((m) => {
-    m.type = 'basic';
-    m.conditions = (m.conditions || []).concat(conditions);
-    return m;
-  });
-}
-
-// Use in "from"
-function fromKey(str) {
-  const binds = str
-        .split('+')
-        .map(s => s.trim().toLowerCase());
-  const keyCode = binds.pop();
-  const modifiers = binds.reduce((mod, keyString) => {
-    const isOptional = keyString.endsWith('?');
-    const key = keyString.replace(/\?$/, '');
-    if (isOptional) {
-      mod.optional = (mod.optional || []).concat(key);
-    } else {
-      mod.mandatory = (mod.mandatory || []).concat(key);
-    }
-    return mod;
-  }, {});
-  return {
-    key_code: keyCode,
-    modifiers,
-  };
-}
-
-// use in "to"
-function sendKey(str) {
-  const binds = str
-        .split('+')
-        .map(s => s.trim().toLowerCase());
-  const keyCode = binds.pop();
-  return {
-    key_code: keyCode,
-    modifiers: binds,
-  };
-}
-
-function setVariable(name, value) {
-  return { set_variable: { name, value } };
-}
-
-function setMode(modeName) {
-  return setVariable('mode', modeName);
-}
-
-function unsetMode() {
-  return setVariable('mode', Modes.Unset);
-}
-
 const baseExcludedApps = [
   '^org\\.gnu\\.Emacs$',
   '^org\\.gnu\\.AquamacsEmacs$',
@@ -480,3 +426,57 @@ module.exports = {
     },
   ]
 };
+
+function conditionsGroup(conditions, manipulators) {
+  return manipulators.map((m) => {
+    m.type = 'basic';
+    m.conditions = (m.conditions || []).concat(conditions);
+    return m;
+  });
+}
+
+// Use in "from"
+function fromKey(str) {
+  const binds = str
+        .split('+')
+        .map(s => s.trim().toLowerCase());
+  const keyCode = binds.pop();
+  const modifiers = binds.reduce((mod, keyString) => {
+    const isOptional = keyString.endsWith('?');
+    const key = keyString.replace(/\?$/, '');
+    if (isOptional) {
+      mod.optional = (mod.optional || []).concat(key);
+    } else {
+      mod.mandatory = (mod.mandatory || []).concat(key);
+    }
+    return mod;
+  }, {});
+  return {
+    key_code: keyCode,
+    modifiers,
+  };
+}
+
+// use in "to"
+function sendKey(str) {
+  const binds = str
+        .split('+')
+        .map(s => s.trim().toLowerCase());
+  const keyCode = binds.pop();
+  return {
+    key_code: keyCode,
+    modifiers: binds,
+  };
+}
+
+function setVariable(name, value) {
+  return { set_variable: { name, value } };
+}
+
+function setMode(modeName) {
+  return setVariable('mode', modeName);
+}
+
+function unsetMode() {
+  return setVariable('mode', Modes.Unset);
+}
