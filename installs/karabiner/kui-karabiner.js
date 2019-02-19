@@ -105,24 +105,6 @@ const baseConditions = [{
   bundle_identifiers: baseExcludedApps,
 }];
 
-const markModeConditions = [
-  {
-    type: 'variable_if',
-    name: 'mode',
-    value: Modes.Mark,
-  },
-  ...baseConditions
-];
-const cxModeCondition = {
-    type: 'variable_if',
-    name: 'mode',
-    value: Modes.Cx,
-};
-const cxModeBaseConditions = [
-  cxModeCondition,
-  ...baseConditions
-];
-
 const webBrowserConditions = [
   {
     type: 'frontmost_application_if',
