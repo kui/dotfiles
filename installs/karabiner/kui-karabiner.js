@@ -1,11 +1,3 @@
-const os = require('os');
-const path = require('path');
-const fs = require('fs');
-
-const targetFile = path.join(os.homedir(), '.config/karabiner/assets/complex_modifications/1111111.json');
-
-fs.mkdirSync(path.dirname(targetFile), { recursive: true });
-
 const baseExcludedApps = [
   '^org\\.gnu\\.Emacs$',
   '^org\\.gnu\\.AquamacsEmacs$',
@@ -99,7 +91,7 @@ const terminalConditions = [
   }
 ];
 
-const config = {
+module.exports = {
   title: 'kui\'s Bindings',
   rules: [
     ////////////////////////////////////////////////////////////
@@ -1061,6 +1053,3 @@ const config = {
     },
   ]
 };
-
-console.log(config);
-fs.writeFileSync(targetFile, JSON.stringify(config, 0, 2));
