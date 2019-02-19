@@ -109,8 +109,28 @@ function fromKey(str) {
   }, {});
   return {
     key_code: keyCode,
-    modifiers
+    modifiers,
   };
+}
+
+// use in "to"
+function sendKey(str) {
+  const binds = str
+        .split('+')
+        .map(s => s.trim().toLowerCase());
+  const keyCode = binds.pop();
+  return {
+    key_code: keyCode,
+    modifiers: binds,
+  };
+}
+
+function setVariable(name, value) {
+  return { set_variable: { name, value } };
+}
+
+function setMode(modeName) {
+  return setVariable('mode', modeName);
 }
 
 // console.log(JSON.stringify(fromKey('option+any?+f'), 0, 2));
@@ -126,32 +146,19 @@ module.exports = {
           type: 'basic',
           conditions: terminalConditions,
           from: fromKey('any? + left_option'),
-          to: [
-            {
-              key_code: 'left_command'
-            },
-          ],
+          to: [ sendKey('left_command') ],
         },
         {
           type: 'basic',
           conditions: terminalConditions,
           from: fromKey('any? + left_command'),
-          to: [
-            {
-              key_code: 'left_option'
-            },
-          ],
+          to: [ sendKey('left_option') ],
         },
         {
           type: 'basic',
           conditions: terminalConditions,
           from: fromKey('option + shift? + tab'),
-          to: [
-            {
-              key_code: 'tab',
-              modifiers: [ 'command' ],
-            },
-          ],
+          to: [ sendKey('command + tab') ],
         },
       ],
     },
@@ -164,46 +171,31 @@ module.exports = {
           type: 'basic',
           conditions: webBrowserConditions,
           from: fromKey('control + shift? + t'),
-          to: [{
-            key_code: 't',
-            modifiers: [ 'command' ],
-          }],
+          to: [ sendKey('command + t') ],
         },
         {
           type: 'basic',
           conditions: webBrowserConditions,
           from: fromKey('control + shift? + l'),
-          to: [{
-            key_code: 'l',
-            modifiers: [ 'command' ],
-          }],
+          to: [ sendKey('command + l') ],
         },
         {
           type: 'basic',
           conditions: webBrowserConditions,
           from: fromKey('control + shift? + r'),
-          to: [{
-            key_code: 'r',
-            modifiers: [ 'command' ],
-          }],
+          to: [ sendKey('command + r') ],
         },
         {
           type: 'basic',
           conditions: webBrowserConditions,
           from: fromKey('command + shift + period'),
-          to: [{
-            key_code: 'down_arrow',
-            modifiers: [ 'command' ],
-          }],
+          to: [ sendKey('command + down_arrow') ],
         },
         {
           type: 'basic',
           conditions: webBrowserConditions,
           from: fromKey('command + shift + comma'),
-          to: [{
-            key_code: 'up_arrow',
-            modifiers: [ 'command' ],
-          }],
+          to: [ sendKey('command + up_arrow') ],
         },
       ]
     },
@@ -216,43 +208,31 @@ module.exports = {
           type: 'basic',
           conditions: ideConditions,
           from: fromKey('command + x'),
-          to: [{
-            key_code: '3',
-            modifiers: [ 'command' ],
-          }]
+          to: [ sendKey('command + 3') ],
         },
         {
           type: 'basic',
           conditions: ideConditions,
           from: fromKey('command + i'),
-          to: [{
-            key_code: 'e',
-            modifiers: [ 'command' ],
-          }]
+          to: [ sendKey('command + e') ],
         },
         {
           type: 'basic',
           conditions: ideConditions,
           from: fromKey('control + o'),
-          to: [{ key_code: 'f3' }]
+          to: [ sendKey('f3') ],
         },
         {
           type: 'basic',
           conditions: ideConditions,
           from: fromKey('control + s'),
-          to: [{
-            key_code: 'j',
-            modifiers: [ 'command' ],
-          }]
+          to: [ sendKey('command + j') ],
         },
         {
           type: 'basic',
           conditions: ideConditions,
           from: fromKey('command + slash'),
-          to: [{
-            key_code: 'spacebar',
-            modifiers: [ 'control' ],
-          }]
+          to: [ sendKey('control + spacebar') ],
         },
         {
           type: 'basic',
@@ -262,17 +242,9 @@ module.exports = {
           ],
           from: fromKey('control + f'),
           to: [
-            {
-              key_code: 'r',
-              modifiers: [ 'shift', 'command' ],
-            },
-            {
-              set_variable: {
-                name: 'c_x_mode',
-                value: 0
-              }
-            },
-          ]
+            sendKey('command + shift + r'),
+            setVariable('c_x_mode', 0),
+          ],
         },
       ]
     },
@@ -286,12 +258,7 @@ module.exports = {
           type: 'basic',
           conditions: baseConditions,
           from: fromKey('control + spacebar'),
-          to: [{
-            set_variable: {
-              name: 'mark_mode',
-              value: 1
-            }
-          }],
+          to: [ setVariable('mark_mode', 1) ],
         },
 
         // Mark Set - Cursor Move
@@ -299,91 +266,61 @@ module.exports = {
           type: 'basic',
           conditions: markModeConditions,
           from: fromKey('control + b'),
-          to: [{
-            key_code: 'left_arrow',
-            modifiers: [ 'shift' ]
-          }],
+          to: [ sendKey('shift + left_arrow') ],
         },
         {
           type: 'basic',
           conditions: markModeConditions,
           from: fromKey('command + b'),
-          to: [{
-            key_code: 'left_arrow',
-            modifiers: [ 'option', 'shift' ]
-          }],
+          to: [ sendKey('shift + option + left_arrow') ],
         },
         {
           type: 'basic',
           conditions: markModeConditions,
           from: fromKey('control + f'),
-          to: [{
-            key_code: 'right_arrow',
-            modifiers: [ 'shift' ]
-          }],
+          to: [ sendKey('shift + right_arrow') ],
         },
         {
           type: 'basic',
           conditions: markModeConditions,
           from: fromKey('command + f'),
-          to: [{
-            key_code: 'right_arrow',
-            modifiers: [ 'option', 'shift' ]
-          }],
+          to: [ sendKey('shift + option + right_arrow') ],
         },
         {
           type: 'basic',
           conditions: markModeConditions,
           from: fromKey('control + n'),
-          to: [{
-            key_code: 'down_arrow',
-            modifiers: [ 'shift' ]
-          }],
+          to: [ sendKey('shift + down_arrow') ],
         },
         {
           type: 'basic',
           conditions: markModeConditions,
           from: fromKey('control + p'),
-          to: [{
-            key_code: 'up_arrow',
-            modifiers: [ 'shift' ]
-          }],
+          to: [ sendKey('shift + up_arrow') ],
         },
         {
           type: 'basic',
           conditions: markModeConditions,
           from: fromKey('control + v'),
-          to: [{
-            key_code: 'page_down',
-            modifiers: [ 'shift' ]
-          }],
+          to: [ sendKey('shift + page_down') ],
         },
         {
           type: 'basic',
           conditions: markModeConditions,
           from: fromKey('command + v'),
-          to: [{
-            key_code: 'page_up',
-            modifiers: [ 'shift' ]
-          }],
+          to: [ sendKey('shift + page_up') ],
         },
         {
           type: 'basic',
           conditions: markModeConditions,
           from: fromKey('control + a'),
-          to: [{
-            key_code: 'left_arrow',
-            modifiers: [ 'command', 'shift' ]
-          }],
+          to: [ sendKey('shift + command + left_arrow') ],
         },
         {
           type: 'basic',
           conditions: markModeConditions,
           from: fromKey('control + e'),
-          to: [{
-            key_code: 'right_arrow',
-            modifiers: [ 'command', 'shift' ]
-          }],
+          to: [ sendKey('shift + command + right_arrow') ],
         },
         {
           type: 'basic',
@@ -416,10 +353,7 @@ module.exports = {
           conditions: cxModeBaseConditions,
           from: fromKey('h'),
           to: [
-            {
-              key_code: 'a',
-              modifiers: [ 'command' ],
-            },
+            sendKey('command + a'),
             {
               set_variable: {
                 name: 'c_x_mode',
@@ -433,10 +367,7 @@ module.exports = {
           conditions: cxModeBaseConditions,
           from: fromKey('control + s'),
           to: [
-            {
-              key_code: 's',
-              modifiers: [ 'command' ],
-            },
+            sendKey('command + s'),
             {
               set_variable: {
                 name: 'c_x_mode',
@@ -450,10 +381,7 @@ module.exports = {
           conditions: cxModeBaseConditions,
           from: fromKey('control + f'),
           to: [
-            {
-              key_code: 'o',
-              modifiers: [ 'command' ],
-            },
+            sendKey('command + o'),
             {
               set_variable: {
                 name: 'c_x_mode',
@@ -467,10 +395,7 @@ module.exports = {
           conditions: cxModeBaseConditions,
           from: fromKey('control + c'),
           to: [
-            {
-              key_code: 'q',
-              modifiers: [ 'command' ],
-            },
+            sendKey('command + q'),
             {
               set_variable: {
                 name: 'c_x_mode',
@@ -512,13 +437,13 @@ module.exports = {
           type: 'basic',
           conditions: baseConditions,
           from: fromKey('control + d'),
-          to: [ { key_code: 'delete_forward' } ],
+          to: [ sendKey('delete_forward') ],
         },
         {
           type: 'basic',
           conditions: baseConditions,
           from: fromKey('control + h'),
-          to: [ { key_code: 'delete_or_backspace' } ],
+          to: [ sendKey('delete_or_backspace') ],
         },
 
         // Tab (C-i)
@@ -526,7 +451,7 @@ module.exports = {
           type: 'basic',
           conditions: baseConditions,
           from: fromKey('control + i'),
-          to: [ { key_code: 'tab' } ],
+          to: [ sendKey('tab') ],
         },
 
         // Esc (C-[)
@@ -540,7 +465,7 @@ module.exports = {
             ...baseConditions
           ],
           from: fromKey('control + open_bracket'),
-          to: [ { key_code: 'escape' } ],
+          to: [ sendKey('escape') ],
         },
         {
           type: 'basic',
@@ -552,15 +477,13 @@ module.exports = {
             ...baseConditions
           ],
           from: fromKey('control + close_bracket'),
-          to: [ { key_code: 'escape' } ],
+          to: [ sendKey('escape') ],
         },
         {
           type: 'basic',
           conditions: baseConditions,
           from: fromKey('control + g'),
-          to: [
-            { key_code: 'escape' },
-          ],
+          to: [ sendKey('escape') ],
         },
 
         // Cursor Moves (C-n, C-p, C-f, C-b, M-f, M-b, C-a, C-e)
@@ -568,61 +491,49 @@ module.exports = {
           type: 'basic',
           conditions: baseConditions,
           from: fromKey('control + b'),
-          to: [ { key_code: 'left_arrow' } ],
+          to: [ sendKey('left_arrow') ],
         },
         {
           type: 'basic',
           conditions: baseConditions,
           from: fromKey('command + b'),
-          to: [ {
-            key_code: 'left_arrow',
-            modifiers: [ 'option' ]
-          } ],
+          to: [ sendKey('option + left_arrow') ],
         },
         {
           type: 'basic',
           conditions: baseConditions,
           from: fromKey('control + f'),
-          to: [ { key_code: 'right_arrow' } ],
+          to: [ sendKey('right_arrow') ],
         },
         {
           type: 'basic',
           conditions: baseConditions,
           from: fromKey('command + f'),
-          to: [ {
-            key_code: 'right_arrow',
-            modifiers: [ 'option' ]
-          } ],
+          to: [ sendKey('option + right_arrow') ],
         },
         {
           type: 'basic',
           conditions: baseConditions,
           from: fromKey('control + n'),
-          to: [ { key_code: 'down_arrow' } ],
+          to: [ sendKey('down_arrow') ],
         },
         {
           type: 'basic',
           conditions: baseConditions,
           from: fromKey('control + p'),
-          to: [ { key_code: 'up_arrow' } ],
+          to: [ sendKey('up_arrow') ],
         },
         {
           type: 'basic',
           conditions: baseConditions,
           from: fromKey('control + a'),
-          to: [{
-            key_code: 'left_arrow',
-            modifiers: [ 'command' ]
-          }],
+          to: [ sendKey('command + left_arrow') ],
         },
         {
           type: 'basic',
           conditions: baseConditions,
           from: fromKey('control + e'),
-          to: [{
-            key_code: 'right_arrow',
-            modifiers: [ 'command' ]
-          }],
+          to: [ sendKey('command + right_arrow') ],
         },
 
         // Page Up/Down
@@ -630,13 +541,13 @@ module.exports = {
           type: 'basic',
           conditions: baseConditions,
           from: fromKey('control + v'),
-          to: [ { key_code: 'page_down' } ],
+          to: [ sendKey('page_down') ],
         },
         {
           type: 'basic',
           conditions: baseConditions,
           from: fromKey('command + v'),
-          to: [ { key_code: 'page_up' } ],
+          to: [ sendKey('page_up') ],
         },
 
         // Cut/Copy/Paste
@@ -645,10 +556,7 @@ module.exports = {
           conditions: baseConditions,
           from: fromKey('control + w'),
           to: [
-            {
-              key_code: 'x',
-              modifiers: [ 'command' ],
-            },
+            sendKey('command + x'),
             {
               set_variable: {
                 name: 'mark_mode',
@@ -662,10 +570,7 @@ module.exports = {
           conditions: baseConditions,
           from: fromKey('command + w'),
           to: [
-            {
-              key_code: 'c',
-              modifiers: [ 'command' ],
-            },
+            sendKey('command + c'),
             {
               set_variable: {
                 name: 'mark_mode',
@@ -678,10 +583,7 @@ module.exports = {
           type: 'basic',
           conditions: baseConditions,
           from: fromKey('control + y'),
-          to: [{
-            key_code: 'v',
-            modifiers: [ 'command' ],
-          }],
+          to: [ sendKey('command + v') ],
         },
 
         // Kill Line
@@ -690,17 +592,8 @@ module.exports = {
           conditions: baseConditions,
           from: fromKey('control + k'),
           to: [
-            {
-              key_code: 'right_arrow',
-              modifiers: [
-                'shift',
-                'command'
-              ]
-            },
-            {
-              key_code: 'x',
-              modifiers: [ 'command']
-            },
+            sendKey('shift + command + right_arrow'),
+            sendKey('command + x'),
           ],
         },
 
@@ -709,10 +602,7 @@ module.exports = {
           type: 'basic',
           conditions: baseConditions,
           from: fromKey('control + s'),
-          to: [{
-            key_code: 'f',
-            modifiers: [ 'command' ],
-          }],
+          to: [ sendKey('command + f') ],
         },
 
         // Undo
@@ -720,10 +610,7 @@ module.exports = {
           type: 'basic',
           conditions: baseConditions,
           from: fromKey('control + slash'),
-          to: [{
-            key_code: 'z',
-            modifiers: [ 'command' ],
-          }],
+          to: [ sendKey('command + z') ],
         },
 
         // M-k
@@ -731,10 +618,7 @@ module.exports = {
           type: 'basic',
           conditions: baseConditions,
           from: fromKey('command + k'),
-          to: [{
-            key_code: 'w',
-            modifiers: [ 'command' ],
-          }],
+          to: [ sendKey('command + w') ],
         }
       ]
     },
