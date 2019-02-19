@@ -4,6 +4,14 @@ const Modes = {
   Mark: 2,
 };
 
+function conditionsGroup(conditions, manipulators) {
+  return manipulators.map((m) => {
+    m.type = 'basic';
+    m.conditions = (m.conditions || []).concat(conditions);
+    return m;
+  });
+}
+
 // Use in "from"
 function fromKey(str) {
   const binds = str
@@ -149,257 +157,207 @@ module.exports = {
     ////////////////////////////////////////////////////////////
     {
       description: 'Terminal',
-      manipulators: [
+      manipulators: conditionsGroup(terminalConditions, [
         {
-          type: 'basic',
-          conditions: terminalConditions,
           from: fromKey('any? + left_option'),
           to: [ sendKey('left_command') ],
         },
         {
-          type: 'basic',
-          conditions: terminalConditions,
           from: fromKey('any? + left_command'),
           to: [ sendKey('left_option') ],
         },
         {
-          type: 'basic',
-          conditions: terminalConditions,
           from: fromKey('option + shift? + tab'),
           to: [ sendKey('command + tab') ],
         },
-      ],
+      ]),
     },
 
     /////////////////////////////////////////////////////////////
     {
       description: 'Web Browser',
-      manipulators: [
+      manipulators: conditionsGroup(webBrowserConditions, [
         {
-          type: 'basic',
-          conditions: webBrowserConditions,
           from: fromKey('control + shift? + t'),
           to: [ sendKey('command + t') ],
         },
         {
-          type: 'basic',
-          conditions: webBrowserConditions,
           from: fromKey('control + shift? + l'),
           to: [ sendKey('command + l') ],
         },
         {
-          type: 'basic',
-          conditions: webBrowserConditions,
           from: fromKey('control + shift? + r'),
           to: [ sendKey('command + r') ],
         },
         {
-          type: 'basic',
-          conditions: webBrowserConditions,
           from: fromKey('command + shift + period'),
           to: [ sendKey('command + down_arrow') ],
         },
         {
-          type: 'basic',
-          conditions: webBrowserConditions,
           from: fromKey('command + shift + comma'),
           to: [ sendKey('command + up_arrow') ],
         },
-      ]
+      ]),
     },
 
     /////////////////////////////////////////////////////////////
     {
       description: 'IDE',
-      manipulators: [
+      manipulators: conditionsGroup(ideConditions, [
         {
-          type: 'basic',
-          conditions: ideConditions,
           from: fromKey('command + x'),
           to: [ sendKey('command + 3') ],
         },
         {
-          type: 'basic',
-          conditions: ideConditions,
           from: fromKey('command + i'),
           to: [ sendKey('command + e') ],
         },
         {
-          type: 'basic',
-          conditions: ideConditions,
           from: fromKey('control + o'),
           to: [ sendKey('f3') ],
         },
         {
-          type: 'basic',
-          conditions: ideConditions,
           from: fromKey('control + s'),
           to: [ sendKey('command + j') ],
         },
         {
-          type: 'basic',
-          conditions: ideConditions,
           from: fromKey('command + slash'),
           to: [ sendKey('control + spacebar') ],
         },
         {
-          type: 'basic',
-          conditions: [
-            ...ideConditions,
-            cxModeCondition
-          ],
+          conditions: [{
+            type: 'variable_if',
+            name: 'mode',
+            value: Modes.Cx,
+          }],
           from: fromKey('control + f'),
           to: [
             sendKey('command + shift + r'),
             unsetMode(),
           ],
         },
-      ]
+      ]),
     },
 
     /////////////////////////////////////////////////
     {
       description: 'Like Emacs',
-      manipulators: [
-        // Mark Set - Base Binding
+      manipulators: conditionsGroup(baseConditions, [
+
+        // Mark mode
         {
-          type: 'basic',
-          conditions: baseConditions,
           from: fromKey('control + spacebar'),
           to: [ setMode(Modes.Mark) ],
         },
-
-        // Mark Set - Cursor Move
-        {
-          type: 'basic',
-          conditions: markModeConditions,
-          from: fromKey('control + b'),
-          to: [ sendKey('shift + left_arrow') ],
-        },
-        {
-          type: 'basic',
-          conditions: markModeConditions,
-          from: fromKey('command + b'),
-          to: [ sendKey('shift + option + left_arrow') ],
-        },
-        {
-          type: 'basic',
-          conditions: markModeConditions,
-          from: fromKey('control + f'),
-          to: [ sendKey('shift + right_arrow') ],
-        },
-        {
-          type: 'basic',
-          conditions: markModeConditions,
-          from: fromKey('command + f'),
-          to: [ sendKey('shift + option + right_arrow') ],
-        },
-        {
-          type: 'basic',
-          conditions: markModeConditions,
-          from: fromKey('control + n'),
-          to: [ sendKey('shift + down_arrow') ],
-        },
-        {
-          type: 'basic',
-          conditions: markModeConditions,
-          from: fromKey('control + p'),
-          to: [ sendKey('shift + up_arrow') ],
-        },
-        {
-          type: 'basic',
-          conditions: markModeConditions,
-          from: fromKey('control + v'),
-          to: [ sendKey('shift + page_down') ],
-        },
-        {
-          type: 'basic',
-          conditions: markModeConditions,
-          from: fromKey('command + v'),
-          to: [ sendKey('shift + page_up') ],
-        },
-        {
-          type: 'basic',
-          conditions: markModeConditions,
-          from: fromKey('control + a'),
-          to: [ sendKey('shift + command + left_arrow') ],
-        },
-        {
-          type: 'basic',
-          conditions: markModeConditions,
-          from: fromKey('control + e'),
-          to: [ sendKey('shift + command + right_arrow') ],
-        },
-        {
-          type: 'basic',
-          conditions: markModeConditions,
-          from: fromKey('control + g'),
-          to: [ unsetMode() ],
-        },
+        ...conditionsGroup(
+          [{
+            type: 'variable_if',
+            name: 'mode',
+            value: Modes.Mark,
+          }],
+          [
+            {
+              from: fromKey('control + b'),
+              to: [ sendKey('shift + left_arrow') ],
+            },
+            {
+              from: fromKey('command + b'),
+              to: [ sendKey('shift + option + left_arrow') ],
+            },
+            {
+              from: fromKey('control + f'),
+              to: [ sendKey('shift + right_arrow') ],
+            },
+            {
+              from: fromKey('command + f'),
+              to: [ sendKey('shift + option + right_arrow') ],
+            },
+            {
+              from: fromKey('control + n'),
+              to: [ sendKey('shift + down_arrow') ],
+            },
+            {
+              from: fromKey('control + p'),
+              to: [ sendKey('shift + up_arrow') ],
+            },
+            {
+              from: fromKey('control + v'),
+              to: [ sendKey('shift + page_down') ],
+            },
+            {
+              from: fromKey('command + v'),
+              to: [ sendKey('shift + page_up') ],
+            },
+            {
+              from: fromKey('control + a'),
+              to: [ sendKey('shift + command + left_arrow') ],
+            },
+            {
+              from: fromKey('control + e'),
+              to: [ sendKey('shift + command + right_arrow') ],
+            },
+            {
+              from: fromKey('control + g'),
+              to: [ unsetMode() ],
+            },
+          ]
+        ),
 
         // C-x Prefix Bindings
         {
-          type: 'basic',
-          conditions: baseConditions,
           from: fromKey('control + x'),
           to: [ setMode(Modes.Cx) ],
         },
-        {
-          type: 'basic',
-          conditions: cxModeBaseConditions,
-          from: fromKey('h'),
-          to: [
-            sendKey('command + a'),
-            unsetMode(),
-          ],
-        },
-        {
-          type: 'basic',
-          conditions: cxModeBaseConditions,
-          from: fromKey('control + s'),
-          to: [
-            sendKey('command + s'),
-            unsetMode(),
-          ],
-        },
-        {
-          type: 'basic',
-          conditions: cxModeBaseConditions,
-          from: fromKey('control + f'),
-          to: [
-            sendKey('command + o'),
-            unsetMode(),
-          ],
-        },
-        {
-          type: 'basic',
-          conditions: cxModeBaseConditions,
-          from: fromKey('control + c'),
-          to: [
-            sendKey('command + q'),
-            unsetMode(),
-          ],
-        },
+        ...conditionsGroup(
+          [{
+            type: 'variable_if',
+            name: 'mode',
+            value: Modes.Cx,
+          }],
+          [
+            {
+              from: fromKey('h'),
+              to: [
+                sendKey('command + a'),
+                unsetMode(),
+              ],
+            },
+            {
+              from: fromKey('control + s'),
+              to: [
+                sendKey('command + s'),
+                unsetMode(),
+              ],
+            },
+            {
+              from: fromKey('control + f'),
+              to: [
+                sendKey('command + o'),
+                unsetMode(),
+              ],
+            },
+            {
+              from: fromKey('control + c'),
+              to: [
+                sendKey('command + q'),
+                unsetMode(),
+              ],
+            },
+            {
+              from: fromKey('control + g'),
+              to: [ unsetMode() ],
+            },
 
-        // Escape C-x mode if unknown key
-        {
-          type: 'basic',
-          conditions: cxModeBaseConditions,
-          from: { any: 'key_code' },
-          to: [ unsetMode() ],
-        },
-
-        {
-          type: 'basic',
-          conditions: cxModeBaseConditions,
-          from: fromKey('control + g'),
-          to: [ unsetMode() ],
-        },
+            // Escape C-x mode if unknown key
+            {
+              from: { any: 'key_code' },
+              to: [ unsetMode() ],
+            },
+          ]
+        ),
 
         // Delete (C-d, C-h)
         {
-          type: 'basic',
-          conditions: baseConditions,
           from: fromKey('control + d'),
           to: [
             sendKey('delete_forward'),
@@ -407,8 +365,6 @@ module.exports = {
           ],
         },
         {
-          type: 'basic',
-          conditions: baseConditions,
           from: fromKey('control + h'),
           to: [
             sendKey('delete_or_backspace'),
@@ -418,112 +374,78 @@ module.exports = {
 
         // Tab (C-i)
         {
-          type: 'basic',
-          conditions: baseConditions,
           from: fromKey('control + i'),
           to: [ sendKey('tab') ],
         },
 
         // Esc (C-[)
         {
-          type: 'basic',
-          conditions: [
-            {
-              keyboard_types: [ 'ansi', 'iso' ],
-              type: 'keyboard_type_if'
-            },
-            ...baseConditions
-          ],
+          conditions: [{
+            keyboard_types: [ 'ansi', 'iso' ],
+            type: 'keyboard_type_if'
+          }],
           from: fromKey('control + open_bracket'),
           to: [ sendKey('escape') ],
         },
         {
-          type: 'basic',
-          conditions: [
-            {
-              keyboard_types: [ 'jis' ],
-              type: 'keyboard_type_if'
-            },
-            ...baseConditions
-          ],
+          conditions: [{
+            keyboard_types: [ 'jis' ],
+            type: 'keyboard_type_if'
+          }],
           from: fromKey('control + close_bracket'),
           to: [ sendKey('escape') ],
         },
         {
-          type: 'basic',
-          conditions: baseConditions,
           from: fromKey('control + g'),
           to: [ sendKey('escape') ],
         },
 
         // Cursor Moves (C-n, C-p, C-f, C-b, M-f, M-b, C-a, C-e)
         {
-          type: 'basic',
-          conditions: baseConditions,
           from: fromKey('control + b'),
           to: [ sendKey('left_arrow') ],
         },
         {
-          type: 'basic',
-          conditions: baseConditions,
           from: fromKey('command + b'),
           to: [ sendKey('option + left_arrow') ],
         },
         {
-          type: 'basic',
-          conditions: baseConditions,
           from: fromKey('control + f'),
           to: [ sendKey('right_arrow') ],
         },
         {
-          type: 'basic',
-          conditions: baseConditions,
           from: fromKey('command + f'),
           to: [ sendKey('option + right_arrow') ],
         },
         {
-          type: 'basic',
-          conditions: baseConditions,
           from: fromKey('control + n'),
           to: [ sendKey('down_arrow') ],
         },
         {
-          type: 'basic',
-          conditions: baseConditions,
           from: fromKey('control + p'),
           to: [ sendKey('up_arrow') ],
         },
         {
-          type: 'basic',
-          conditions: baseConditions,
           from: fromKey('control + a'),
           to: [ sendKey('command + left_arrow') ],
         },
         {
-          type: 'basic',
-          conditions: baseConditions,
           from: fromKey('control + e'),
           to: [ sendKey('command + right_arrow') ],
         },
 
         // Page Up/Down
         {
-          type: 'basic',
-          conditions: baseConditions,
           from: fromKey('control + v'),
           to: [ sendKey('page_down') ],
         },
         {
-          type: 'basic',
-          conditions: baseConditions,
           from: fromKey('command + v'),
           to: [ sendKey('page_up') ],
         },
 
         // Cut/Copy/Paste
         {
-          type: 'basic',
-          conditions: baseConditions,
           from: fromKey('control + w'),
           to: [
             sendKey('command + x'),
@@ -531,8 +453,6 @@ module.exports = {
           ],
         },
         {
-          type: 'basic',
-          conditions: baseConditions,
           from: fromKey('command + w'),
           to: [
             sendKey('command + c'),
@@ -540,16 +460,12 @@ module.exports = {
           ],
         },
         {
-          type: 'basic',
-          conditions: baseConditions,
           from: fromKey('control + y'),
           to: [ sendKey('command + v') ],
         },
 
         // Kill Line
         {
-          type: 'basic',
-          conditions: baseConditions,
           from: fromKey('control + k'),
           to: [
             sendKey('shift + command + right_arrow'),
@@ -560,28 +476,22 @@ module.exports = {
 
         // Search
         {
-          type: 'basic',
-          conditions: baseConditions,
           from: fromKey('control + s'),
           to: [ sendKey('command + f') ],
         },
 
         // Undo
         {
-          type: 'basic',
-          conditions: baseConditions,
           from: fromKey('control + slash'),
           to: [ sendKey('command + z') ],
         },
 
         // M-k
         {
-          type: 'basic',
-          conditions: baseConditions,
           from: fromKey('command + k'),
           to: [ sendKey('command + w') ],
         }
-      ]
+      ]),
     },
   ]
 };
