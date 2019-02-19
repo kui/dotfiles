@@ -1,3 +1,6 @@
+// TODO refactor some frequent patterns
+// such as: { from: fromKey(...), to: [ sendKey(...) ] }
+
 const Modes = {
   Unset: 0,
   Cx: 1,
@@ -98,39 +101,19 @@ const baseExcludedApps = [
   '^org\\.macosforge\\.xquartz\\.X11$',
   '^org\\.macports\\.X11$',
   '^com\\.microsoft\\.VSCode$'
-]
-
-const baseConditions = [{
-  type: 'frontmost_application_unless',
-  bundle_identifiers: baseExcludedApps,
-}];
-
-const webBrowserConditions = [
-  {
-    type: 'frontmost_application_if',
-    bundle_identifiers: [
-      '^com\\.google\\.Chrome$',
-    ],
-  }
-]
-
-const ideConditions = [
-  {
-    type: 'frontmost_application_if',
-    bundle_identifiers: [
-      '^com\\.jetbrains\\.intellij$',
-    ]
-  },
 ];
 
-const terminalConditions = [
-  {
-    type: 'frontmost_application_if',
-    bundle_identifiers: [
-      '^com\\.apple\\.Terminal$',
-      '^com\\.googlecode\\.iterm2$',
-    ]
-  }
+const webBrowsers = [
+  '^com\\.google\\.Chrome$',
+];
+
+const ides = [
+  '^com\\.jetbrains\\.intellij$',
+];
+
+const terminals = [
+  '^com\\.apple\\.Terminal$',
+  '^com\\.googlecode\\.iterm2$',
 ];
 
 module.exports = {
@@ -139,7 +122,12 @@ module.exports = {
     ////////////////////////////////////////////////////////////
     {
       description: 'Terminal',
-      manipulators: conditionsGroup(terminalConditions, [
+      manipulators: conditionsGroup([
+        {
+          type: 'frontmost_application_if',
+          bundle_identifiers: terminals
+        }
+      ], [
         {
           from: fromKey('any? + left_option'),
           to: [ sendKey('left_command') ],
@@ -158,7 +146,12 @@ module.exports = {
     /////////////////////////////////////////////////////////////
     {
       description: 'Web Browser',
-      manipulators: conditionsGroup(webBrowserConditions, [
+      manipulators: conditionsGroup([
+        {
+          type: 'frontmost_application_if',
+          bundle_identifiers: webBrowsers,
+        },
+      ], [
         {
           from: fromKey('control + shift? + t'),
           to: [ sendKey('command + t') ],
@@ -185,7 +178,12 @@ module.exports = {
     /////////////////////////////////////////////////////////////
     {
       description: 'IDE',
-      manipulators: conditionsGroup(ideConditions, [
+      manipulators: conditionsGroup([
+        {
+          type: 'frontmost_application_if',
+          bundle_identifiers: ides,
+        },
+      ], [
         {
           from: fromKey('command + x'),
           to: [ sendKey('command + 3') ],
@@ -224,8 +222,12 @@ module.exports = {
     /////////////////////////////////////////////////
     {
       description: 'Like Emacs',
-      manipulators: conditionsGroup(baseConditions, [
-
+      manipulators: conditionsGroup([
+        {
+          type: 'frontmost_application_unless',
+          bundle_identifiers: baseExcludedApps,
+        },
+      ], [
         // Mark mode
         {
           from: fromKey('control + spacebar'),
