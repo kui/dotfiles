@@ -16,7 +16,7 @@ if (!defaultProfile) {
   return 1;
 }
 
-defaultProfile.rules = complexModConfig.rules;
+defaultProfile.complex_modifications.rules = complexModConfig.rules;
 
 console.log('mkdir', targetDir)
 fs.mkdirSync(targetDir, { recursive: true });
