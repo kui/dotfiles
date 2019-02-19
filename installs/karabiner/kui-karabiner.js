@@ -91,6 +91,30 @@ const terminalConditions = [
   }
 ];
 
+// Use in "from"
+function fromKey(str) {
+  const binds = str
+        .split('+')
+        .map(s => s.trim().toLowerCase());
+  const keyCode = binds.pop();
+  const modifiers = binds.reduce((mod, keyString) => {
+    const isOptional = keyString.endsWith('?');
+    const key = keyString.replace(/\?$/, '');
+    if (isOptional) {
+      mod.optional = (mod.optional || []).concat(key);
+    } else {
+      mod.mandatory = (mod.mandatory || []).concat(key);
+    }
+    return mod;
+  }, {});
+  return {
+    key_code: keyCode,
+    modifiers
+  };
+}
+
+// console.log(JSON.stringify(fromKey('option+any?+f'), 0, 2));
+
 module.exports = {
   title: 'kui\'s Bindings',
   rules: [
@@ -101,12 +125,7 @@ module.exports = {
         {
           type: 'basic',
           conditions: terminalConditions,
-          from: {
-            key_code: 'left_option',
-            modifiers: {
-              optional: [ 'any' ],
-            },
-          },
+          from: fromKey('any? + left_option'),
           to: [
             {
               key_code: 'left_command'
@@ -116,12 +135,7 @@ module.exports = {
         {
           type: 'basic',
           conditions: terminalConditions,
-          from: {
-            key_code: 'left_command',
-            modifiers: {
-              optional: [ 'any' ],
-            },
-          },
+          from: fromKey('any? + left_command'),
           to: [
             {
               key_code: 'left_option'
@@ -131,13 +145,7 @@ module.exports = {
         {
           type: 'basic',
           conditions: terminalConditions,
-          from: {
-            key_code: 'tab',
-            modifiers: {
-              mandatory: [ 'option' ],
-              optional: [ 'shift' ],
-            },
-          },
+          from: fromKey('option + shift? + tab'),
           to: [
             {
               key_code: 'tab',
@@ -155,13 +163,7 @@ module.exports = {
         {
           type: 'basic',
           conditions: webBrowserConditions,
-          from: {
-            key_code: 't',
-            modifiers: {
-              mandatory: [ 'control' ],
-              optional: [ 'shift' ],
-            }
-          },
+          from: fromKey('control + shift? + t'),
           to: [{
             key_code: 't',
             modifiers: [ 'command' ],
@@ -170,13 +172,7 @@ module.exports = {
         {
           type: 'basic',
           conditions: webBrowserConditions,
-          from: {
-            key_code: 'l',
-            modifiers: {
-              mandatory: [ 'control' ],
-              optional: [ 'shift' ],
-            }
-          },
+          from: fromKey('control + shift? + l'),
           to: [{
             key_code: 'l',
             modifiers: [ 'command' ],
@@ -185,13 +181,7 @@ module.exports = {
         {
           type: 'basic',
           conditions: webBrowserConditions,
-          from: {
-            key_code: 'r',
-            modifiers: {
-              mandatory: [ 'control' ],
-              optional: [ 'shift' ],
-            }
-          },
+          from: fromKey('control + shift? + r'),
           to: [{
             key_code: 'r',
             modifiers: [ 'command' ],
@@ -200,12 +190,7 @@ module.exports = {
         {
           type: 'basic',
           conditions: webBrowserConditions,
-          from: {
-            key_code: 'period',
-            modifiers: {
-              mandatory: [ 'command', 'shift' ],
-            }
-          },
+          from: fromKey('command + shift + period'),
           to: [{
             key_code: 'down_arrow',
             modifiers: [ 'command' ],
@@ -214,12 +199,7 @@ module.exports = {
         {
           type: 'basic',
           conditions: webBrowserConditions,
-          from: {
-            key_code: 'comma',
-            modifiers: {
-              mandatory: [ 'command', 'shift' ],
-            }
-          },
+          from: fromKey('command + shift + comma'),
           to: [{
             key_code: 'up_arrow',
             modifiers: [ 'command' ],
@@ -235,13 +215,7 @@ module.exports = {
         {
           type: 'basic',
           conditions: ideConditions,
-          from: {
-            key_code: 'x',
-            modifiers: {
-              mandatory: [ 'command' ],
-              optional: [ 'any' ]
-            },
-          },
+          from: fromKey('command + x'),
           to: [{
             key_code: '3',
             modifiers: [ 'command' ],
@@ -250,13 +224,7 @@ module.exports = {
         {
           type: 'basic',
           conditions: ideConditions,
-          from: {
-            key_code: 'i',
-            modifiers: {
-              mandatory: [ 'command' ],
-              optional: [ 'any' ]
-            },
-          },
+          from: fromKey('command + i'),
           to: [{
             key_code: 'e',
             modifiers: [ 'command' ],
@@ -265,25 +233,13 @@ module.exports = {
         {
           type: 'basic',
           conditions: ideConditions,
-          from: {
-            key_code: 'o',
-            modifiers: {
-              mandatory: [ 'control' ],
-              optional: [ 'any' ]
-            },
-          },
+          from: fromKey('control + o'),
           to: [{ key_code: 'f3' }]
         },
         {
           type: 'basic',
           conditions: ideConditions,
-          from: {
-            key_code: 's',
-            modifiers: {
-              mandatory: [ 'control' ],
-              optional: [ 'any' ]
-            },
-          },
+          from: fromKey('control + s'),
           to: [{
             key_code: 'j',
             modifiers: [ 'command' ],
@@ -292,13 +248,7 @@ module.exports = {
         {
           type: 'basic',
           conditions: ideConditions,
-          from: {
-            key_code: 'slash',
-            modifiers: {
-              mandatory: [ 'command' ],
-              optional: [ 'any' ]
-            },
-          },
+          from: fromKey('command + slash'),
           to: [{
             key_code: 'spacebar',
             modifiers: [ 'control' ],
@@ -310,13 +260,7 @@ module.exports = {
             ...ideConditions,
             cxModeCondition
           ],
-          from: {
-            key_code: 'f',
-            modifiers: {
-              mandatory: [ 'control' ],
-              optional: [ 'any' ]
-            },
-          },
+          from: fromKey('control + f'),
           to: [
             {
               key_code: 'r',
@@ -341,10 +285,7 @@ module.exports = {
         {
           type: 'basic',
           conditions: baseConditions,
-          from: {
-            key_code: 'spacebar',
-            modifiers: { mandatory: [ 'control' ] }
-          },
+          from: fromKey('control + spacebar'),
           to: [{
             set_variable: {
               name: 'mark_mode',
@@ -357,16 +298,7 @@ module.exports = {
         {
           type: 'basic',
           conditions: markModeConditions,
-          from: {
-            key_code: 'b',
-            modifiers: {
-              mandatory: [ 'control' ],
-              optional: [
-                'caps_lock',
-                'option'
-              ]
-            }
-          },
+          from: fromKey('control + b'),
           to: [{
             key_code: 'left_arrow',
             modifiers: [ 'shift' ]
@@ -375,16 +307,7 @@ module.exports = {
         {
           type: 'basic',
           conditions: markModeConditions,
-          from: {
-            key_code: 'b',
-            modifiers: {
-              mandatory: [ 'command' ],
-              optional: [
-                'caps_lock',
-                'option'
-              ]
-            }
-          },
+          from: fromKey('command + b'),
           to: [{
             key_code: 'left_arrow',
             modifiers: [ 'option', 'shift' ]
@@ -393,18 +316,7 @@ module.exports = {
         {
           type: 'basic',
           conditions: markModeConditions,
-          from: {
-            key_code: 'f',
-            modifiers: {
-              mandatory: [
-                'control'
-              ],
-              optional: [
-                'caps_lock',
-                'option'
-              ]
-            }
-          },
+          from: fromKey('control + f'),
           to: [{
             key_code: 'right_arrow',
             modifiers: [ 'shift' ]
@@ -413,17 +325,7 @@ module.exports = {
         {
           type: 'basic',
           conditions: markModeConditions,
-          from: {
-            key_code: 'f',
-            modifiers: {
-              mandatory: [
-                'command'
-              ],
-              optional: [
-                'caps_lock',
-              ]
-            }
-          },
+          from: fromKey('command + f'),
           to: [{
             key_code: 'right_arrow',
             modifiers: [ 'option', 'shift' ]
@@ -432,16 +334,7 @@ module.exports = {
         {
           type: 'basic',
           conditions: markModeConditions,
-          from: {
-            key_code: 'n',
-            modifiers: {
-              mandatory: [ 'control' ],
-              optional: [
-                'caps_lock',
-                'option'
-              ]
-            }
-          },
+          from: fromKey('control + n'),
           to: [{
             key_code: 'down_arrow',
             modifiers: [ 'shift' ]
@@ -450,16 +343,7 @@ module.exports = {
         {
           type: 'basic',
           conditions: markModeConditions,
-          from: {
-            key_code: 'p',
-            modifiers: {
-              'mandatory': [ 'control' ],
-              'optional': [
-                'caps_lock',
-                'option'
-              ]
-            }
-          },
+          from: fromKey('control + p'),
           to: [{
             key_code: 'up_arrow',
             modifiers: [ 'shift' ]
@@ -468,13 +352,7 @@ module.exports = {
         {
           type: 'basic',
           conditions: markModeConditions,
-          from: {
-            key_code: 'v',
-            modifiers: {
-              mandatory: [ 'control' ],
-              optional: [ 'caps_lock' ]
-            }
-          },
+          from: fromKey('control + v'),
           to: [{
             key_code: 'page_down',
             modifiers: [ 'shift' ]
@@ -483,13 +361,7 @@ module.exports = {
         {
           type: 'basic',
           conditions: markModeConditions,
-          from: {
-            key_code: 'v',
-            modifiers: {
-              mandatory: [ 'command' ],
-              optional: [ 'caps_lock' ]
-            }
-          },
+          from: fromKey('command + v'),
           to: [{
             key_code: 'page_up',
             modifiers: [ 'shift' ]
@@ -498,13 +370,7 @@ module.exports = {
         {
           type: 'basic',
           conditions: markModeConditions,
-          from: {
-            key_code: 'a',
-            modifiers: {
-              mandatory: [ 'control' ],
-              optional: [ 'caps_lock' ]
-            }
-          },
+          from: fromKey('control + a'),
           to: [{
             key_code: 'left_arrow',
             modifiers: [ 'command', 'shift' ]
@@ -513,29 +379,31 @@ module.exports = {
         {
           type: 'basic',
           conditions: markModeConditions,
-          from: {
-            key_code: 'e',
-            modifiers: {
-              mandatory: [ 'control' ],
-              optional: [ 'caps_lock' ]
-            }
-          },
+          from: fromKey('control + e'),
           to: [{
             key_code: 'right_arrow',
             modifiers: [ 'command', 'shift' ]
           }],
+        },
+        {
+          type: 'basic',
+          conditions: markModeConditions,
+          from: fromKey('control + g'),
+          to: [
+            {
+              set_variable: {
+                name: 'mark_mode',
+                value: 0
+              },
+            },
+          ],
         },
 
         // C-x Prefix Bindings
         {
           type: 'basic',
           conditions: baseConditions,
-          from: {
-            key_code: 'x',
-            modifiers: {
-              mandatory: [ 'control' ],
-            }
-          },
+          from: fromKey('control + x'),
           to: [{
             set_variable: {
               name: 'c_x_mode',
@@ -546,9 +414,7 @@ module.exports = {
         {
           type: 'basic',
           conditions: cxModeBaseConditions,
-          from: {
-            key_code: 'h',
-          },
+          from: fromKey('h'),
           to: [
             {
               key_code: 'a',
@@ -565,12 +431,7 @@ module.exports = {
         {
           type: 'basic',
           conditions: cxModeBaseConditions,
-          from: {
-            key_code: 's',
-            modifiers: {
-              mandatory: [ 'control' ],
-            }
-          },
+          from: fromKey('control + s'),
           to: [
             {
               key_code: 's',
@@ -587,12 +448,7 @@ module.exports = {
         {
           type: 'basic',
           conditions: cxModeBaseConditions,
-          from: {
-            key_code: 'f',
-            modifiers: {
-              mandatory: [ 'control' ],
-            }
-          },
+          from: fromKey('control + f'),
           to: [
             {
               key_code: 'o',
@@ -609,12 +465,7 @@ module.exports = {
         {
           type: 'basic',
           conditions: cxModeBaseConditions,
-          from: {
-            key_code: 'c',
-            modifiers: {
-              mandatory: [ 'control' ],
-            }
-          },
+          from: fromKey('control + c'),
           to: [
             {
               key_code: 'q',
@@ -631,9 +482,7 @@ module.exports = {
         {
           type: 'basic',
           conditions: cxModeBaseConditions,
-          from: {
-            any: 'key_code',
-          },
+          from: { any: 'key_code' },
           to: [
             {
               set_variable: {
@@ -644,22 +493,11 @@ module.exports = {
           ],
         },
 
-        // Cancel Modes
         {
           type: 'basic',
-          conditions: baseConditions,
-          from: {
-            key_code: 'g',
-            modifiers: { mandatory: [ 'control' ] }
-          },
+          conditions: cxModeBaseConditions,
+          from: fromKey('control + g'),
           to: [
-            { key_code: 'escape' },
-            {
-              set_variable: {
-                name: 'mark_mode',
-                value: 0
-              }
-            },
             {
               set_variable: {
                 name: 'c_x_mode',
@@ -673,25 +511,13 @@ module.exports = {
         {
           type: 'basic',
           conditions: baseConditions,
-          from: {
-            key_code: 'd',
-            modifiers: {
-              mandatory: [ 'control' ],
-              'optional': [ 'caps_lock', 'option' ]
-            }
-          },
+          from: fromKey('control + d'),
           to: [ { key_code: 'delete_forward' } ],
         },
         {
           type: 'basic',
           conditions: baseConditions,
-          from: {
-            key_code: 'h',
-            modifiers: {
-              mandatory: [ 'control' ],
-              optional: [ 'caps_lock', 'option' ]
-            }
-          },
+          from: fromKey('control + h'),
           to: [ { key_code: 'delete_or_backspace' } ],
         },
 
@@ -699,13 +525,7 @@ module.exports = {
         {
           type: 'basic',
           conditions: baseConditions,
-          from: {
-            key_code: 'i',
-            modifiers: {
-              mandatory: [ 'control' ],
-              'optional': [ 'caps_lock', 'shift' ]
-            }
-          },
+          from: fromKey('control + i'),
           to: [ { key_code: 'tab' } ],
         },
 
@@ -719,13 +539,7 @@ module.exports = {
             },
             ...baseConditions
           ],
-          from: {
-            key_code: 'open_bracket',
-            modifiers: {
-              mandatory: [ 'control' ],
-              optional: [ 'caps_lock' ]
-            }
-          },
+          from: fromKey('control + open_bracket'),
           to: [ { key_code: 'escape' } ],
         },
         {
@@ -737,46 +551,29 @@ module.exports = {
             },
             ...baseConditions
           ],
-          from: {
-            key_code: 'close_bracket',
-            modifiers: {
-              mandatory: [ 'control' ],
-              optional: [ 'caps_lock' ]
-            }},
+          from: fromKey('control + close_bracket'),
           to: [ { key_code: 'escape' } ],
+        },
+        {
+          type: 'basic',
+          conditions: baseConditions,
+          from: fromKey('control + g'),
+          to: [
+            { key_code: 'escape' },
+          ],
         },
 
         // Cursor Moves (C-n, C-p, C-f, C-b, M-f, M-b, C-a, C-e)
         {
           type: 'basic',
           conditions: baseConditions,
-          from: {
-            key_code: 'b',
-            modifiers: {
-              mandatory: [ 'control' ],
-              optional: [
-                'caps_lock',
-                'shift',
-                'option'
-              ]
-            }
-          },
+          from: fromKey('control + b'),
           to: [ { key_code: 'left_arrow' } ],
         },
         {
           type: 'basic',
           conditions: baseConditions,
-          from: {
-            key_code: 'b',
-            modifiers: {
-              mandatory: [ 'command' ],
-              optional: [
-                'caps_lock',
-                'shift',
-                'option'
-              ]
-            }
-          },
+          from: fromKey('command + b'),
           to: [ {
             key_code: 'left_arrow',
             modifiers: [ 'option' ]
@@ -785,36 +582,13 @@ module.exports = {
         {
           type: 'basic',
           conditions: baseConditions,
-          from: {
-            key_code: 'f',
-            modifiers: {
-              mandatory: [
-                'control'
-              ],
-              optional: [
-                'caps_lock',
-                'shift',
-                'option'
-              ]
-            }
-          },
+          from: fromKey('control + f'),
           to: [ { key_code: 'right_arrow' } ],
         },
         {
           type: 'basic',
           conditions: baseConditions,
-          from: {
-            key_code: 'f',
-            modifiers: {
-              mandatory: [
-                'command'
-              ],
-              optional: [
-                'caps_lock',
-                'shift',
-              ]
-            }
-          },
+          from: fromKey('command + f'),
           to: [ {
             key_code: 'right_arrow',
             modifiers: [ 'option' ]
@@ -823,49 +597,19 @@ module.exports = {
         {
           type: 'basic',
           conditions: baseConditions,
-          from: {
-            key_code: 'n',
-            modifiers: {
-              mandatory: [ 'control' ],
-              optional: [
-                'caps_lock',
-                'shift',
-                'option'
-              ]
-            }
-          },
+          from: fromKey('control + n'),
           to: [ { key_code: 'down_arrow' } ],
         },
         {
           type: 'basic',
           conditions: baseConditions,
-          from: {
-            key_code: 'p',
-            modifiers: {
-              mandatory: [ 'control' ],
-              optional: [
-                'caps_lock',
-                'shift',
-                'option'
-              ]
-            }
-          },
+          from: fromKey('control + p'),
           to: [ { key_code: 'up_arrow' } ],
         },
         {
           type: 'basic',
           conditions: baseConditions,
-          from: {
-            key_code: 'a',
-            modifiers: {
-              mandatory: [ 'control' ],
-              optional: [
-                'caps_lock',
-                'shift',
-                'option'
-              ]
-            }
-          },
+          from: fromKey('control + a'),
           to: [{
             key_code: 'left_arrow',
             modifiers: [ 'command' ]
@@ -874,17 +618,7 @@ module.exports = {
         {
           type: 'basic',
           conditions: baseConditions,
-          from: {
-            key_code: 'e',
-            modifiers: {
-              mandatory: [ 'control' ],
-              optional: [
-                'caps_lock',
-                'shift',
-                'option'
-              ]
-            }
-          },
+          from: fromKey('control + e'),
           to: [{
             key_code: 'right_arrow',
             modifiers: [ 'command' ]
@@ -895,25 +629,13 @@ module.exports = {
         {
           type: 'basic',
           conditions: baseConditions,
-          from: {
-            key_code: 'v',
-            modifiers: {
-              mandatory: [ 'control' ],
-              optional: [ 'caps_lock', 'shift' ]
-            }
-          },
+          from: fromKey('control + v'),
           to: [ { key_code: 'page_down' } ],
         },
         {
           type: 'basic',
           conditions: baseConditions,
-          from: {
-            key_code: 'v',
-            modifiers: {
-              mandatory: [ 'command' ],
-              optional: [ 'caps_lock', 'shift' ]
-            }
-          },
+          from: fromKey('command + v'),
           to: [ { key_code: 'page_up' } ],
         },
 
@@ -921,12 +643,7 @@ module.exports = {
         {
           type: 'basic',
           conditions: baseConditions,
-          from: {
-            key_code: 'w',
-            modifiers: {
-              mandatory: [ 'control' ],
-            }
-          },
+          from: fromKey('control + w'),
           to: [
             {
               key_code: 'x',
@@ -943,12 +660,7 @@ module.exports = {
         {
           type: 'basic',
           conditions: baseConditions,
-          from: {
-            key_code: 'w',
-            modifiers: {
-              mandatory: [ 'command' ],
-            }
-          },
+          from: fromKey('command + w'),
           to: [
             {
               key_code: 'c',
@@ -965,12 +677,7 @@ module.exports = {
         {
           type: 'basic',
           conditions: baseConditions,
-          from: {
-            key_code: 'y',
-            modifiers: {
-              mandatory: [ 'control' ],
-            }
-          },
+          from: fromKey('control + y'),
           to: [{
             key_code: 'v',
             modifiers: [ 'command' ],
@@ -981,12 +688,7 @@ module.exports = {
         {
           type: 'basic',
           conditions: baseConditions,
-          from: {
-            key_code: 'k',
-            modifiers: {
-              mandatory: [ 'control' ],
-            },
-          },
+          from: fromKey('control + k'),
           to: [
             {
               key_code: 'right_arrow',
@@ -1006,12 +708,7 @@ module.exports = {
         {
           type: 'basic',
           conditions: baseConditions,
-          from: {
-            key_code: 's',
-            modifiers: {
-              mandatory: [ 'control' ],
-            }
-          },
+          from: fromKey('control + s'),
           to: [{
             key_code: 'f',
             modifiers: [ 'command' ],
@@ -1022,12 +719,7 @@ module.exports = {
         {
           type: 'basic',
           conditions: baseConditions,
-          from: {
-            key_code: 'slash',
-            modifiers: {
-              mandatory: [ 'control' ],
-            }
-          },
+          from: fromKey('control + slash'),
           to: [{
             key_code: 'z',
             modifiers: [ 'command' ],
@@ -1038,12 +730,7 @@ module.exports = {
         {
           type: 'basic',
           conditions: baseConditions,
-          from: {
-            key_code: 'k',
-            modifiers: {
-              mandatory: [ 'command' ],
-            }
-          },
+          from: fromKey('command + k'),
           to: [{
             key_code: 'w',
             modifiers: [ 'command' ],
