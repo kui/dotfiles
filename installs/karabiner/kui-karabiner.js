@@ -333,6 +333,7 @@ module.exports = {
             },
 
             // Escape C-x mode if unknown key
+            // TODO Fix that this expression escapes mode if modifier key was pressed.
             {
               from: { any: 'key_code' },
               to: [ unsetMode() ],
