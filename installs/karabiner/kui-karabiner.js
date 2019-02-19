@@ -1,3 +1,55 @@
+const Modes = {
+  Unset: 0,
+  Cx: 1,
+  Mark: 2,
+};
+
+// Use in "from"
+function fromKey(str) {
+  const binds = str
+        .split('+')
+        .map(s => s.trim().toLowerCase());
+  const keyCode = binds.pop();
+  const modifiers = binds.reduce((mod, keyString) => {
+    const isOptional = keyString.endsWith('?');
+    const key = keyString.replace(/\?$/, '');
+    if (isOptional) {
+      mod.optional = (mod.optional || []).concat(key);
+    } else {
+      mod.mandatory = (mod.mandatory || []).concat(key);
+    }
+    return mod;
+  }, {});
+  return {
+    key_code: keyCode,
+    modifiers,
+  };
+}
+
+// use in "to"
+function sendKey(str) {
+  const binds = str
+        .split('+')
+        .map(s => s.trim().toLowerCase());
+  const keyCode = binds.pop();
+  return {
+    key_code: keyCode,
+    modifiers: binds,
+  };
+}
+
+function setVariable(name, value) {
+  return { set_variable: { name, value } };
+}
+
+function setMode(modeName) {
+  return setVariable('mode', modeName);
+}
+
+function unsetMode() {
+  return setVariable('mode', Modes.Unset);
+}
+
 const baseExcludedApps = [
   '^org\\.gnu\\.Emacs$',
   '^org\\.gnu\\.AquamacsEmacs$',
@@ -48,15 +100,15 @@ const baseConditions = [{
 const markModeConditions = [
   {
     type: 'variable_if',
-    name: 'mark_mode',
-    value: 1,
+    name: 'mode',
+    value: Modes.Mark,
   },
   ...baseConditions
 ];
 const cxModeCondition = {
     type: 'variable_if',
-    name: 'c_x_mode',
-    value: 1,
+    name: 'mode',
+    value: Modes.Cx,
 };
 const cxModeBaseConditions = [
   cxModeCondition,
@@ -91,52 +143,8 @@ const terminalConditions = [
   }
 ];
 
-// Use in "from"
-function fromKey(str) {
-  const binds = str
-        .split('+')
-        .map(s => s.trim().toLowerCase());
-  const keyCode = binds.pop();
-  const modifiers = binds.reduce((mod, keyString) => {
-    const isOptional = keyString.endsWith('?');
-    const key = keyString.replace(/\?$/, '');
-    if (isOptional) {
-      mod.optional = (mod.optional || []).concat(key);
-    } else {
-      mod.mandatory = (mod.mandatory || []).concat(key);
-    }
-    return mod;
-  }, {});
-  return {
-    key_code: keyCode,
-    modifiers,
-  };
-}
-
-// use in "to"
-function sendKey(str) {
-  const binds = str
-        .split('+')
-        .map(s => s.trim().toLowerCase());
-  const keyCode = binds.pop();
-  return {
-    key_code: keyCode,
-    modifiers: binds,
-  };
-}
-
-function setVariable(name, value) {
-  return { set_variable: { name, value } };
-}
-
-function setMode(modeName) {
-  return setVariable('mode', modeName);
-}
-
-// console.log(JSON.stringify(fromKey('option+any?+f'), 0, 2));
-
 module.exports = {
-  title: 'kui\'s Bindings',
+  title: `kui's Bindings`,
   rules: [
     ////////////////////////////////////////////////////////////
     {
@@ -243,7 +251,7 @@ module.exports = {
           from: fromKey('control + f'),
           to: [
             sendKey('command + shift + r'),
-            setVariable('c_x_mode', 0),
+            unsetMode(),
           ],
         },
       ]
@@ -258,7 +266,7 @@ module.exports = {
           type: 'basic',
           conditions: baseConditions,
           from: fromKey('control + spacebar'),
-          to: [ setVariable('mark_mode', 1) ],
+          to: [ setMode(Modes.Mark) ],
         },
 
         // Mark Set - Cursor Move
@@ -326,14 +334,7 @@ module.exports = {
           type: 'basic',
           conditions: markModeConditions,
           from: fromKey('control + g'),
-          to: [
-            {
-              set_variable: {
-                name: 'mark_mode',
-                value: 0
-              },
-            },
-          ],
+          to: [ unsetMode() ],
         },
 
         // C-x Prefix Bindings
@@ -341,12 +342,7 @@ module.exports = {
           type: 'basic',
           conditions: baseConditions,
           from: fromKey('control + x'),
-          to: [{
-            set_variable: {
-              name: 'c_x_mode',
-              value: 1
-            }
-          }],
+          to: [ setMode(Modes.Cx) ],
         },
         {
           type: 'basic',
@@ -354,12 +350,7 @@ module.exports = {
           from: fromKey('h'),
           to: [
             sendKey('command + a'),
-            {
-              set_variable: {
-                name: 'c_x_mode',
-                value: 0
-              }
-            },
+            unsetMode(),
           ],
         },
         {
@@ -368,12 +359,7 @@ module.exports = {
           from: fromKey('control + s'),
           to: [
             sendKey('command + s'),
-            {
-              set_variable: {
-                name: 'c_x_mode',
-                value: 0
-              }
-            },
+            unsetMode(),
           ],
         },
         {
@@ -382,12 +368,7 @@ module.exports = {
           from: fromKey('control + f'),
           to: [
             sendKey('command + o'),
-            {
-              set_variable: {
-                name: 'c_x_mode',
-                value: 0
-              }
-            },
+            unsetMode(),
           ],
         },
         {
@@ -396,40 +377,23 @@ module.exports = {
           from: fromKey('control + c'),
           to: [
             sendKey('command + q'),
-            {
-              set_variable: {
-                name: 'c_x_mode',
-                value: 0
-              }
-            },
+            unsetMode(),
           ],
         },
+
+        // Escape C-x mode if unknown key
         {
           type: 'basic',
           conditions: cxModeBaseConditions,
           from: { any: 'key_code' },
-          to: [
-            {
-              set_variable: {
-                name: 'c_x_mode',
-                value: 0,
-              }
-            },
-          ],
+          to: [ unsetMode() ],
         },
 
         {
           type: 'basic',
           conditions: cxModeBaseConditions,
           from: fromKey('control + g'),
-          to: [
-            {
-              set_variable: {
-                name: 'c_x_mode',
-                value: 0
-              }
-            },
-          ],
+          to: [ unsetMode() ],
         },
 
         // Delete (C-d, C-h)
@@ -437,13 +401,19 @@ module.exports = {
           type: 'basic',
           conditions: baseConditions,
           from: fromKey('control + d'),
-          to: [ sendKey('delete_forward') ],
+          to: [
+            sendKey('delete_forward'),
+            unsetMode(),
+          ],
         },
         {
           type: 'basic',
           conditions: baseConditions,
           from: fromKey('control + h'),
-          to: [ sendKey('delete_or_backspace') ],
+          to: [
+            sendKey('delete_or_backspace'),
+            unsetMode(),
+          ],
         },
 
         // Tab (C-i)
@@ -557,12 +527,7 @@ module.exports = {
           from: fromKey('control + w'),
           to: [
             sendKey('command + x'),
-            {
-              set_variable: {
-                name: 'mark_mode',
-                value: 0
-              }
-            }
+            unsetMode(),
           ],
         },
         {
@@ -571,12 +536,7 @@ module.exports = {
           from: fromKey('command + w'),
           to: [
             sendKey('command + c'),
-            {
-              set_variable: {
-                name: 'mark_mode',
-                value: 0
-              }
-            }
+            unsetMode(),
           ],
         },
         {
@@ -594,6 +554,7 @@ module.exports = {
           to: [
             sendKey('shift + command + right_arrow'),
             sendKey('command + x'),
+            unsetMode(),
           ],
         },
 
