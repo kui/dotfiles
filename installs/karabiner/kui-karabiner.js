@@ -1,6 +1,3 @@
-// TODO refactor some frequent patterns
-// such as: { from: fromKey(...), to: [ sendKey(...) ] }
-
 const Modes = {
   Unset: 0,
   Cx: 1,
@@ -156,6 +153,15 @@ module.exports = {
             bindKey('control + a', 'shift + command + left_arrow'),
             bindKey('control + e', 'shift + command + right_arrow'),
             bindKey('control + g', unsetMode()),
+
+            bindKey('control + d', [
+              'delete_forward',
+              unsetMode(),
+            ]),
+            bindKey('control + h', [
+              'delete_or_backspace',
+              unsetMode(),
+            ]),
           ]
         ),
 
@@ -197,14 +203,10 @@ module.exports = {
         ),
 
         // Delete (C-d, C-h)
-        bindKey('control + d', [
-          'delete_forward',
-          unsetMode(),
-        ]),
-        bindKey('control + h', [
-          'delete_or_backspace',
-          unsetMode(),
-        ]),
+        // Note: separate definitions from markset bindings
+        // Because the key repeat is disabled if the bindings is not just key mappings
+        bindKey('control + d', 'delete_forward'),
+        bindKey('control + h', 'delete_or_backspace'),
 
         // Tab (C-i)
         bindKey('control + i', 'tab'),
