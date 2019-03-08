@@ -106,17 +106,22 @@ if [ $TERM = "xterm" ] && infocmp xterm-256color &>/dev/null; then
 fi
 
 if which brew &>/dev/null; then
-    coreutils_path=$(brew --prefix coreutils)
-    path=(
-        ${coreutils_path}/libexec/gnubin(N-/)
-        $path
-    )
-
     manpath=(
         $(brew --prefix)/share/man(N-/)
-        ${coreutils_path}/libexec/gnuman(N-/)
         $manpath
     )
+
+    for dir in $(brew --prefix)/opt/*/libexec
+    do
+        path=(
+            ${dir}/gnubin(N-/)
+            $path
+        )
+        manpath=(
+            ${dir}/gnuman(N-/)
+            $manpath
+        )
+    done
 fi
 
 # 表示言語設定
