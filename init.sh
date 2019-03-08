@@ -6,7 +6,7 @@ HOMEBREW_INSTALLS=(
     git zsh curl wget xz ctags
     terminal-notifier reattach-to-user-namespace
     coreutils findutils debianutils binutils diffutils
-    homebrew/dupes/grep homebrew/dupes/gzip
+    grep gzip
     gawk gnu-indent gnu-which gnu-getopt gnu-sed gnu-tar gnutls
     watch
 )
