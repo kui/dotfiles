@@ -48,7 +48,7 @@ install_basics() {
         cat "$SKIP_BREW_FILE" 2>/dev/null || :
         export PATH=$HOME/.homebrew/bin:$PATH
         if [[ "$(cat "$SKIP_BREW_FILE" 2>/dev/null)" != "$BREW_DIR" ]]; then
-            run brew install "${HOMEBREW_INSTALLS[@]}" --with-default-names --default-names
+            run brew install "${HOMEBREW_INSTALLS[@]}"
             run echo "$BREW_DIR" > "$SKIP_BREW_FILE"
         fi
     else
