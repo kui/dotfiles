@@ -42,10 +42,10 @@ install_basics() {
     elif grep "darwin" <<< "$OSTYPE" &>/dev/null; then
         if [[ ! -e ~/.homebrew ]]; then
             run mkdir ~/.homebrew
-            run curl -L https://github.com/Homebrew/homebrew/tarball/master | tar xz --strip 1 -C ~/.homebrew
+            run curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C ~/.homebrew
         fi
         echo "$BREW_DIR"
-        cat "$SKIP_BREW_FILE" 2>/dev/null
+        cat "$SKIP_BREW_FILE" 2>/dev/null || :
         export PATH=$HOME/.homebrew/bin:$PATH
         if [[ "$(cat "$SKIP_BREW_FILE" 2>/dev/null)" != "$BREW_DIR" ]]; then
             run brew install "${HOMEBREW_INSTALLS[@]}" --with-default-names --default-names
