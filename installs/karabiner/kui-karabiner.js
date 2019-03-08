@@ -120,7 +120,9 @@ module.exports = {
             name: 'mode',
             value: Modes.Cx,
           }]},
-        )
+        ),
+        bindKey('command + shift + period', 'command + down_arrow'),
+        bindKey('command + shift + comma', 'command + up_arrow'),
       ]),
     },
 
