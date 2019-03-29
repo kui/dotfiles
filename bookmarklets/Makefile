@@ -4,7 +4,7 @@ BMKS = $(patsubst %.js, %.bookmarklet.js, $(filter-out %.bookmarklet.js, $(wildc
 all: $(BMKS)
 
 %.bookmarklet.js: %.js node_modules
-	$(BIN)/babili < $< > $@
+	$(BIN)/minify < $< > $@
 
 node_modules: package.json
 	npm install
