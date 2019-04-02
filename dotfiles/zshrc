@@ -20,10 +20,10 @@ readlink_f() {
 
 ############################################################
 # java
-if [[ -n "$JAVA_HOME" ]]
-then : # do nothing
-elif [[ -e /usr/libexec/java_home ]]
+if [[ -e /usr/libexec/java_home ]]
 then JAVA_HOME="$(/usr/libexec/java_home)"
+elif [[ -n "$JAVA_HOME" ]]
+then : # do nothing
 elif which jar &>/dev/null
 then JAVA_HOME="$(readlink_f $(which jar | head -n 1) | xargs dirname | xargs dirname)"
 elif which java &>/dev/null
