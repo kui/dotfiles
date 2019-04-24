@@ -760,3 +760,8 @@ which npm > /dev/null 2>&1 && . <(npm completion)
 
 # racer: see installs/racer.sh
 export RUST_SRC_PATH="$HOME/.local/rust/src"
+
+if which direnv &> /dev/null
+then
+    eval "$(direnv hook zsh)"
+fi
