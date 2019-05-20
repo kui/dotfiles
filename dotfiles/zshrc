@@ -761,7 +761,20 @@ which npm > /dev/null 2>&1 && . <(npm completion)
 # racer: see installs/racer.sh
 export RUST_SRC_PATH="$HOME/.local/rust/src"
 
+# direnv
 if which direnv &> /dev/null
 then
     eval "$(direnv hook zsh)"
+fi
+
+# kubectl
+if kubectl completion zsh &> /dev/null
+then
+    source <(kubectl completion zsh)
+fi
+
+# minikube
+if minikube completion zsh &> /dev/null
+then
+    source <(minikube completion zsh)
 fi
