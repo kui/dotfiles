@@ -47,12 +47,13 @@
       q.content = imgs.map(encode).join(",");
     },
     () => { // twitter images
-      const query = "#permalink-overlay .AdaptiveMedia img";
-      let imgs = Array.from(document.querySelectorAll(query)).map(i => i.src + ":orig");
+      const query = "img[src$='&name=medium'],img[src$='&name=large']";
+      let imgs = Array.from(document.querySelectorAll(query)).map(i => i.src.replace(/&name=(medium|large)?$/, ""));
       if (imgs.length === 0) return;
       imgs = uniq(imgs);
       console.log("imgs", imgs);
 
+      q.url = q.url.replace(/\?.*$/, "");
       q.posttype = "photo";
       q.content = imgs.map(encode).join(",");
     },
@@ -70,6 +71,8 @@
     e();
     return q.content != null;
   });
+
+  console.log(q);
 
   const tumblr = "https://www.tumblr.com/widgets/share/tool?"
         +Object.entries(q).map(e => e.join("=")).join("&");
