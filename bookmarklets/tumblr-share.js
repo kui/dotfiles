@@ -47,8 +47,8 @@
       q.content = imgs.map(encode).join(",");
     },
     () => { // twitter images
-      const query = "img[src$='&name=medium'],img[src$='&name=large']";
-      let imgs = Array.from(document.querySelectorAll(query)).map(i => i.src.replace(/&name=(medium|large)?$/, ""));
+      const query = "img[src$='&name=medium'],img[src$='&name=large'],img[src$='&name=900x900']";
+      let imgs = Array.from(document.querySelectorAll(query)).map(i => i.src.replace(/&name=(medium|large|900x900)?$/, ""));
       if (imgs.length === 0) return;
       imgs = uniq(imgs);
       console.log("imgs", imgs);
