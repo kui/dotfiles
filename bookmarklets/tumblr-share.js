@@ -6,7 +6,6 @@
     return a;
   }
 
-  const encode = window.encodeURIComponent;
   const $ = document.querySelector.bind(document);
   const $$ = document.querySelectorAll.bind(document);
   const url = ((t=$("link[rel=canonical]")) && t.href)
@@ -15,8 +14,8 @@
   const title = document.title;
 
   const q = {
-    url: encode(url),
-    caption: encode(`<a href="${url}">${title}</a>`),
+    url: url,
+    caption: `<a href="${url}">${title}</a>`,
   };
 
   const contentExtractors = [
@@ -44,18 +43,20 @@
       console.log("imgs", imgs);
 
       q.posttype = "photo";
-      q.content = imgs.map(encode).join(",");
+      q.content = imgs.join(",");
     },
     () => { // twitter images
-      const query = "img[src$='&name=medium'],img[src$='&name=large'],img[src$='&name=900x900']";
-      let imgs = Array.from(document.querySelectorAll(query)).map(i => i.src.replace(/&name=(medium|large|900x900)?$/, ""));
+      let imgs = Array
+          .from(document.querySelectorAll("img"))
+          .filter(i => i.src.match(/\/media\//))
+          .map(i => i.src.replace(/&name=.*?$/, ""));
       if (imgs.length === 0) return;
       imgs = uniq(imgs);
       console.log("imgs", imgs);
 
       q.url = q.url.replace(/\?.*$/, "");
       q.posttype = "photo";
-      q.content = imgs.map(encode).join(",");
+      q.content = imgs.join(",");
     },
     () => { // pixiv
       let imgs = Array.from(document.querySelectorAll('img.original-image')).map(i => i.dataset["src"]);
@@ -64,7 +65,7 @@
       console.log("imgs", imgs);
 
       q.posttype = "photo";
-      q.content = imgs.map(encode).join(",");
+      q.content = imgs.join(",");
     }
   ];
   contentExtractors.some((e) => {
@@ -75,7 +76,7 @@
   console.log(q);
 
   const tumblr = "https://www.tumblr.com/widgets/share/tool?"
-        +Object.entries(q).map(e => e.join("=")).join("&");
+        +Object.entries(q).map(e => e.map(window.encodeURIComponent).join("=")).join("&");
   const screen = window.screen;
   const height = screen && screen.height || 600;
   window.open(tumblr, null, `height=${height},width=540`);
