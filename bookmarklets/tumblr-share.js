@@ -8,14 +8,15 @@
 
   const $ = document.querySelector.bind(document);
   const $$ = document.querySelectorAll.bind(document);
+  const escape = window.encodeURIComponent;
   const url = ((t=$("link[rel=canonical]")) && t.href)
         || ((t=$('meta[property="og:url"],meta[property="twitter:url"]')) && t.content)
         || location.href;
   const title = document.title;
 
   const q = {
-    url: url,
-    caption: `<a href="${url}">${title}</a>`,
+    url,
+    caption: escape(`<a href="${url}">${title}</a>`),
   };
 
   const contentExtractors = [
@@ -43,7 +44,7 @@
       console.log("imgs", imgs);
 
       q.posttype = "photo";
-      q.content = imgs.join(",");
+      q.content = imgs.map(escape).join(",");
     },
     () => { // twitter images
       let imgs = Array
@@ -56,7 +57,7 @@
 
       q.url = q.url.replace(/\?.*$/, "");
       q.posttype = "photo";
-      q.content = imgs.join(",");
+      q.content = imgs.map(escape).join(",");
     },
     () => { // pixiv
       let imgs = Array.from(document.querySelectorAll('img.original-image')).map(i => i.dataset["src"]);
@@ -65,7 +66,7 @@
       console.log("imgs", imgs);
 
       q.posttype = "photo";
-      q.content = imgs.join(",");
+      q.content = imgs.map(escape).join(",");
     }
   ];
   contentExtractors.some((e) => {
@@ -76,7 +77,8 @@
   console.log(q);
 
   const tumblr = "https://www.tumblr.com/widgets/share/tool?"
-        +Object.entries(q).map(e => e.map(window.encodeURIComponent).join("=")).join("&");
+        +Object.entries(q).map(e => e.join("=")).join("&");
+  console.log(tumblr);
   const screen = window.screen;
   const height = screen && screen.height || 600;
   window.open(tumblr, null, `height=${height},width=540`);
