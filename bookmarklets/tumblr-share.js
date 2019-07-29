@@ -48,9 +48,9 @@
     },
     () => { // twitter images
       let imgs = Array
-          .from(document.querySelectorAll("img"))
+          .from(document.querySelectorAll("article[data-testid='tweetDetail'] img"))
           .filter(i => i.src.match(/\/media\//))
-          .map(i => i.src.replace(/&name=.*?$/, ""));
+          .map(i => i.src.replace(/\?.*$/, ".jpg"));
       if (imgs.length === 0) return;
       imgs = uniq(imgs);
       console.log("imgs", imgs);
