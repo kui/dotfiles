@@ -32,6 +32,8 @@
         if (!selection.containsNode(e, true)) continue;
         if (e.tagName === "IMG" && e.src) {
           imgs.push(e.src);
+        } else if (e.tagName === "A" && /\.(jpe?g|png)/.exec((new URL(e.href)).pathname)) {
+          imgs.push(e.href)
         }
         const style = window.getComputedStyle(e);
         const urlMatch = /^url\(["']?([^"']+)["']?\)$/.exec(style.backgroundImage);
