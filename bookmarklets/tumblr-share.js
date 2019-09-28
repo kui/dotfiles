@@ -50,7 +50,7 @@
     },
     () => { // twitter images
       let imgs = Array
-          .from(document.querySelectorAll("article[data-testid='tweetDetail'] img"))
+          .from(document.querySelectorAll("article img"))
           .filter(i => i.src.match(/\/media\//))
           .map(i => i.src.replace(/\?.*$/, ".jpg"));
       if (imgs.length === 0) return;
