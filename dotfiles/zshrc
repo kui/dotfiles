@@ -720,7 +720,25 @@ source_if_exist "$HOME/.nvm/nvm.sh"
 
 # fzf
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+if [[ -x "$(which fzf)" ]]; then
+    if which brew &>/dev/null; then
+        source "$(brew --prefix)"/opt/fzf/shell/completion.zsh
+    fi
 
+    _fzf_complete_git() {
+        ARGS="$@"
+        local branches
+        if [[ $ARGS == 'git co'* ]]; then
+            branches=$(git branch -vv --all)
+            _fzf_complete "--reverse --multi" "$@" < <(
+                echo $branches
+            )
+        else
+            eval "zle ${fzf_default_completion:-expand-or-complete}"
+        fi
+    }
+    _fzf_complete_git_post() { awk '{print $1}' }
+fi
 if [[ -x "$(which fzf-tmux)" ]]; then
     echo "Enable fzf-tmux"
     bindkey '^xp' fzf-ps
