@@ -50,6 +50,7 @@ path=(
     $HOME/{.rvm,.rbenv,local,.local}/bin(N-/)
     $HOME/.nodebrew/current/bin(N-/)
     $HOME/.homebrew/bin(N-/)
+    $HOME/.krew/bin(N-/)
     $GEM_HOME/bin(N-/)
     $GOPATH/bin
     /opt/local/bin(N-/)
