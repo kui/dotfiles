@@ -413,6 +413,15 @@ echo_pyenv_version() {
 }
 prompt_opts+=echo_pyenv_version
 
+echo_kubectl_context() {
+    type kubectl &>/dev/null || return
+    [[ -z "$KUBECONFIG" ]] && return
+
+    local c="$(kubectl config current-context)"
+    print -n "%f:%F{blue}k8s/$c "
+}
+prompt_opts+=echo_kubectl_context
+
 user="%F{$(color_code_from_str "$USER")}%n"
 host="%F{$(color_code_from_str "$HOST")}%m"
 tmux=
