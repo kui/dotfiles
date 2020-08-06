@@ -764,6 +764,10 @@ This function should be :around advice function."
   (shell-command (concat "npx eslint --fix " (buffer-file-name)))
   (revert-buffer t t t))
 
+(use-package json-mode
+  :mode "\\.json"
+  )
+
 (use-package typescript
   :no-require t
   :config
