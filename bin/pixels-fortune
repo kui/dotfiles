@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 # Install script
 # curl -o pixels-fortune https://gist.githubusercontent.com/kui/c0f4b48d143b7af19018/raw/pixels-fortune.py && chmod +x pixels-fortune
@@ -82,9 +82,9 @@ def convert(b64):
     zipped = base64.urlsafe_b64decode(b64)
     json_str = zlib.decompress(zipped)
     j = json.loads(json_str)
-    if type(j) is types.DictType:
+    if isinstance(j, dict):
         return j['pixels']
-    elif type(j) is types.ListType:
+    elif isinstance(j, list):
         return j
     else:
         sys.exit('Invalid JSON: %s' % type(j))
