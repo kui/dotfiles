@@ -757,25 +757,16 @@ This function should be :around advice function."
   ;; "プロジェクトルート/node_modules/.bin" を実行パスに追加
   (let* ((local-path (kui/chomp-end (shell-command-to-string "npm bin"))))
     (setq-local exec-path (cons local-path exec-path)))
-  (when (and (executable-find "flow")
-             (featurep 'flycheck))
-    (use-package flycheck-flow
-      :ensure t
-      :config
-      ;; flow によるチェックは優先度下位
-      (setq flycheck-checkers (cl-remove 'javascript-flow flycheck-checkers))
-      (add-to-list 'flycheck-checkers 'javascript-flow t)
-      ;; 本来のチェッカーの次にチェーンして flow が起動するように設定
-      (let ((c (flycheck-get-checker-for-buffer)))
-        (when c (flycheck-add-next-checker c 'javascript-flow)))
-      )
-    )
   )
 (defun kui/eslint-fix ()
   "Execute eslint --fix FILE."
   (interactive)
   (shell-command (concat "npx eslint --fix " (buffer-file-name)))
   (revert-buffer t t t))
+
+(use-package json-mode
+  :mode "\\.json"
+  )
 
 (use-package typescript
   :no-require t

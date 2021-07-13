@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 # Install script
 # curl -o pixels-fortune https://gist.githubusercontent.com/kui/c0f4b48d143b7af19018/raw/pixels-fortune.py && chmod +x pixels-fortune
@@ -57,6 +57,12 @@ PIXELS = [
 
     # Oshino Shinobu (Waza-monogatari)
     "eAGllE1PwzAMhv8KygmkCDWtcLfegAN3duAw7QCjjErVOpVNQiD-O2kbp85Hh8ekuPmynzrO236LXfVZ1ovqqxRFlkrxsrlv6qYVhXh8uLu9TOSFadezKyHFm91-eq_2pV5Zd_PF7nmtASK9Ab20bTZt9fohin17KOXwBj1bLreHupaxR5opa_wt-1jJKLoLUVlujaL8dRYVA_s-zQbrIBBdDrl8ZJ78B9m7Awaj6enQvEXt6fAQNVJMGEQa3UVKCDDu-WzaYHQlHIOYikq7ekTGHllTvJxiIATgOACGJ4wh-zBwKeDCJgpOaTSZaRpOT6JliYszcxbPObB2VGpkKcJV1oMrfiAywIyBCucYy_mkwSk0ZqiCHe-PQtTmv9fEWzO50XytyqYUexxzkl5NdeZzazEUQ61jTj2E9O4R2XrAgntGS8T_Z5MLpbIPb46HjH8UENX8Odj-Tmx3PtZJeez-DuKRLd4dMPCrn18o5DCr",
+
+    # Pickaxe (Minecraft)
+    "eAGrVirIrEjNCc6sSlWyMjLVUUpKd87PyS9SslIKcndy1DDQUYAiPQtNJR2lNLh0eEZmSSpQJBnEDy5ITAYaoGRkagYUystPL8pMKVaySkvMKU7VgVgB5EZH55Xm5OhQj4jVIWCikTEKIsccoDYTExAyNocioIippY6hsRmZDoGYAtJvSIoR2AhLE4SbyDYJaAjIMaZGqGaRYAzCBJhnSTUGzQQyjMFmAlIEEmEMThOINga_CShm4YktYk0hlJApMAfTMFML8g0iP33T28TYWgBUVbwI",
+
+    # Noita
+    "eAHtll1vgjAUhv_Kcq62pFmkhEa4013sfl54YbxwDh1JI8aPZNH439fCVIZHhIlFxknet0lb0vM-fLRsYR58-bIXbHzwuMPgffoSynABHry9djuPLfbwo-f2EzCYHKb7n8HKVyNj3e_NR2O1AHBHqKFZOF0EH0vwJiO59FlcQnUHg9laSlZpY9ku6pLrDBmxVkEotG5Wj0hNkoqjiLO-nK7QIsr_Q5kUUd4v5bnzP21iPFnVakU2TZiP4ncvlmNrNZEqi4_bVuTrmC7lj1Oms6av4jx2TZmiIGeQ9iFVKiW8d7BaELGCwEonlRURvaknpRHfWWT02ZTzLQhXC39rsnJeYsxPcJz_225VDwITu2wRksTOwTnq5lIVbq48E4uyZZ-UVltEJrJbkhVv8v3n7E2MxEiM5shKZSFSA6QVcjWedbj7Bk2xcu4=",
 ]
 
 import sys, base64, zlib, json, types, random
@@ -82,9 +88,9 @@ def convert(b64):
     zipped = base64.urlsafe_b64decode(b64)
     json_str = zlib.decompress(zipped)
     j = json.loads(json_str)
-    if type(j) is types.DictType:
+    if isinstance(j, dict):
         return j['pixels']
-    elif type(j) is types.ListType:
+    elif isinstance(j, list):
         return j
     else:
         sys.exit('Invalid JSON: %s' % type(j))
