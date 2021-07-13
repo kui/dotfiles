@@ -64,6 +64,16 @@ module.exports = {
   rules: [
     ////////////////////////////////////////////////////////////
     {
+      description: 'Japanese Input Mode',
+      manipulators: conditionsGroup([
+      ], [
+        bindKey('shift + left_command + j', 'japanese_kana'), 
+        bindKey('left_command + j', 'japanese_eisuu')
+      ])
+    },
+
+    ////////////////////////////////////////////////////////////
+    {
       description: 'Terminal',
       manipulators: conditionsGroup([
         {
