@@ -418,8 +418,6 @@ prompt_opts+=echo_pyenv_version
 
 echo_kubectl_context() {
     type kubectl &>/dev/null || return
-    [[ -z "$KUBECONFIG" ]] && return
-
     local c="$(kubectl config current-context)"
     print -n "%f:%F{blue}k8s/$c "
 }
@@ -817,6 +815,11 @@ fi
 if [ -f ~/golang/src/github.com/bonnefoa/kubectl-fzf/kubectl_fzf.plugin.zsh ]
 then
     source ~/golang/src/github.com/bonnefoa/kubectl-fzf/kubectl_fzf.plugin.zsh
+fi
+
+if kustomize completion zsh &> /dev/null
+then
+    source <(kustomize completion zsh)
 fi
 
 # minikube
