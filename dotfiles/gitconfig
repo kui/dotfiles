@@ -12,6 +12,7 @@
 [alias]
 	co = checkout
 	st = status
+	sw = switch
 	s = status
 	c = commit
 [push]
