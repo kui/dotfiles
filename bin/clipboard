@@ -22,16 +22,19 @@ Example:
 "
 
 main() {
-  local platform cmd
+  local platform cmd tests
 
   if [[ "$#" -eq 0 ]]; then
     abort "$USAGE"
   fi
 
-  if [[ "$OSTYPE" =~ 'linux'  ]]; then
+  if wsl_test; then
+    platform=wsl
+  elif [[ "$OSTYPE" =~ 'linux'  ]]; then
     platform=linux
   elif [[ "$OSTYPE" =~ 'darwin' ]]; then
-    platform=darwin # Mac OS X
+    # Mac OS X
+    platform=darwin
   else
     abort "Not supported platform"
   fi
@@ -59,7 +62,7 @@ linux_copy() {
 linux_paste() {
   require_command xsel
 
-  if [[ -z "$DISPLAY" ]]; then
+  if [[ -z "${DISPLAY:-}" ]]; then
     abort "Require X Window System"
   fi
 
@@ -69,14 +72,14 @@ linux_paste() {
 linux_test() {
   require_command xsel
 
-  if [[ -z "$DISPLAY" ]]; then
+  if [[ -z "${DISPLAY:-}" ]]; then
     abort "Require X Window System"
   fi
 }
 
 darwin_copy() {
   require_command pbcopy
-  if [[ -n "$TMUX" ]]; then
+  if [[ -n "${TMUX:-}" ]]; then
       reattach-to-user-namespace pbcopy
   else
       pbcopy
@@ -85,7 +88,7 @@ darwin_copy() {
 
 darwin_paste() {
   require_command pbpaste
-  if [[ -n "$TMUX" ]]; then
+  if [[ -n "${TMUX:-}" ]]; then
       reattach-to-user-namespace pbpaste
   else
       pbpaste
@@ -96,8 +99,23 @@ darwin_test() {
   require_command pbpaste pbcopy
 }
 
+wsl_copy() {
+  require_command clip.exe
+  clip.exe
+}
+
+wsl_paste() {
+  require_command powershell.exe
+  powershell.exe Get-Clipboard
+}
+
+wsl_test() {
+  require_command clip.exe powershell.exe
+}
+
 require_command() {
-  local error=0
+  local error cmd
+  error=0
   for cmd in "$@"; do
     if ! which "$cmd" &>/dev/null; then
       echo "Require command: $cmd" >&2
@@ -105,13 +123,13 @@ require_command() {
     fi
   done
   if [[ "$error" = 1 ]]; then
-    exit 1
+    return 1
   fi
 }
 
 abort() {
   echo "$@" >&2
-  exit 1
+  return 1
 }
 
 main "$@"
