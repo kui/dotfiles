@@ -7,6 +7,3 @@
 [submodule "dotfiles/zshrc.d/zaw"]
 	path = dotfiles/zshrc.d/zaw
 	url = git@github.com:zsh-users/zaw.git
-[submodule "dotfiles/zshrc.d/grunt-zsh-completion"]
-	path = dotfiles/zshrc.d/grunt-zsh-completion
-	url = git@github.com:yonchu/grunt-zsh-completion.git
