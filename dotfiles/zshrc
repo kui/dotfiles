@@ -128,6 +128,8 @@ fi
 # 表示言語設定
 export LANG=ja_JP.UTF-8
 
+stty stop undef
+
 ## 補完機能の強化
 autoload -U compinit
 compinit -u
