@@ -420,8 +420,10 @@ prompt_opts+=echo_pyenv_version
 
 echo_kubectl_context() {
     type kubectl &>/dev/null || return
-    local c="$(kubectl config current-context)"
-    print -n "%f:%F{blue}k8s/$c "
+    local c="$(kubectl config current-context 2>/dev/null)"
+    if [[ -n "$c" ]]; then
+        print -n "%f:%F{blue}k8s/$c "
+    fi
 }
 prompt_opts+=echo_kubectl_context
 
