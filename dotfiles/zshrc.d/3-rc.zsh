@@ -219,15 +219,6 @@ PROMPT='%(?.%F{243}.%F{red})%U${(l:COLUMNS:: :)?}%u
 %(?.%f.%F{red})%(!.#.$)%f '
 
 ############################################################
-##  screen の window タイトルを設定
-update_screen_title() {
-    local shell="$(basename "$SHELL")"
-    local dir="$(basename $(print -P '%~'))"
-    screen -X title "${shell}#${dir}"
-}
-[ "$STY" ] && precmd_functions=($precmd_functions update_screen_title)
-
-############################################################
 ##  cdr の設定
 autoload -Uz chpwd_recent_dirs cdr add-zsh-hook
 add-zsh-hook chpwd chpwd_recent_dirs
