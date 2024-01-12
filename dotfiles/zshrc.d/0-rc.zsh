@@ -801,7 +801,8 @@ fi
 # fi
 
 # syntax-highligting
-source_if_exist "$HOME/.zshrc.d/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+#source_if_exist "$HOME/.zshrc.d/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+source_if_exist "$HOME/.zshrc.d/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh"
 
 # golang utillityes which be installed by dpkg (apt)
 source_if_exist "/usr/lib/go/misc/zsh/go"
