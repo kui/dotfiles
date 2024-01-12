@@ -46,10 +46,6 @@ fi
 [[ -n "${JAVA_HOME}" ]] && export JAVA_HOME
 
 ############################################################
-# go
-export GOPATH="$HOME/golang"
-
-############################################################
 # パスの設定
 ## (N-/): 存在しないディレクトリは登録しない。
 ##    パス(...): ...という条件にマッチするパスのみ残す。
@@ -66,8 +62,6 @@ path=(
     $HOME/.nodebrew/current/bin(N-/)
     $HOME/.homebrew/bin(N-/)
     $HOME/.krew/bin(N-/)
-    $GOPATH/bin
-    /usr/local/go/bin(N-/)
     /opt/local/bin(N-/)
     $path
     /usr{/local,/usr,}/bin(N-/)
@@ -810,9 +804,6 @@ fi
 # syntax-highligting
 #source_if_exist "$HOME/.zshrc.d/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 source_if_exist "$HOME/.zshrc.d/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh"
-
-# golang utillityes which be installed by dpkg (apt)
-source_if_exist "/usr/lib/go/misc/zsh/go"
 
 # npm
 which npm > /dev/null 2>&1 && . <(npm completion)
