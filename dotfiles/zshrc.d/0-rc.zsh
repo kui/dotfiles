@@ -11,7 +11,14 @@ source_if_exist(){
         return 1
     fi
     echo load "$1"
-    source "$1"
+
+    local start_at
+    start_at=$(date +%s%N)
+
+    source "$@"
+
+    echo "  Exit Code: $?"
+    echo "  Elapsed Time: $((($(date +%s%N) - $start_at) / 1000000)) ms"
 }
 
 has_command() {
@@ -750,7 +757,7 @@ source_if_exist "/usr/local/rvm/scripts/rvm" || \
     source_if_exist "$HOME/.rvm/scripts/rvm"
 
 ## nvm
-source_if_exist "$HOME/.nvm/nvm.sh"
+source_if_exist "$HOME/.nvm/nvm.sh" --no-use
 
 # fzf
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
