@@ -194,17 +194,6 @@ do_enter() {
 zle -N do_enter
 bindkey '^m' do_enter
 
-## rvm
-source_if_exist "/usr/local/rvm/scripts/rvm" || \
-    source_if_exist "$HOME/.rvm/scripts/rvm"
-
-## rbenv
-if which rbenv &> /dev/null && ! which rvm &> /dev/null
-then
-    echo load rbenv
-    eval "$(rbenv init - zsh)"
-fi
-
 # syntax-highligting
 source_if_exist "$HOME/.zshrc.d/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh"
 
