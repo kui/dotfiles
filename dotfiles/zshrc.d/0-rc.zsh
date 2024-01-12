@@ -14,8 +14,15 @@ source_if_exist(){
     source "$1"
 }
 
+has_command() {
+    command -v "$1" >/dev/null 2>&1
+}
+
 readlink_f() {
-    python -c "import os; print(os.path.realpath('$1'))"
+    has_command greadlink && greadlink -f "$1" && return
+    has_command readlink && readlink -f "$1" && return
+    has_command python && python -c "import os; print(os.path.realpath('$1'))"
+    python3 -c "import os; print(os.path.realpath('$1'))"
 }
 
 ############################################################
@@ -173,12 +180,12 @@ fi
 
 eval $(dircolors)
 
-function jqess(){
+jqess(){
     jq -C | less -R
 }
 
 # HTTPサーバを立ち上げる
-function serve(){
+serve(){
     local port=${SERVE_PORT:-8007}
 
     local current_dir="$(pwd)"
@@ -202,7 +209,18 @@ function serve(){
     else
         color_echo green "Serve the current directory"
     fi
-    python -m SimpleHTTPServer $port &
+    if has_command python; then
+        python -m SimpleHTTPServer $port &
+    elif has_command python3; then
+        python3 -m http.server $port &
+    elif has_command ruby; then
+        ruby -run -e httpd . -p $port &
+    elif has_command busybox; then
+        busybox httpd -f -p $port &
+    else
+        echo "Not Found python, ruby, busybox" >&2
+        return 1
+    fi
     cd "${current_dir}"
 
     local url="http://localhost:$port/$file"
