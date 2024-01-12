@@ -1,59 +1,9 @@
 # -*- mode: sh; coding: utf-8; -*-
-
-[ -f /etc/zsh/zshrc ] && source /etc/zsh/zshrc
-
-typeset -xU path PATH
-path=(
-    $HOME/.{settings,dotfiles}/bin(N-/)
-    $HOME/.local/bin(N-/)
-    $HOME/.krew/bin(N-/)
-    /opt/local/bin(N-/)
-    $path
-    /usr{/local,/usr,}/bin(N-/)
-)
-
 pixels-fortune
-
-typeset -xU manpath
-manpath=(
-    $manpath
-)
-
-typeset -xU SUDO_PATH sudo_path
-sudo_path=(
-    /opt/local/sbin(N-/)
-    {,/usr/pkg,/usr/local,/usr}/sbin(N-/)
-    $sudo_path $path
-)
-
-typeset -xU LD_LIBRARY_PATH ld_library_path
-ld_library_path=(
-    /usr/local/kui-avconv/lib(N-/)
-    /opt/local/lib(N-/)
-    $ld_library_path
-)
-
-typeset -xU INCLUDE include
-include=(
-    /usr/local/kui-avconv/include(N-/)
-    /opt/local/include
-    $include
-)
-export CPATH=$INCLUDE
-
-typeset -xU FPATH include
-fpath=(
-    {$HOME/.rvm,/usr/local/rvm}/scripts/zsh/Completion(N-/)
-    $HOME/.zshrc.d/completion(N-/)
-    $HOME/.zshrc.d/zsh-completions/src(N-/)
-    $fpath)
 
 if [ $TERM = "xterm" ] && infocmp xterm-256color &>/dev/null; then
     export TERM="xterm-256color"
 fi
-
-# 表示言語設定
-export LANG=ja_JP.UTF-8
 
 stty stop undef
 
@@ -321,11 +271,6 @@ fzf-history-widget() {
   zle redisplay
 }
 zle     -N   fzf-history-widget
-
-
-## マシンごとの設定
-! [[ -f ~/.zshrc.local ]] && touch ~/.zshrc.local
-source ~/.zshrc.local
 
 ## rvm
 source_if_exist "/usr/local/rvm/scripts/rvm" || \

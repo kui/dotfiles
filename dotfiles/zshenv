@@ -1,0 +1,48 @@
+# インタラクティブシェルでなくても呼ばれる場所なので、
+# インタラクティブシェルでなくても設定が必要なものは
+# zshrc ではなくここに書く
+
+export LANG=ja_JP.UTF-8
+
+typeset -xU path PATH
+path=(
+    $HOME/.{settings,dotfiles}/bin(N-/)
+    $HOME/.local/bin(N-/)
+    /opt/local/bin(N-/)
+    $path
+    /usr{/local,/usr,}/bin(N-/)
+)
+
+typeset -xU sudo_path SUDO_PATH
+sudo_path=(
+    /opt/local/sbin(N-/)
+    {,/usr/pkg,/usr/local,/usr}/sbin(N-/)
+    $sudo_path $path
+)
+
+typeset -xU manpath MANPATH
+manpath=(
+    $manpath
+)
+
+typeset -xU ld_library_path LD_LIBRARY_PATH
+ld_library_path=(
+    /usr/local/kui-avconv/lib(N-/)
+    /opt/local/lib(N-/)
+    $ld_library_path
+)
+
+typeset -xU include INCLUDE
+include=(
+    /usr/local/kui-avconv/include(N-/)
+    /opt/local/include(N-/)
+    $include
+)
+export CPATH=$INCLUDE
+
+typeset -xU fpath FPATH
+fpath=(
+    $HOME/.zshrc.d/completion(N-/)
+    $HOME/.zshrc.d/zsh-completions/src(N-/)
+    $fpath
+)
