@@ -37,14 +37,6 @@ elif which code &> /dev/null; then
     export EDITOR="code --wait"
 fi
 
-if clipboard test &>/dev/null; then
-    if [[ -n "$TMUX" ]]; then
-        tmux bind-key C-y run 'clipboard paste | tmux load-buffer - && tmux paste-buffer'
-        tmux bind-key -Tcopy-mode C-w send-keys -X copy-pipe-and-cancel 'clipboard copy'
-        tmux bind-key -Tcopy-mode M-w send-keys -X copy-pipe-and-cancel 'clipboard copy'
-    fi
-fi
-
 # open
 if [[ -f /usr/bin/xdg-open ]]
 then alias open=/usr/bin/xdg-open
