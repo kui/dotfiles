@@ -1,5 +1,3 @@
-# -*- coding:utf-8-unix; mode:sh; -*-
-
 export HISTCONTROL="ignoreboth"
 export HISTSIZE="10000"
 
