@@ -216,19 +216,7 @@ then
     eval "$(rbenv init - zsh)"
 fi
 
-# zaw
-# if source_if_exist "$HOME/.zshrc.d/zaw/zaw.zsh"
-# then
-#     bindkey "^o"   zaw-cdr
-#     bindkey "^x^f" zaw-open-file
-#     bindkey "^r"   zaw-history
-#     bindkey "^xp"  zaw-process
-#     bindkey "^xb"  zaw-git-branches
-#     zstyle ':filter-select' case-insensitive yes
-# fi
-
 # syntax-highligting
-#source_if_exist "$HOME/.zshrc.d/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 source_if_exist "$HOME/.zshrc.d/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh"
 
 # npm
