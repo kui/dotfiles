@@ -443,68 +443,6 @@ fzf-history-widget() {
 }
 zle     -N   fzf-history-widget
 
-#############################################################
-# 時間のかかったコマンドは、通知システムに通知する
-# 参考: http://qiita.com/hayamiz/items/d64730b61b7918fbb970
-
-timetrack_threshold=10 # seconds
-
-export timetrack_threshold
-export timetrack_ignore_progs
-
-unset timetrack_start
-unset timetrack_command
-
-function preexec_start_timetrack() {
-    export timetrack_command="$1"
-    export timetrack_start="`date +%s`"
-}
-
-function preexec_end_timetrack() {
-    local command="$timetrack_command"
-    local exec_time
-    local message
-
-    if [[ -z "$timetrack_start" || \
-          -z "$timetrack_threshold" ]]
-    then return
-    fi
-
-    if [[ -z "$command" ]]
-    then command="<UNKNOWN>"
-    fi
-
-    export timetrack_end=`date +%s`
-
-    exec_time="$(( timetrack_end - timetrack_start ))"
-
-    if [[ "$exec_time" -ge "$timetrack_threshold" ]]
-    then
-        message="Time: $exec_time seconds\nCOMMAND: $command"
-
-        if which growlnotify &>/dev/null
-        then echo "$message" | growlnotify -n "ZSH timetracker" --appIcon Terminal
-        elif which notify-send &>/dev/null && [[ -z "$DISPLAY" ]]
-        then notify-send --icon=terminal "Command finished" "$message"
-        elif which terminal-notifier &>/dev/null
-        then terminal-notifier -message "$message"
-        fi
-
-        echo $'\a'
-    fi
-
-    unset timetrack_start
-    unset timetrack_command
-}
-
-if ( which growlnotify &>/dev/null || \
-     which notify-send &>/dev/null || \
-     which terminal-notifier &>/dev/null ) &&
-       autoload -U add-zsh-hook 2>/dev/null
-then
-    add-zsh-hook preexec preexec_start_timetrack
-    add-zsh-hook precmd preexec_end_timetrack
-fi
 
 ## マシンごとの設定
 ! [[ -f ~/.zshrc.local ]] && touch ~/.zshrc.local

@@ -6,12 +6,15 @@ source_if_exist() {
     echo "source: $1"
 
     local start_at
-    start_at=$(now_nano)
+    start_at=$(now_milli)
 
     source "$@"
 
-    echo "  Exit Code: $?"
-    echo "  Elapsed Time: $(( ($(now_nano) - $start_at) / 1000000)) ms"
+    echo "  Exit Code: $?, Elapsed Time: $(($(now_milli) - $start_at)) ms"
+}
+
+now_milli() {
+    echo $(( $(now_nano) / 1000 / 1000 ))
 }
 
 now_nano() {
