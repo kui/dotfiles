@@ -5,35 +5,14 @@ if [ $TERM = "xterm" ] && infocmp xterm-256color &>/dev/null; then
     export TERM="xterm-256color"
 fi
 
+# Ctrl+S でターミナルが固まるのを防ぐ
 stty stop undef
 
-## 補完機能の強化
+## 補完機能
 autoload -U compinit
 compinit -u
 
-############################################################
-## alias, funcction の設定
-
-alias less="less -R"
-alias grep="grep --color"
-
-if   ls -F --color &>/dev/null;  then alias ls="ls -F --color=auto"
-elif gls -F --color &>/dev/null; then alias ls="gls -F --color=auto"
-elif ls -F -G &>/dev/null;       then alias ls="ls -F -G"
-fi
-
-if which reattach-to-user-namespace &>/dev/null
-then
-    alias terminal-notifier='reattach-to-user-namespace terminal-notifier'
-fi
-
 eval $(dircolors)
-
-# open
-if [[ -f /usr/bin/xdg-open ]]
-then alias open=/usr/bin/xdg-open
-fi
-alias o=open
 
 ############################################################
 ##  cdr の設定
