@@ -44,40 +44,37 @@ export GOPATH="$HOME/golang"
 ##            -: シンボリックリンク先のパスを評価。
 ##            /: ディレクトリのみ残す。
 ##
+typeset -U path PATH
 path=(
-    # ./node_modules/.bin
     $HOME/.{settings,dotfiles}/bin(N-/)
-    $HOME/{.rvm,.rbenv,local,.local}/bin(N-/)
+    $HOME/local/bin(N-/)
+    $HOME/.local/bin(N-/)
     $HOME/.nodebrew/current/bin(N-/)
     $HOME/.homebrew/bin(N-/)
     $HOME/.krew/bin(N-/)
-    $GEM_HOME/bin(N-/)
     $GOPATH/bin
+    /usr/local/go/bin(N-/)
     /opt/local/bin(N-/)
     $path
-    /usr/local/heroku/bin(N-/)
-    /usr/local/go/bin(N-/)
-    /usr/local/{rvm,rbenv}/bin(N-/)
-    /app/{script,mingw/tdm/bin,gs/bin,gs/lib}(N-/)
     /usr{/local,/usr,}/bin(N-/)
-    /usr/local/kui-avconv/bin(N-/)
 )
 
 pixels-fortune
 
+typeset -U manpath
 manpath=(
     $(which brew &>/dev/null && echo "$(brew --prefix)/share/man(N-/)")
     $manpath
 )
 
-[ -z "$sudo_path" ] && typeset -xT SUDO_PATH sudo_path
+[ -z "$sudo_path" ] && typeset -xU SUDO_PATH sudo_path
 sudo_path=(
     /opt/local/sbin(N-/)
     {,/usr/pkg,/usr/local,/usr}/sbin(N-/)
     $sudo_path $path
 )
 
-[ -z "$ld_library_path" ] && typeset -xT LD_LIBRARY_PATH ld_library_path
+[ -z "$ld_library_path" ] && typeset -xU LD_LIBRARY_PATH ld_library_path
 ld_library_path=(
     $HOME/.homebrew/lib(N-/)
     /usr/local/kui-avconv/lib(N-/)
@@ -85,7 +82,7 @@ ld_library_path=(
     $ld_library_path
 )
 
-[ -z "$include" ] && typeset -xT INCLUDE include
+[ -z "$include" ] && typeset -xU INCLUDE include
 include=(
     $HOME/.homebrew/include(N-/)
     /usr/local/kui-avconv/include(N-/)
@@ -94,7 +91,7 @@ include=(
 )
 export CPATH=$INCLUDE
 
-[ -z "$fpath" ] && typeset -xT FPATH include
+[ -z "$fpath" ] && typeset -xU FPATH include
 fpath=(
     {$HOME/.rvm,/usr/local/rvm}/scripts/zsh/Completion(N-/)
     $HOME/.zshrc.d/grunt-zsh-completion(N-/)
