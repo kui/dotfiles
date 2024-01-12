@@ -755,8 +755,8 @@ source_if_exist "$HOME/.nvm/nvm.sh"
 # fzf
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 if [[ -x "$(which fzf)" ]]; then
-    if which brew &>/dev/null; then
-        source "$(brew --prefix)"/opt/fzf/shell/completion.zsh
+    if has_command brew; then
+        source_if_exist "$(brew --prefix)"/opt/fzf/shell/completion.zsh
     fi
 
     _fzf_complete_git() {
@@ -774,7 +774,6 @@ if [[ -x "$(which fzf)" ]]; then
     _fzf_complete_git_post() { awk '{print $1}' }
 fi
 if [[ -x "$(which fzf-tmux)" ]]; then
-    echo "Enable fzf-tmux"
     bindkey '^xp' fzf-ps
     bindkey '^xs' fzf-search-file
     bindkey '^x^f' fzf-find-file
