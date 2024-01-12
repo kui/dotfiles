@@ -37,8 +37,6 @@ path=(
     $HOME/.{settings,dotfiles}/bin(N-/)
     $HOME/local/bin(N-/)
     $HOME/.local/bin(N-/)
-    $HOME/.nodebrew/current/bin(N-/)
-    $HOME/.homebrew/bin(N-/)
     $HOME/.krew/bin(N-/)
     /opt/local/bin(N-/)
     $path
@@ -62,7 +60,6 @@ sudo_path=(
 
 typeset -xU LD_LIBRARY_PATH ld_library_path
 ld_library_path=(
-    $HOME/.homebrew/lib(N-/)
     /usr/local/kui-avconv/lib(N-/)
     /opt/local/lib(N-/)
     $ld_library_path
@@ -70,7 +67,6 @@ ld_library_path=(
 
 typeset -xU INCLUDE include
 include=(
-    $HOME/.homebrew/include(N-/)
     /usr/local/kui-avconv/include(N-/)
     /opt/local/include
     $include
@@ -80,7 +76,6 @@ export CPATH=$INCLUDE
 typeset -xU FPATH include
 fpath=(
     {$HOME/.rvm,/usr/local/rvm}/scripts/zsh/Completion(N-/)
-    $HOME/.zshrc.d/grunt-zsh-completion(N-/)
     $HOME/.zshrc.d/completion(N-/)
     $HOME/.zshrc.d/zsh-completions/src(N-/)
     $fpath)
