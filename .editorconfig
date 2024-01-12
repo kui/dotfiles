@@ -18,5 +18,5 @@ trim_trailing_whitespace = false
 indent_style = tab
 indent_size = 4
 
-[*.{sh,bash,zsh}]
+[{*.{sh,bash,zsh},*shrc*,*shenv*,*zprofile*,*zlogin*,*zlogout*}]
 indent_size = 4

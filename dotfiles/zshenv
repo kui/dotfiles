@@ -4,6 +4,11 @@
 
 export LANG=ja_JP.UTF-8
 
+# EDITOR
+if command -V code >/dev/null 2>&1; then
+    export EDITOR="code --wait"
+fi
+
 typeset -xU path PATH
 path=(
     $HOME/.{settings,dotfiles}/bin(N-/)

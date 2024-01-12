@@ -29,14 +29,6 @@ fi
 
 eval $(dircolors)
 
-if which emacs &> /dev/null && which emacsclientw &> /dev/null; then
-    alias e="emacsclientw --no-wait"
-    export EDITOR=emacsclientw
-elif which code &> /dev/null; then
-    alias e="code"
-    export EDITOR="code --wait"
-fi
-
 # open
 if [[ -f /usr/bin/xdg-open ]]
 then alias open=/usr/bin/xdg-open
