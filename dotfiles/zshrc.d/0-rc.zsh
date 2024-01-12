@@ -6,19 +6,45 @@
 ##  外部設定ファイル
 
 source_if_exist(){
-    if [ ! -f "$1" ]
-    then
+    if [[ ! -f "$1" ]]; then
         return 1
     fi
-    echo load "$1"
+
+    echo "source: $1"
 
     local start_at
-    start_at=$(date +%s%N)
+    start_at=$(now_nano)
 
     source "$@"
 
     echo "  Exit Code: $?"
-    echo "  Elapsed Time: $((($(date +%s%N) - $start_at) / 1000000)) ms"
+    echo "  Elapsed Time: $(( ($(now_nano) - $start_at) / 1000000)) ms"
+}
+
+now_nano() {
+    local n
+    n=$(date +%s%N)
+    if [[ $n =~ ^[0-9]+$ ]]; then
+        echo $n
+        return
+    fi
+
+    if has_command brew; then
+        gdate +%s%N
+        return
+    fi
+
+    if has_command python; then
+        python -c 'import time; print(int(time.time() * 1000000000))'
+        return
+    fi
+
+    if has_command python3; then
+        python3 -c 'import time; print(int(time.time() * 1000000000))'
+        return
+    fi
+
+    date +%s000000000
 }
 
 has_command() {
@@ -35,7 +61,6 @@ readlink_f() {
 typeset -xU path PATH
 path=(
     $HOME/.{settings,dotfiles}/bin(N-/)
-    $HOME/local/bin(N-/)
     $HOME/.local/bin(N-/)
     $HOME/.krew/bin(N-/)
     /opt/local/bin(N-/)
@@ -47,7 +72,6 @@ pixels-fortune
 
 typeset -xU manpath
 manpath=(
-    $(which brew &>/dev/null && echo "$(brew --prefix)/share/man")
     $manpath
 )
 
@@ -82,25 +106,6 @@ fpath=(
 
 if [ $TERM = "xterm" ] && infocmp xterm-256color &>/dev/null; then
     export TERM="xterm-256color"
-fi
-
-if which brew &>/dev/null; then
-    manpath=(
-        $(brew --prefix)/share/man(N-/)
-        $manpath
-    )
-
-    for dir in $(brew --prefix)/opt/*/libexec
-    do
-        path=(
-            ${dir}/gnubin(N-/)
-            $path
-        )
-        manpath=(
-            ${dir}/gnuman(N-/)
-            $manpath
-        )
-    done
 fi
 
 # 表示言語設定
