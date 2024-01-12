@@ -106,7 +106,7 @@ wsl_copy() {
 
 wsl_paste() {
   require_command powershell.exe
-  powershell.exe Get-Clipboard
+  powershell.exe Get-Clipboard | sed -z 's/\r\n$//'
 }
 
 wsl_test() {
