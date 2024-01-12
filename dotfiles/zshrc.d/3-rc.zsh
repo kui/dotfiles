@@ -22,11 +22,6 @@ elif gls -F --color &>/dev/null; then alias ls="gls -F --color=auto"
 elif ls -F -G &>/dev/null;       then alias ls="ls -F -G"
 fi
 
-if which tmux &> /dev/null
-then
-    alias t="tmux new-window"
-fi
-
 if which reattach-to-user-namespace &>/dev/null
 then
     alias terminal-notifier='reattach-to-user-namespace terminal-notifier'
@@ -199,15 +194,9 @@ do_enter() {
 zle -N do_enter
 bindkey '^m' do_enter
 
-#############################################################
-# fzf 関係
-
 ## rvm
 source_if_exist "/usr/local/rvm/scripts/rvm" || \
     source_if_exist "$HOME/.rvm/scripts/rvm"
-
-## nvm
-source_if_exist "$HOME/.nvm/nvm.sh" --no-use
 
 ## rbenv
 if which rbenv &> /dev/null && ! which rvm &> /dev/null
@@ -218,9 +207,6 @@ fi
 
 # syntax-highligting
 source_if_exist "$HOME/.zshrc.d/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh"
-
-# npm
-which npm > /dev/null 2>&1 && . <(npm completion)
 
 # racer: see installs/racer.sh
 export RUST_SRC_PATH="$HOME/.local/rust/src"
