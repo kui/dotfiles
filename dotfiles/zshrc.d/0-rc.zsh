@@ -32,16 +32,7 @@ readlink_f() {
     python3 -c "import os; print(os.path.realpath('$1'))"
 }
 
-############################################################
-# パスの設定
-## (N-/): 存在しないディレクトリは登録しない。
-##    パス(...): ...という条件にマッチするパスのみ残す。
-##            N: NULL_GLOBオプションを設定。
-##               globがマッチしなかったり存在しないパスを無視する。
-##            -: シンボリックリンク先のパスを評価。
-##            /: ディレクトリのみ残す。
-##
-typeset -U path PATH
+typeset -xU path PATH
 path=(
     $HOME/.{settings,dotfiles}/bin(N-/)
     $HOME/local/bin(N-/)
@@ -56,20 +47,20 @@ path=(
 
 pixels-fortune
 
-typeset -U manpath
+typeset -xU manpath
 manpath=(
-    $(which brew &>/dev/null && echo "$(brew --prefix)/share/man(N-/)")
+    $(which brew &>/dev/null && echo "$(brew --prefix)/share/man")
     $manpath
 )
 
-[ -z "$sudo_path" ] && typeset -xU SUDO_PATH sudo_path
+typeset -xU SUDO_PATH sudo_path
 sudo_path=(
     /opt/local/sbin(N-/)
     {,/usr/pkg,/usr/local,/usr}/sbin(N-/)
     $sudo_path $path
 )
 
-[ -z "$ld_library_path" ] && typeset -xU LD_LIBRARY_PATH ld_library_path
+typeset -xU LD_LIBRARY_PATH ld_library_path
 ld_library_path=(
     $HOME/.homebrew/lib(N-/)
     /usr/local/kui-avconv/lib(N-/)
@@ -77,7 +68,7 @@ ld_library_path=(
     $ld_library_path
 )
 
-[ -z "$include" ] && typeset -xU INCLUDE include
+typeset -xU INCLUDE include
 include=(
     $HOME/.homebrew/include(N-/)
     /usr/local/kui-avconv/include(N-/)
@@ -86,7 +77,7 @@ include=(
 )
 export CPATH=$INCLUDE
 
-[ -z "$fpath" ] && typeset -xU FPATH include
+typeset -xU FPATH include
 fpath=(
     {$HOME/.rvm,/usr/local/rvm}/scripts/zsh/Completion(N-/)
     $HOME/.zshrc.d/grunt-zsh-completion(N-/)
