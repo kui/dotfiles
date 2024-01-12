@@ -7,3 +7,9 @@ if clipboard test &>/dev/null; then
     tmux bind-key -Tcopy-mode C-w send-keys -X copy-pipe-and-cancel 'clipboard copy'
     tmux bind-key -Tcopy-mode M-w send-keys -X copy-pipe-and-cancel 'clipboard copy'
 fi
+
+if infocmp tmux-256color &>/dev/null; then
+    TERM=tmux-256color
+else
+    TERM=screen-256color
+fi

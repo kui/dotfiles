@@ -1,7 +1,6 @@
 # -*- mode: sh; coding: utf-8; -*-
-pixels-fortune
 
-if [ $TERM = "xterm" ] && infocmp xterm-256color &>/dev/null; then
+if [[ "$TERM" = "xterm" ]] && infocmp xterm-256color &>/dev/null; then
     export TERM="xterm-256color"
 fi
 
