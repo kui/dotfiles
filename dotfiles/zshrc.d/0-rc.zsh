@@ -33,19 +33,6 @@ readlink_f() {
 }
 
 ############################################################
-# java
-if [[ -e /usr/libexec/java_home ]]
-then JAVA_HOME="$(/usr/libexec/java_home)"
-elif [[ -n "$JAVA_HOME" ]]
-then : # do nothing
-elif which jar &>/dev/null
-then JAVA_HOME="$(readlink_f $(which jar | head -n 1) | xargs dirname | xargs dirname)"
-elif which java &>/dev/null
-then JAVA_HOME="$(readlink_f $(which java | head -n 1) | xargs dirname | xargs dirname)"
-fi
-[[ -n "${JAVA_HOME}" ]] && export JAVA_HOME
-
-############################################################
 # パスの設定
 ## (N-/): 存在しないディレクトリは登録しない。
 ##    パス(...): ...という条件にマッチするパスのみ残す。
