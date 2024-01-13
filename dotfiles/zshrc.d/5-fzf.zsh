@@ -1,6 +1,6 @@
-has_command fzf || return
-
 source_if_exist ~/.fzf.zsh
+
+has_command fzf || return
 
 export FZF_DEFAULT_OPTS="--exact --reverse --color=dark,hl:177,fg+:82,hl+:207"
 
@@ -85,3 +85,5 @@ if [[ -x "$(which fzf-tmux)" ]]; then
     bindkey '^[i' fzf-cd-history
     bindkey '^r' fzf-history-widget
 fi
+
+source_if_exist ~/.zshrc.d/fzf-tab/fzf-tab.plugin.zsh

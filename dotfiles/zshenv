@@ -4,15 +4,6 @@
 
 export LANG=ja_JP.UTF-8
 
-# EDITOR
-if command -V code &>/dev/null; then
-    export EDITOR="code --wait"
-elif command -V vim &>/dev/null; then
-    export EDITOR="vim"
-else
-    export EDITOR="vi"
-fi
-
 typeset -xU path PATH
 path=(
     $HOME/.{settings,dotfiles}/bin(N-/)
@@ -55,3 +46,12 @@ fpath=(
     $HOME/.zshrc.d/zsh-completions/src(N-/)
     $fpath
 )
+
+# EDITOR
+if command -V code &>/dev/null; then
+    export EDITOR="code --wait"
+elif command -V vim &>/dev/null; then
+    export EDITOR="vim"
+else
+    export EDITOR="vi"
+fi

@@ -7,10 +7,11 @@ fi
 # Ctrl+S でターミナルが固まるのを防ぐ
 stty stop undef
 
-## 補完機能
+# 補完機能
 autoload -U compinit
 compinit -u
 
+# Colorlize ls
 eval $(dircolors)
 
 ############################################################
@@ -155,9 +156,6 @@ do_enter() {
 }
 zle -N do_enter
 bindkey '^m' do_enter
-
-# syntax-highligting
-source_if_exist "$HOME/.zshrc.d/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh"
 
 # racer: see installs/racer.sh
 export RUST_SRC_PATH="$HOME/.local/rust/src"
