@@ -147,8 +147,3 @@ bindkey '^m' do_enter
 # racer: see installs/racer.sh
 export RUST_SRC_PATH="$HOME/.local/rust/src"
 
-# direnv
-if which direnv &> /dev/null
-then
-    eval "$(direnv hook zsh)"
-fi
