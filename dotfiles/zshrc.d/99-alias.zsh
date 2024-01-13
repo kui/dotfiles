@@ -17,3 +17,7 @@ elif has_command powershell.exe; then
     alias open="powershell.exe /C start"
 fi
 alias o=open
+
+if has_command code; then
+    alias e="code"
+fi
