@@ -97,7 +97,7 @@ _prompt_opts+=echo_pyenv_version
 # kubectl の context 表示
 echo_kubectl_context() {
     has_command kubectl || return
-    local c="$(kubectl config current-context 2>/dev/null)"
+    local c="$(sed -rne 's!current-context: (.*)!\1!p' "${KUBECONFIG:-${HOME}/.kube/config}")"
     if [[ -n "$c" ]]; then
         print -n "%f:%F{blue}k8s/$c "
     fi
