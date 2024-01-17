@@ -13,7 +13,7 @@ _timetrack_start() {
 }
 
 _timetrack_end() {
-    unset LAST_COMMAND_ELAPSED_SECONDS
+    unset COMMAND_SECONDS
 
     if [[ -z "$_timetrack_start_time" ]]; then
         return
@@ -23,11 +23,11 @@ _timetrack_end() {
         _timetrack_command="<UNKNOWN>"
     fi
 
-    export LAST_COMMAND_ELAPSED_SECONDS=$(bc <<<"scale=1; $(($(now_milli) - _timetrack_start_time)) / 1000")
+    export COMMAND_SECONDS=$(bc <<<"scale=1; $(($(now_milli) - _timetrack_start_time)) / 1000")
 
     local title="Finished: $_timetrack_command"
-    local message="Elapsed Time: ${LAST_COMMAND_ELAPSED_SECONDS}s"
-    if [[ "$LAST_COMMAND_ELAPSED_SECONDS" -ge "$TIMETRACK_THRESHOLD" ]]; then
+    local message="Elapsed Time: ${COMMAND_SECONDS}s"
+    if [[ "$COMMAND_SECONDS" -ge "$TIMETRACK_THRESHOLD" ]]; then
         if has_command notify-send && [[ -z "$DISPLAY" ]]; then
             notify-send --icon=terminal "$title" "$message"
         elif has_command terminal-notifier; then

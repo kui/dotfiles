@@ -107,7 +107,17 @@ _prompt_opts+=echo_kubectl_context
 # 直前のコマンドの実行結果更新
 typeset -gx _last_command_status
 _update_last_command_status() {
-    _last_command_status="time=${LAST_COMMAND_ELAPSED_SECONDS}s exit=$?"
+    local seconds mins time
+    if [[ -n "$COMMAND_SECONDS" ]]; then
+        seconds=$(bc <<<"scale=0; $COMMAND_SECONDS % 60")
+        mins=$(bc <<<"scale=0; $COMMAND_SECONDS / 60")
+        if [[ $mins -gt 0 ]]; then
+            time="${mins}m${seconds}s"
+        else
+            time="${seconds}s"
+        fi
+    fi
+    _last_command_status="time=$time exit=$?"
 }
 add-zsh-hook precmd _update_last_command_status
 
