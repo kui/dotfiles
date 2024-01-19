@@ -110,7 +110,7 @@ wsl_paste() {
 }
 
 wsl_test() {
-  require_command clip.exe powershell.exe
+  require_command clip.exe powershell.exe >/dev/null 2>&1
 }
 
 require_command() {
