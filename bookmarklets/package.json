@@ -3,13 +3,12 @@
   "version": "1.0.0",
   "description": "",
   "private": true,
-  "main": "tumblr-share.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Keiichiro UI",
   "license": "ISC",
   "devDependencies": {
-    "babel-minify": "^0.5.1"
+    "esbuild": "^0.24.0"
   }
 }
