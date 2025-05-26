@@ -10,7 +10,6 @@
 	user = kui
 	password = !ssh-askpass 'input Github password' | tr -d '\n'
 [alias]
-	co = checkout
 	st = status
 	sw = switch
 	s = status
@@ -19,3 +18,7 @@
 	default = simple
 [include]
   path = ~/.gitconfig.local
+[pull]
+	ff = only
+[branch]
+	sort = -authordate
