@@ -55,3 +55,13 @@ elif command -V vim &>/dev/null; then
 else
     export EDITOR="vi"
 fi
+
+# set JAVA_HOME if sdkman dir exists
+if [[ -d $HOME/.sdkman ]]; then
+    export JAVA_HOME="$HOME/.sdkman/candidates/java/current"
+fi
+
+if command -v brew &>/dev/null; then
+    export HOMEBREW_NO_ANALYTICS=1
+    export HOMEBREW_NO_AUTO_UPDATE=1
+fi
