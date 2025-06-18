@@ -1,0 +1,36 @@
+#!/bin/bash
+
+set -ueo pipefail
+
+# 標準入力・もしくは第一引数のファイルを tee しつつその中に URL を検知したら全て open する
+# 標準入力も第一引数もなければエラーを出力する
+
+USAGE="Usage: $0 file
+$0 < file
+
+Example:
+  echo 'google http://google.com/' | $0
+"
+if [[ $# -gt 1 ]]; then
+    echo "$USAGE" >&2
+    exit 1
+fi
+
+# TODO Better URL Regex
+URL_REGEX='https?://[a-zA-Z0-9._~:/?#@!$&'\''()*+,;=%-]+'
+
+if [[ $# -eq 1 ]]; then
+    FILE="$1"
+elif [[  $# -eq 0 && ! -t 0 ]]; then
+    FILE="/dev/stdin"
+else
+    echo "$USAGE" >&2
+    exit 1
+fi
+
+while IFS= read -r line; do
+    echo "$line"
+    if [[ $line =~ $URL_REGEX ]]; then
+        open "${BASH_REMATCH[0]}"
+    fi
+done < "$FILE"
