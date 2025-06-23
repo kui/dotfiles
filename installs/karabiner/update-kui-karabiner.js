@@ -16,6 +16,9 @@ if (!defaultProfile) {
   return 1;
 }
 
+if (!defaultProfile.complex_modifications) {
+  defaultProfile.complex_modifications = {};
+}
 defaultProfile.complex_modifications.rules = complexModConfig.rules;
 
 console.log('mkdir', targetDir)

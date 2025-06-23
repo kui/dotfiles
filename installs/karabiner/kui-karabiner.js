@@ -67,7 +67,7 @@ module.exports = {
       description: 'Japanese Input Mode',
       manipulators: conditionsGroup([
       ], [
-        bindKey('shift + left_command + j', 'japanese_kana'), 
+        bindKey('shift + left_command + j', 'japanese_kana'),
         bindKey('left_command + j', 'japanese_eisuu')
       ])
     },
@@ -81,9 +81,7 @@ module.exports = {
           bundle_identifiers: terminals
         }
       ], [
-        // bindKey('any? + left_option', 'left_command'),
         bindKey('left_option', 'left_command'),
-        // bindKey('any? + left_command', 'left_option'),
         bindKey('left_command', 'left_option'),
         bindKey('option + shift? + tab', 'command + tab'),
       ]),
