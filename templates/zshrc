@@ -1,3 +1,5 @@
 pixels-fortune
+export COLOR_THEME=light
+#export COLOR_THEME=dark
 [[ -f /etc/zsh/zshrc ]] && source /etc/zsh/zshrc
 for f in ~/.zshrc.d/*.zsh; do source "$f"; done

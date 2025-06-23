@@ -41,9 +41,8 @@ if [ "$(echotc Co)" = "256" ]; then
     color_codes=()
     for c in {16..255}; do
         b=$(ansi_brightness $c)
-        # if [[ $b -le 500 ]] # デフォルトバックグラウンドが明るい色の時
-        if [[ $b -ge 500 ]] # デフォルトバックグラウンドが暗い色の時
-        then color_codes=($color_codes $c)
+        if [[ "$COLOR_THEME" == 'dark' && $b -ge 500 ]] || [[ $b -le 500 ]]; then
+            color_codes=($color_codes $c)
         fi
     done
 fi
