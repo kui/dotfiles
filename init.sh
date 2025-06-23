@@ -1,10 +1,10 @@
 #!/bin/bash
-# -*- coding:utf-8 -*-
 set -eu
 
 HOMEBREW_INSTALLS=(
     git zsh curl wget xz ctags
     terminal-notifier reattach-to-user-namespace
+    tmux fzf bat git-delta
     coreutils findutils debianutils binutils diffutils
     grep gzip
     gawk gnu-indent gnu-which gnu-getopt gnu-sed gnu-tar gnutls

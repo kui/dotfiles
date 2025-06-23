@@ -4,7 +4,7 @@
 [color]
 	ui = auto
 [core]
-	pager = less
+	pager = delta --color-only
 	autocrlf = input
 [github]
 	user = kui
@@ -22,3 +22,9 @@
 	ff = only
 [branch]
 	sort = -authordate
+[interactive]
+	diffFilter = delta --color-only
+[delta]
+	navigate = true
+[merge]
+	conflictStyle = zdiff3
