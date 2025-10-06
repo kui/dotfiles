@@ -31,7 +31,7 @@ _timetrack_end() {
         if has_command notify-send && [[ -z "$DISPLAY" ]]; then
             notify-send --icon=terminal "$title" "$message"
         elif has_command terminal-notifier; then
-            terminal-notifier -title "$title" -message "$message"
+            terminal-notifier -title "$title" -message "$message" -activate "$__CFBundleIdentifier"
         fi
         echo $'\a'
     fi
