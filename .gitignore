@@ -20,3 +20,4 @@ node_modules
 /dotfiles/emacs.d/*.eld
 /dotfiles/emacs.d/eshell
 /dotfiles/emacs.d/network-security.data
+/dotfiles/hammerspoon/Spoons/EmmyLua.spoon/annotations
