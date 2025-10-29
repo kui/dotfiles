@@ -16,7 +16,7 @@ local function switchInputSource(targetSourceID, displayName)
     local beforeSourceID = hs.keycodes.currentSourceID()
     hs.keycodes.currentSourceID(targetSourceID)
     local afterSourceID = hs.keycodes.currentSourceID()
-    hs.console.printStyledtext(displayName .. " - 変更前: " .. beforeSourceID .. " → 変更後: " .. afterSourceID)
+    log(displayName .. " - 変更前: " .. beforeSourceID .. " → 変更後: " .. afterSourceID)
     hs.alert.show(displayName)
 end
 
@@ -43,7 +43,7 @@ local f18Keymap = {{
     },
     action = {
         key = "down"
-    },
+    }
 }, {
     trigger = {
         key = "k"
@@ -220,7 +220,7 @@ local f18Keymap = {{
     },
     action = {
         func = function()
-            switchInputSource(INPUT_SOURCES.ROMAN, "英数入力")
+            switchInputSource(INPUT_SOURCES.ROMAN, "_A")
         end
     }
 }, {
@@ -231,7 +231,7 @@ local f18Keymap = {{
     },
     action = {
         func = function()
-            switchInputSource(INPUT_SOURCES.JAPANESE, "日本語入力")
+            switchInputSource(INPUT_SOURCES.JAPANESE, "あ")
         end
     }
 }, {
@@ -312,3 +312,116 @@ for _, mapping in ipairs(f18Keymap) do
         log("  F18 + " .. triggerModStr .. mapping.trigger.key .. " → " .. actionModStr .. mapping.action.key)
     end
 end
+
+-- ========================================
+-- 日本語入力インジケータ
+-- ========================================
+
+-- 日本語入力インジケータ
+---@type hs.canvas|nil
+local japaneseInputIndicator = nil
+---@type hs.timer|nil
+local indicatorUpdateTimer = nil
+
+-- 日本語入力状態の表示を作成
+local function createJapaneseIndicator()
+    if japaneseInputIndicator then
+        japaneseInputIndicator:delete()
+    end
+
+    japaneseInputIndicator = hs.canvas.new({
+        x = 0,
+        y = 0,
+        w = 60,
+        h = 30
+    })
+    ---@cast japaneseInputIndicator hs.canvas
+    japaneseInputIndicator:appendElements({
+        type = "rectangle",
+        action = "fill",
+        fillColor = {
+            red = 0.2,
+            green = 0.6,
+            blue = 1.0,
+            alpha = 0.9
+        },
+        roundedRectRadii = {
+            xRadius = 5,
+            yRadius = 5
+        }
+    }, {
+        type = "text",
+        text = "あ",
+        textColor = {
+            white = 1.0,
+            alpha = 1.0
+        },
+        textSize = 18,
+        textAlignment = "center",
+        frame = {
+            x = 0,
+            y = 3,
+            w = 60,
+            h = 24
+        }
+    })
+
+    -- レベルを設定（他のウィンドウの上に表示）
+    japaneseInputIndicator:level("floating")
+    japaneseInputIndicator:behavior("canJoinAllSpaces")
+
+    return japaneseInputIndicator
+end
+
+-- インジケータの位置をマウスカーソルに追従させる
+local function updateIndicatorPosition()
+    if not japaneseInputIndicator then
+        return
+    end
+
+    -- マウスカーソルの近くに表示
+    local mousePos = hs.mouse.absolutePosition()
+    japaneseInputIndicator:topLeft({
+        x = mousePos.x + 20,
+        y = mousePos.y + 20
+    })
+end
+
+-- 入力ソース変更を監視
+local function inputSourceChanged()
+    local currentSourceID = hs.keycodes.currentSourceID()
+
+    if currentSourceID == INPUT_SOURCES.JAPANESE then
+        -- 日本語入力モード
+        if not japaneseInputIndicator then
+            createJapaneseIndicator()
+        end
+        updateIndicatorPosition()
+        japaneseInputIndicator:show()
+
+        -- マウス追従タイマーを開始（0.05秒ごとに更新）
+        if indicatorUpdateTimer then
+            indicatorUpdateTimer:stop()
+        end
+        indicatorUpdateTimer = hs.timer.doEvery(0.05, updateIndicatorPosition)
+    else
+        -- 英数入力モード
+        if japaneseInputIndicator then
+            japaneseInputIndicator:hide()
+        end
+
+        -- タイマーを停止
+        if indicatorUpdateTimer then
+            indicatorUpdateTimer:stop()
+            indicatorUpdateTimer = nil
+        end
+    end
+end
+
+-- 入力ソース変更のウォッチャーを設定
+hs.keycodes.inputSourceChanged(inputSourceChanged)
+
+-- 初期状態を設定
+inputSourceChanged()
+
+log("日本語入力インジケータが有効になりました")
