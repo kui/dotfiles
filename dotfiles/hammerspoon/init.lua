@@ -333,7 +333,7 @@ local function createJapaneseIndicator()
         x = 0,
         y = 0,
         w = 60,
-        h = 30
+        h = 60
     })
     ---@cast japaneseInputIndicator hs.canvas
     japaneseInputIndicator:appendElements({
@@ -356,13 +356,13 @@ local function createJapaneseIndicator()
             white = 1.0,
             alpha = 1.0
         },
-        textSize = 18,
+        textSize = 32,
         textAlignment = "center",
         frame = {
             x = 0,
-            y = 3,
+            y = 11,
             w = 60,
-            h = 24
+            h = 60
         }
     })
 
