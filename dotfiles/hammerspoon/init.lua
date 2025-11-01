@@ -317,48 +317,69 @@ end
 -- 日本語入力インジケータ
 -- ========================================
 
--- 日本語入力インジケータ
----@type hs.canvas|nil
-JapaneseInputIndicator = nil
----@type hs.timer|nil
-IndicatorUpdateTimer = nil
+-- インジケータの設定定数
+local INDICATOR_CONFIG = {
+    SIZE = {
+        WIDTH = 60,
+        HEIGHT = 60
+    },
+    TEXT = {
+        CONTENT = "あ",
+        SIZE = 32,
+        Y_OFFSET = 11 -- テキストの垂直位置調整
+    },
+    COLOR = {
+        BACKGROUND = {
+            red = 0.2,
+            green = 0.6,
+            blue = 1.0,
+            alpha = 0.9
+        },
+        TEXT = {
+            white = 1.0,
+            alpha = 1.0
+        }
+    },
+    RADIUS = {
+        X = 5,
+        Y = 5
+    },
+    POSITION = {
+        OFFSET = 20 -- マウスカーソルからのオフセット
+    },
+    TIMER = {
+        UPDATE_INTERVAL = 0.05 -- マウス追従の更新間隔（秒）
+    }
+}
 
 -- 日本語入力状態の表示を作成
 local function createJapaneseIndicator()
     local indicator = hs.canvas.new({
         x = 0,
         y = 0,
-        w = 60,
-        h = 60
+        w = INDICATOR_CONFIG.SIZE.WIDTH,
+        h = INDICATOR_CONFIG.SIZE.HEIGHT
     })
     ---@cast indicator hs.canvas
     indicator:appendElements({
         type = "rectangle",
         action = "fill",
-        fillColor = {
-            red = 0.2,
-            green = 0.6,
-            blue = 1.0,
-            alpha = 0.9
-        },
+        fillColor = INDICATOR_CONFIG.COLOR.BACKGROUND,
         roundedRectRadii = {
-            xRadius = 5,
-            yRadius = 5
+            xRadius = INDICATOR_CONFIG.RADIUS.X,
+            yRadius = INDICATOR_CONFIG.RADIUS.Y
         }
     }, {
         type = "text",
-        text = "あ",
-        textColor = {
-            white = 1.0,
-            alpha = 1.0
-        },
-        textSize = 32,
+        text = INDICATOR_CONFIG.TEXT.CONTENT,
+        textColor = INDICATOR_CONFIG.COLOR.TEXT,
+        textSize = INDICATOR_CONFIG.TEXT.SIZE,
         textAlignment = "center",
         frame = {
             x = 0,
-            y = 11,
-            w = 60,
-            h = 60
+            y = INDICATOR_CONFIG.TEXT.Y_OFFSET,
+            w = INDICATOR_CONFIG.SIZE.WIDTH,
+            h = INDICATOR_CONFIG.SIZE.HEIGHT
         }
     })
 
@@ -385,23 +406,18 @@ local function updateIndicatorPosition(indicator)
     end
     local screenFrame = screen:frame()
 
-    -- インジケータのサイズ
-    local indicatorWidth = 60
-    local indicatorHeight = 60
-    local offset = 20
-
     -- デフォルトは右下
-    local x = mousePos.x + offset
-    local y = mousePos.y + offset
+    local x = mousePos.x + INDICATOR_CONFIG.POSITION.OFFSET
+    local y = mousePos.y + INDICATOR_CONFIG.POSITION.OFFSET
 
     -- 画面右端に近い場合は左側に表示
-    if mousePos.x + offset + indicatorWidth > screenFrame.x + screenFrame.w then
-        x = mousePos.x - offset - indicatorWidth
+    if mousePos.x + INDICATOR_CONFIG.POSITION.OFFSET + INDICATOR_CONFIG.SIZE.WIDTH > screenFrame.x + screenFrame.w then
+        x = mousePos.x - INDICATOR_CONFIG.POSITION.OFFSET - INDICATOR_CONFIG.SIZE.WIDTH
     end
 
     -- 画面下端に近い場合は上側に表示
-    if mousePos.y + offset + indicatorHeight > screenFrame.y + screenFrame.h then
-        y = mousePos.y - offset - indicatorHeight
+    if mousePos.y + INDICATOR_CONFIG.POSITION.OFFSET + INDICATOR_CONFIG.SIZE.HEIGHT > screenFrame.y + screenFrame.h then
+        y = mousePos.y - INDICATOR_CONFIG.POSITION.OFFSET - INDICATOR_CONFIG.SIZE.HEIGHT
     end
 
     indicator:topLeft({
@@ -409,6 +425,11 @@ local function updateIndicatorPosition(indicator)
         y = y
     })
 end
+
+---@type hs.canvas|nil
+JapaneseInputIndicator = nil
+---@type hs.timer|nil
+IndicatorUpdateTimer = nil
 
 -- 入力ソース変更を監視
 local function inputSourceChanged()
@@ -422,11 +443,11 @@ local function inputSourceChanged()
         updateIndicatorPosition(JapaneseInputIndicator)
         JapaneseInputIndicator:show()
 
-        -- マウス追従タイマーを開始（0.05秒ごとに更新）
+        -- マウス追従タイマーを開始
         if IndicatorUpdateTimer then
             IndicatorUpdateTimer:stop()
         end
-        IndicatorUpdateTimer = hs.timer.doEvery(0.05, function()
+        IndicatorUpdateTimer = hs.timer.doEvery(INDICATOR_CONFIG.TIMER.UPDATE_INTERVAL, function()
             updateIndicatorPosition(JapaneseInputIndicator)
         end)
     else
