@@ -375,11 +375,38 @@ local function updateIndicatorPosition(indicator)
         return
     end
 
-    -- マウスカーソルの近くに表示
+    -- マウスカーソルの位置を取得
     local mousePos = hs.mouse.absolutePosition()
+
+    -- 画面のサイズを取得
+    local screen = hs.mouse.getCurrentScreen()
+    if not screen then
+        return
+    end
+    local screenFrame = screen:frame()
+
+    -- インジケータのサイズ
+    local indicatorWidth = 60
+    local indicatorHeight = 60
+    local offset = 20
+
+    -- デフォルトは右下
+    local x = mousePos.x + offset
+    local y = mousePos.y + offset
+
+    -- 画面右端に近い場合は左側に表示
+    if mousePos.x + offset + indicatorWidth > screenFrame.x + screenFrame.w then
+        x = mousePos.x - offset - indicatorWidth
+    end
+
+    -- 画面下端に近い場合は上側に表示
+    if mousePos.y + offset + indicatorHeight > screenFrame.y + screenFrame.h then
+        y = mousePos.y - offset - indicatorHeight
+    end
+
     indicator:topLeft({
-        x = mousePos.x + 20,
-        y = mousePos.y + 20
+        x = x,
+        y = y
     })
 end
 
