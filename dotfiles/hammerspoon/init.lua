@@ -319,24 +319,20 @@ end
 
 -- 日本語入力インジケータ
 ---@type hs.canvas|nil
-local japaneseInputIndicator = nil
+JapaneseInputIndicator = nil
 ---@type hs.timer|nil
-local indicatorUpdateTimer = nil
+IndicatorUpdateTimer = nil
 
 -- 日本語入力状態の表示を作成
 local function createJapaneseIndicator()
-    if japaneseInputIndicator then
-        japaneseInputIndicator:delete()
-    end
-
-    japaneseInputIndicator = hs.canvas.new({
+    local indicator = hs.canvas.new({
         x = 0,
         y = 0,
         w = 60,
         h = 60
     })
-    ---@cast japaneseInputIndicator hs.canvas
-    japaneseInputIndicator:appendElements({
+    ---@cast indicator hs.canvas
+    indicator:appendElements({
         type = "rectangle",
         action = "fill",
         fillColor = {
@@ -367,21 +363,21 @@ local function createJapaneseIndicator()
     })
 
     -- レベルを設定（他のウィンドウの上に表示）
-    japaneseInputIndicator:level("floating")
-    japaneseInputIndicator:behavior("canJoinAllSpaces")
+    indicator:level("floating")
+    indicator:behavior("canJoinAllSpaces")
 
-    return japaneseInputIndicator
+    return indicator
 end
 
 -- インジケータの位置をマウスカーソルに追従させる
-local function updateIndicatorPosition()
-    if not japaneseInputIndicator then
+local function updateIndicatorPosition(indicator)
+    if not indicator then
         return
     end
 
     -- マウスカーソルの近くに表示
     local mousePos = hs.mouse.absolutePosition()
-    japaneseInputIndicator:topLeft({
+    indicator:topLeft({
         x = mousePos.x + 20,
         y = mousePos.y + 20
     })
@@ -393,27 +389,29 @@ local function inputSourceChanged()
 
     if currentSourceID == INPUT_SOURCES.JAPANESE then
         -- 日本語入力モード
-        if not japaneseInputIndicator then
-            createJapaneseIndicator()
+        if not JapaneseInputIndicator then
+            JapaneseInputIndicator = createJapaneseIndicator()
         end
-        updateIndicatorPosition()
-        japaneseInputIndicator:show()
+        updateIndicatorPosition(JapaneseInputIndicator)
+        JapaneseInputIndicator:show()
 
         -- マウス追従タイマーを開始（0.05秒ごとに更新）
-        if indicatorUpdateTimer then
-            indicatorUpdateTimer:stop()
+        if IndicatorUpdateTimer then
+            IndicatorUpdateTimer:stop()
         end
-        indicatorUpdateTimer = hs.timer.doEvery(0.05, updateIndicatorPosition)
+        IndicatorUpdateTimer = hs.timer.doEvery(0.05, function()
+            updateIndicatorPosition(JapaneseInputIndicator)
+        end)
     else
         -- 英数入力モード
-        if japaneseInputIndicator then
-            japaneseInputIndicator:hide()
+        if JapaneseInputIndicator then
+            JapaneseInputIndicator:hide()
         end
 
         -- タイマーを停止
-        if indicatorUpdateTimer then
-            indicatorUpdateTimer:stop()
-            indicatorUpdateTimer = nil
+        if IndicatorUpdateTimer then
+            IndicatorUpdateTimer:stop()
+            IndicatorUpdateTimer = nil
         end
     end
 end
