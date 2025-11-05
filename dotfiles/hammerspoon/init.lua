@@ -6,19 +6,14 @@ end
 
 local MODIFIER_KEYS = {"shift", "cmd", "alt", "ctrl", "fn"}
 
--- Google日本語入力のSourceID定数
+-- 想定している入力ソース
+-- それぞれ先にあるものが優先される
 local INPUT_SOURCES = {
-    ROMAN = "com.google.inputmethod.Japanese.Roman", -- 英数入力
-    JAPANESE = "com.google.inputmethod.Japanese.base" -- 日本語入力
+    -- 英数入力モード
+    ROMAN = {"com.google.inputmethod.Japanese.Roman", "com.apple.inputmethod.Kotoeri.RomajiTyping.Roman"},
+    -- 日本語入力モード
+    JAPANESE = {"com.google.inputmethod.Japanese.base", "com.apple.inputmethod.Kotoeri.RomajiTyping.Japanese"}
 }
-
-local function switchInputSource(targetSourceID, displayName)
-    local beforeSourceID = hs.keycodes.currentSourceID()
-    hs.keycodes.currentSourceID(targetSourceID)
-    local afterSourceID = hs.keycodes.currentSourceID()
-    log(displayName .. " - 変更前: " .. beforeSourceID .. " → 変更後: " .. afterSourceID)
-    hs.alert.show(displayName)
-end
 
 local function contains(array, value)
     for _, item in ipairs(array) do
@@ -27,6 +22,14 @@ local function contains(array, value)
         end
     end
     return false
+end
+
+local function switchInputSource(targetSources)
+    for _, sourceID in ipairs(targetSources) do
+        if hs.keycodes.currentSourceID(sourceID) then
+            return
+        end
+    end
 end
 
 -- F18キーとの組み合わせで変換するキーマップ
@@ -145,27 +148,25 @@ local f18Keymap = {{
         key = "forwarddelete"
     }
 }, {
-    -- Delete to end of line
+    -- Select to end of line
     trigger = {
         key = "a"
     },
     action = {
         func = function()
-            -- キャレット右側行頭までを削除: Cmd+Shift+Left(行頭まで選択) → Delete
+            -- キャレット右側行頭までを選択
             hs.eventtap.keyStroke({"cmd", "shift"}, "left", 0)
-            hs.eventtap.keyStroke({}, "delete", 0)
         end
     }
 }, {
-    -- Delete to beginning of line
+    -- Select to beginning of line
     trigger = {
         key = "f"
     },
     action = {
         func = function()
-            -- キャレット左側行末までを削除: Cmd+Shift+Right(行末まで選択) → Delete
+            -- キャレット左側行末までを選択
             hs.eventtap.keyStroke({"cmd", "shift"}, "right", 0)
-            hs.eventtap.keyStroke({}, "delete", 0)
         end
     }
 }, {
@@ -220,7 +221,7 @@ local f18Keymap = {{
     },
     action = {
         func = function()
-            switchInputSource(INPUT_SOURCES.ROMAN, "_A")
+            switchInputSource(INPUT_SOURCES.ROMAN)
         end
     }
 }, {
@@ -231,7 +232,7 @@ local f18Keymap = {{
     },
     action = {
         func = function()
-            switchInputSource(INPUT_SOURCES.JAPANESE, "あ")
+            switchInputSource(INPUT_SOURCES.JAPANESE)
         end
     }
 }, {
@@ -435,7 +436,7 @@ IndicatorUpdateTimer = nil
 local function inputSourceChanged()
     local currentSourceID = hs.keycodes.currentSourceID()
 
-    if currentSourceID == INPUT_SOURCES.JAPANESE then
+    if contains(INPUT_SOURCES.JAPANESE, currentSourceID) then
         -- 日本語入力モード
         if not JapaneseInputIndicator then
             JapaneseInputIndicator = createJapaneseIndicator()
@@ -464,10 +465,5 @@ local function inputSourceChanged()
     end
 end
 
--- 入力ソース変更のウォッチャーを設定
 hs.keycodes.inputSourceChanged(inputSourceChanged)
-
--- 初期状態を設定
 inputSourceChanged()
-
-log("日本語入力インジケータが有効になりました")
