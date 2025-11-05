@@ -432,6 +432,41 @@ JapaneseInputIndicator = nil
 ---@type hs.timer|nil
 IndicatorUpdateTimer = nil
 
+-- ========================================
+-- マウス移動による自動入力切り替え
+-- ========================================
+
+-- マウス移動の設定
+local MOUSE_CONFIG = {
+    MOVEMENT_THRESHOLD = 300
+}
+
+---@type hs.geometry|nil
+LastMousePosition = nil
+
+-- 2点間の距離を計算
+local function calculateDistance(point1, point2)
+    local dx = point2.x - point1.x
+    local dy = point2.y - point1.y
+    return math.sqrt(dx * dx + dy * dy)
+end
+
+-- マウス移動を監視して、閾値を超えたら英数入力に切り替え
+local function checkMouseMovement()
+    local currentPos = hs.mouse.absolutePosition()
+
+    if LastMousePosition then
+        local distance = calculateDistance(LastMousePosition, currentPos)
+
+        -- 閾値を超えた場合、英数入力に切り替え
+        if distance >= MOUSE_CONFIG.MOVEMENT_THRESHOLD then
+            switchInputSource(INPUT_SOURCES.ROMAN)
+        end
+    end
+
+    LastMousePosition = currentPos
+end
+
 -- 入力ソース変更を監視
 local function inputSourceChanged()
     local currentSourceID = hs.keycodes.currentSourceID()
@@ -444,12 +479,14 @@ local function inputSourceChanged()
         updateIndicatorPosition(JapaneseInputIndicator)
         JapaneseInputIndicator:show()
 
-        -- マウス追従タイマーを開始
+        -- タイマーを開始（インジケータ更新とマウス移動監視）
         if IndicatorUpdateTimer then
             IndicatorUpdateTimer:stop()
         end
+        LastMousePosition = hs.mouse.absolutePosition()
         IndicatorUpdateTimer = hs.timer.doEvery(INDICATOR_CONFIG.TIMER.UPDATE_INTERVAL, function()
             updateIndicatorPosition(JapaneseInputIndicator)
+            checkMouseMovement()
         end)
     else
         -- 英数入力モード
@@ -462,6 +499,7 @@ local function inputSourceChanged()
             IndicatorUpdateTimer:stop()
             IndicatorUpdateTimer = nil
         end
+        LastMousePosition = nil
     end
 end
 
