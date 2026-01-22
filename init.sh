@@ -12,6 +12,7 @@ HOMEBREW_INSTALLS=(
 )
 UBUNTU_INSTALLS=(
     git zsh curl wget ssh build-essential xz-utils exuberant-ctags
+    git-delta bat tmux fzf
 )
 BASE_DIR="$HOME/.dotfiles"
 BREW_DIR="$HOME/.homebrew"
