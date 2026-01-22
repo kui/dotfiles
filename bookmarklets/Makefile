@@ -3,8 +3,7 @@ BMKS = $(patsubst %.js, %.bookmarklet.js, $(filter-out %.bookmarklet.js, $(wildc
 all: $(BMKS)
 
 %.bookmarklet.js: %.js node_modules
-	npx esbuild --minify < $< > $@
-
+	npx swc $< -o $@ -C minify=true
 node_modules: package.json
 	npm install
 

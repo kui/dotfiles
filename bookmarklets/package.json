@@ -9,6 +9,7 @@
   "author": "Keiichiro UI",
   "license": "ISC",
   "devDependencies": {
-    "esbuild": "^0.24.0"
+    "@swc/cli": "^0.7.10",
+    "@swc/core": "^1.15.10"
   }
 }
