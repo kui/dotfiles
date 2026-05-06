@@ -6,5 +6,6 @@ elif command -V vim &>/dev/null; then
 else
     export EDITOR="vi"
 fi
+export VISUAL="$EDITOR"
 
 eval "$($HOME/.local/bin/mise activate zsh --shims)"
