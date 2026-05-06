@@ -47,15 +47,6 @@ fpath=(
     $fpath
 )
 
-# EDITOR
-if command -V code &>/dev/null; then
-    export EDITOR="code --wait"
-elif command -V vim &>/dev/null; then
-    export EDITOR="vim"
-else
-    export EDITOR="vi"
-fi
-
 # set JAVA_HOME if sdkman dir exists
 if [[ -d $HOME/.sdkman ]]; then
     export JAVA_HOME="$HOME/.sdkman/candidates/java/current"
