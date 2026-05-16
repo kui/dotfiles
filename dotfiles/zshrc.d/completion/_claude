@@ -21,7 +21,7 @@ _claude_session_ids() {
     project_dir=""
     local f
     for f in "$HOME/.claude/projects"/*/sessions-index.json(N); do
-      if [[ "$(jq -r '.originalPath // ""' "$f" 2>/dev/null)" == "$PWD" ]]; then
+      if [[ "$(python3 -c 'import sys,json; d=json.load(sys.stdin); print(d.get("originalPath",""))' < "$f" 2>/dev/null)" == "$PWD" ]]; then
         project_dir="${f:h}"
         break
       fi
@@ -56,30 +56,50 @@ _claude_session_ids() {
       [[ -z "$id" ]] && continue
       indexed[$id]=1
       candidates+=("${modified}"$'\t'"${id}"$'\tindex\t'"${branch}"$'\t'"${summary}")
-    done < <(jq -rs '[.[].entries[]] | .[] | [.modified, .sessionId, (.gitBranch // "?"), (.summary // .firstPrompt[:60] // "")] | @tsv' "$index_file" 2>/dev/null)
+    done < <(python3 -c '
+import sys, json
+try:
+    data = [json.loads(l) for l in sys.stdin if l.strip()]
+    entries = []
+    for obj in data:
+        e = obj.get("entries") or {}
+        vals = e.values() if isinstance(e, dict) else e
+        entries.extend(vals)
+    for e in entries:
+        modified = e.get("modified", "")
+        sid = e.get("sessionId", "")
+        branch = e.get("gitBranch") or "?"
+        summary = e.get("summary") or (e.get("firstPrompt") or "")[:60]
+        print(f"{modified}\t{sid}\t{branch}\t{summary}")
+except Exception:
+    pass
+' < "$index_file" 2>/dev/null)
   fi
 
   # Unindexed JSONL files — just mtime+uuid here; the expensive head|jq
   # parse is deferred until we know the candidate survived the cap. Use
-  # zsh parameter expansion (`${f:t:r}`) and a single batched `stat` call
-  # to avoid forking a subshell per file: projects with thousands of
-  # sessions would otherwise spend many seconds just naming the files.
+  # zsh parameter expansion (`${zf:t:r}`) and the zsh/stat + zsh/datetime
+  # builtins (zstat, strftime) to avoid forking a subshell per file: these
+  # are pure builtins and work on both BSD/macOS and GNU/Linux.
   #
   # Note: all locals used below are declared once here, up-front. zsh
   # prints the current value of a variable when `local`/`typeset` is
   # applied to it a second time in the same scope (treats it like
   # `typeset -p`), so pass 2 must *not* redeclare these.
-  local -a jsonl_files mtime_lines top
-  local line iso_mtime filepath uuid sortkey src branch msg datestr info
+  local -a jsonl_files _zst top
+  local line iso_mtime uuid sortkey src branch msg datestr info zf
   local count=0 headroom
+
+  zmodload -F zsh/stat b:zstat 2>/dev/null
+  zmodload -F zsh/datetime b:strftime 2>/dev/null
 
   jsonl_files=( "$project_dir"/*.jsonl(N) )
   if (( ${#jsonl_files} > 0 )); then
-    mtime_lines=( "${(f)$(stat -f '%Sm %N' -t '%Y-%m-%dT%H:%M:%S' "${jsonl_files[@]}" 2>/dev/null)}" )
-    for line in "${mtime_lines[@]}"; do
-      iso_mtime="${line% *}"
-      filepath="${line#* }"
-      uuid="${filepath:t:r}"
+    for zf in "${jsonl_files[@]}"; do
+      _zst=()
+      zstat -A _zst +mtime -- "$zf" 2>/dev/null || continue
+      strftime -s iso_mtime '%Y-%m-%dT%H:%M:%S' ${_zst[1]}
+      uuid="${zf:t:r}"
       [[ -n "${indexed[$uuid]}" ]] && continue
       candidates+=("${iso_mtime}"$'\t'"${uuid}"$'\tjsonl')
     done
@@ -107,27 +127,42 @@ _claude_session_ids() {
     IFS=$'\t' read -r sortkey uuid src branch msg <<< "$line"
     datestr="${sortkey:0:10}"
     if [[ "$src" == "jsonl" ]]; then
-      # Extract branch + first real user prompt in one jq call.
+      # Extract branch + first real user prompt.
       # Skip isMeta wrappers and <command-*> / <local-command-*> messages.
       # Emits nothing when no resumable user prompt exists, so files
       # containing only file-history-snapshots, hook progress, or
       # <command-*>/meta entries are filtered out — `claude --resume`
       # rejects those with "No conversation found".
-      info=$(head -100 "$project_dir/$uuid.jsonl" | jq -rs '
-        [.[] | select(.type=="user")] as $users |
-        ([
-          $users[]
-          | select((.isMeta // false) != true and .message.content != null)
-          | .message.content
-          | if type=="array" then .[0].text else . end
-          | select(. != null)
-          | select(test("^\\s*<(command|local-command)") | not)
-        ] | first) as $msg |
-        if $msg == null then empty else
-          ($users[0].gitBranch // "?") as $branch |
-          "\($branch)\t\($msg | gsub("\n"; " ") | .[0:60])"
-        end
-      ' 2>/dev/null)
+      info=$(head -100 "$project_dir/$uuid.jsonl" | python3 -c '
+import sys, json, re
+users = []
+for line in sys.stdin:
+    line = line.strip()
+    if not line:
+        continue
+    try:
+        obj = json.loads(line)
+    except Exception:
+        continue
+    if obj.get("type") == "user":
+        users.append(obj)
+if not users:
+    sys.exit(0)
+branch = users[0].get("gitBranch") or "?"
+for u in users:
+    if u.get("isMeta"):
+        continue
+    content = (u.get("message") or {}).get("content")
+    if content is None:
+        continue
+    text = content[0].get("text") if isinstance(content, list) else content
+    if not text:
+        continue
+    if re.match(r"^\s*<(command|local-command)", text):
+        continue
+    print(branch + "\t" + text.replace(chr(10), chr(32))[:60])
+    sys.exit(0)
+' 2>/dev/null)
       [[ -z "$info" ]] && continue
       branch="${info%%$'\t'*}"
       msg="${info#*$'\t'}"
