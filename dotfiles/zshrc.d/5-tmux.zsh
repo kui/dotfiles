@@ -6,6 +6,10 @@ if clipboard test &>/dev/null; then
     tmux bind-key C-y run 'clipboard paste | tmux load-buffer - && tmux paste-buffer'
     tmux bind-key -Tcopy-mode C-w send-keys -X copy-pipe-and-cancel 'clipboard copy'
     tmux bind-key -Tcopy-mode M-w send-keys -X copy-pipe-and-cancel 'clipboard copy'
+    tmux bind-key -Tcopy-mode C-c send-keys -X copy-pipe-and-cancel 'clipboard copy'
+    tmux bind-key -Tcopy-mode C-x send-keys -X copy-pipe-and-cancel 'clipboard copy'
+    # マウス選択範囲は自動でコピー扱い
+    tmux bind-key -Tcopy-mode MouseDragEnd1Pane send-keys -X copy-pipe-and-cancel 'clipboard copy'
 fi
 
 if infocmp tmux-256color &>/dev/null; then
