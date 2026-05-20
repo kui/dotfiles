@@ -117,7 +117,7 @@ _update_last_command_status() {
             time="${seconds}s"
         fi
     fi
-    _last_command_status="time=$time exit=$?"
+    _last_command_status="time=$time exit=$? %F{243}$(date '+%H:%M')%f"
 }
 add-zsh-hook precmd _update_last_command_status
 
