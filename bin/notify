@@ -1,0 +1,127 @@
+#!/bin/bash
+set -eu
+
+######################################
+# cross-platform notification
+######################################
+
+THIS="$(basename $0)"
+USAGE="$THIS [options] <title> <message>
+
+Options:
+    --test  Is this supported platform?
+
+Example:
+
+    # Send notification
+    $ $THIS \"Title\" \"Message\"
+
+    # Is this supported platform?
+    $ $THIS --test; echo \$?
+"
+
+main() {
+  local platform
+
+  if wsl_test; then
+    platform=wsl
+  elif [[ "$OSTYPE" =~ 'linux'  ]]; then
+    platform=linux
+  elif [[ "$OSTYPE" =~ 'darwin' ]]; then
+    # Mac OS X
+    platform=darwin
+  else
+    abort "Not supported platform"
+  fi
+
+  if [[ "$#" -eq 1 && "$1" == "--test" ]]; then
+    "${platform}_test"
+    return
+  fi
+
+  if [[ "$#" -lt 2 ]]; then
+    abort "$USAGE"
+  fi
+
+  "${platform}_send" "$1" "$2"
+}
+
+linux_send() {
+  require_command notify-send
+
+  local title="$1"
+  local message="$2"
+
+  notify-send --icon=terminal "$title" "$message"
+}
+
+linux_test() {
+  require_command notify-send
+}
+
+darwin_send() {
+  local title="$1"
+  local message="$2"
+
+  if has_command terminal-notifier; then
+    terminal-notifier -title "$title" -message "$message"
+  else
+    require_command osascript
+    osascript -e "display notification \"$message\" with title \"$title\""
+  fi
+}
+
+darwin_test() {
+  if ! has_command terminal-notifier; then
+    require_command osascript
+  fi
+}
+
+wsl_send() {
+  require_command powershell.exe
+
+  local title="$1"
+  local message="$2"
+
+  powershell.exe -NoProfile -Command "
+      Add-Type -AssemblyName System.Windows.Forms | Out-Null;
+      \$icon = New-Object System.Windows.Forms.NotifyIcon;
+      \$icon.Icon = [System.Drawing.SystemIcons]::Information;
+      \$icon.BalloonTipIcon = 'Info';
+      \$icon.BalloonTipTitle = '$title';
+      \$icon.BalloonTipText = '$message';
+      \$icon.Visible = \$true;
+      \$icon.ShowBalloonTip(5000);
+      Start-Sleep -Milliseconds 5500;
+      \$icon.Dispose()
+  "
+}
+
+wsl_test() {
+  require_command powershell.exe >/dev/null 2>&1
+}
+
+require_command() {
+  local error cmd
+  error=0
+  for cmd in "$@"; do
+    if ! which "$cmd" &>/dev/null; then
+      echo "Require command: $cmd" >&2
+      error=1
+    fi
+  done
+  if [[ "$error" = 1 ]]; then
+    return 1
+  fi
+}
+
+has_command() {
+  which "$1" &>/dev/null
+}
+
+abort() {
+  echo "$@" >&2
+  return 1
+}
+
+main "$@"

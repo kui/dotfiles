@@ -1,3 +1,5 @@
+# vim: set ft=zsh:
+
 #############################################################
 # 時間のかかったコマンドは、通知システムに通知する
 
@@ -6,6 +8,14 @@ export TIMETRACK_THRESHOLD
 
 unset _timetrack_start_time
 unset _timetrack_command
+
+_timetrack_notify() {
+    local title="$1"
+    local message="$2"
+    if has_command notify; then
+        (notify "$title" "$message" 2>/dev/null) &!
+    fi
+}
 
 _timetrack_start() {
     export _timetrack_command="$1"
@@ -28,11 +38,7 @@ _timetrack_end() {
     local title="Finished: $_timetrack_command"
     local message="Elapsed Time: ${COMMAND_SECONDS}s"
     if [[ "$COMMAND_SECONDS" -ge "$TIMETRACK_THRESHOLD" ]]; then
-        if has_command notify-send && [[ -z "$DISPLAY" ]]; then
-            notify-send --icon=terminal "$title" "$message"
-        elif has_command terminal-notifier; then
-            terminal-notifier -title "$title" -message "$message" -activate "$__CFBundleIdentifier"
-        fi
+        _timetrack_notify "$title" "$message"
         echo $'\a'
     fi
 
