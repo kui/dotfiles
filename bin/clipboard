@@ -100,8 +100,8 @@ darwin_test() {
 }
 
 wsl_copy() {
-  require_command clip.exe
-  clip.exe
+  require_command powershell.exe
+  powershell.exe -Command '[Console]::InputEncoding = [System.Text.Encoding]::UTF8; $content = [Console]::In.ReadToEnd(); Set-Clipboard -Value $content'
 }
 
 wsl_paste() {
