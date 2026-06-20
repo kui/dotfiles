@@ -86,4 +86,14 @@ if [[ -x "$(which fzf-tmux)" ]]; then
     bindkey '^r' fzf-history-widget
 fi
 
+cdwt() {
+    local d
+    d="$(git worktree list | \
+         fzf-tmux --prompt='worktree > ' | \
+         awk '{print $1}')"
+    if [ -n "$d" ]; then
+        cd "$d"
+    fi
+}
+
 source_if_exist ~/.zshrc.d/fzf-tab/fzf-tab.plugin.zsh
