@@ -90,7 +90,9 @@ ImeState = {
     ---@type hs.canvas[]
     overlays = {},
     ---@type hs.timer|nil
-    overlayTimer = nil
+    overlayTimer = nil,
+    ---@type hs.timer|nil
+    switchTimer = nil
 }
 
 local function isJapaneseSource(sourceID)
@@ -246,18 +248,36 @@ local function applyImeState(japanese)
     updateMouseIndicatorVisibility()
 end
 
-local function switchInputSource(targetSources)
-    for _, sourceID in ipairs(targetSources) do
-        if hs.keycodes.currentSourceID(sourceID) then
+-- JIS キーボードの「英数」「かな」キー
+local EISU_KEYCODE = 102
+local KANA_KEYCODE = 104
+
+-- TISSelectInputSource（hs.keycodes.currentSourceID）でキーボードレイアウト（ABC）から
+-- IME に切り替えると、メニューバーの表示だけ変わって実際の入力が切り替わらないことがある。
+-- そのため「英数」「かな」キーを送出して IME 自身に切り替えさせ、効かなかった場合のみ TIS で切り替える
+local function switchInputSource(japanese)
+    hs.eventtap.keyStroke({}, japanese and KANA_KEYCODE or EISU_KEYCODE, 0)
+    -- 入力ソースの変更は非同期に反映されるので、少し待ってから確認する
+    if ImeState.switchTimer then
+        ImeState.switchTimer:stop()
+    end
+    ImeState.switchTimer = hs.timer.doAfter(0.3, function()
+        ImeState.switchTimer = nil
+        if isJapaneseSource(hs.keycodes.currentSourceID()) == japanese then
             return
         end
-    end
+        for _, sourceID in ipairs(japanese and INPUT_SOURCES.JAPANESE or INPUT_SOURCES.ROMAN) do
+            if hs.keycodes.currentSourceID(sourceID) then
+                return
+            end
+        end
+    end)
 end
 
 -- 明示的な IME 切り替え（F18+Space やマウス移動による自動切り替え）
 setIme = function(japanese)
     ImeState.suppressed = false
-    switchInputSource(japanese and INPUT_SOURCES.JAPANESE or INPUT_SOURCES.ROMAN)
+    switchInputSource(japanese)
     showCenterOverlay(japanese)
     ImeState.anchor = hs.mouse.absolutePosition()
     applyImeState(japanese)
