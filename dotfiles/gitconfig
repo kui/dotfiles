@@ -17,7 +17,7 @@
 [push]
 	default = simple
 [include]
-  path = ~/.gitconfig.local
+	path = ~/.gitconfig.local
 [pull]
 	ff = only
 [branch]
