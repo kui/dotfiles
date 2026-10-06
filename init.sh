@@ -87,6 +87,10 @@ install_templates() {
     local file
     for file in templates/*; do
         local dest="$HOME/.$(basename $file)"
+        # 以前 dotfiles/ から symlink していたものはテンプレートに置き換える
+        if [[ -L "$dest" && "$(readlink "$dest")" == "$BASE_DIR"/* ]]; then
+            run rm "$dest"
+        fi
         if [[ -e "$dest" ]]; then
             warn "Skip the template installation: Already exist $file"
             continue

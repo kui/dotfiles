@@ -1,0 +1,9 @@
+# EDITOR
+if command -V code &>/dev/null; then
+    export EDITOR="code --wait"
+elif command -V vim &>/dev/null; then
+    export EDITOR="vim"
+else
+    export EDITOR="vi"
+fi
+export VISUAL="$EDITOR"
