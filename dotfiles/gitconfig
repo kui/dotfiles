@@ -18,6 +18,8 @@
 	default = simple
 [include]
 	path = ~/.gitconfig.local
+[includeIf "gitdir:~/.dotfiles/"]
+	path = ~/.gitconfig-personal
 [pull]
 	ff = only
 [branch]

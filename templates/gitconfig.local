@@ -1,3 +1,13 @@
 # code: language=properties
-[user]
-  email = oshigoto@example.com
+# 私用以外のアカウントを既定にするマシン（社用PCなど）で記入する
+
+#[user]
+#  email = oshigoto@example.com
+
+# 私用アカウントのリポジトリは私用鍵（~/.ssh/config の github-personal）で接続
+#[url "git@github-personal:kui/"]
+#  insteadOf = git@github.com:kui/
+
+# 私用リポジトリを置くディレクトリでは私用メールでコミット
+#[includeIf "gitdir:~/path/to/personal/"]
+#  path = ~/.gitconfig-personal

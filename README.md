@@ -19,6 +19,31 @@ In your terminal:
 curl -s https://raw.githubusercontent.com/kui/dotfiles/master/init.sh | bash
 ```
 
+### On a machine whose default GitHub account is not `kui`
+
+When the default SSH key (`~/.ssh/id_ed25519`) belongs to another account (e.g. a work PC),
+use a separate key for `kui` and clone this repository through a host alias:
+
+1. Put the `kui` key at `~/.ssh/id_ed25519_personal` and add to `~/.ssh/config`:
+
+   ```
+   Host github-personal
+       HostName github.com
+       User git
+       IdentityFile ~/.ssh/id_ed25519_personal
+       IdentitiesOnly yes
+   ```
+
+2. Clone and install:
+
+   ```
+   git clone git@github-personal:kui/dotfiles.git ~/.dotfiles
+   ~/.dotfiles/init.sh
+   ```
+
+3. Fill in `~/.gitconfig.local` following the comments in it
+   (default `user.email`, `insteadOf` for `kui/`, `includeIf` for personal repositories).
+
 
 Profile
 --------
