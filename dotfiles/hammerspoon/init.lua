@@ -67,7 +67,6 @@ local IME_CONFIG = {
         HEIGHT = 35,
         TEXT_SIZE = 20,
         OFFSET = 20, -- マウスカーソルからのオフセット
-        UPDATE_INTERVAL = 0.05, -- マウス追従の更新間隔（秒）
         RESTORE_DELAY = 3.0 -- タイピング停止後にインジケーターを復活させるまでの時間（秒）
     },
     -- この距離（px）以上マウスが動いたら英数入力に切り替える
@@ -83,9 +82,9 @@ ImeState = {
     suppressed = false,
     ---@type hs.canvas|nil
     mouseIndicator = nil,
-    ---@type hs.timer|nil
-    mouseTimer = nil,
-    ---@type hs.timer|nil
+    ---@type hs.eventtap|nil 日本語入力中のみ動かすマウス移動の監視
+    mouseTap = nil,
+    ---@type hs.timer.delayed|nil
     restoreTimer = nil,
     ---@type hs.canvas[]
     overlays = {},
@@ -170,13 +169,13 @@ local function showCenterOverlay(japanese)
 end
 
 -- マウスカーソル付近のインジケーター位置を更新
-local function updateMouseIndicatorPosition()
+local function updateMouseIndicatorPosition(mousePos)
     local indicator = ImeState.mouseIndicator
     if not indicator then
         return
     end
     local cfg = IME_CONFIG.MOUSE_INDICATOR
-    local mousePos = hs.mouse.absolutePosition()
+    mousePos = mousePos or hs.mouse.absolutePosition()
     local screen = hs.mouse.getCurrentScreen()
     if not screen then
         return
@@ -223,29 +222,43 @@ end
 local setIme
 
 -- 日本語入力中: マウスが基準位置から閾値以上離れたら英数に切り替え、そうでなければインジケーターを追従
-local function onMouseTick()
-    local pos = hs.mouse.absolutePosition()
+local function onMouseMoved(event)
+    local pos = event:location()
     local anchor = ImeState.anchor or pos
     local dx, dy = pos.x - anchor.x, pos.y - anchor.y
     if math.sqrt(dx * dx + dy * dy) > IME_CONFIG.MOUSE_MOVE_THRESHOLD then
         setIme(false)
     elseif not ImeState.suppressed then
-        updateMouseIndicatorPosition()
+        updateMouseIndicatorPosition(pos)
     end
+    return false
 end
+
+ImeState.mouseTap = hs.eventtap.new({hs.eventtap.event.types.mouseMoved, hs.eventtap.event.types.leftMouseDragged,
+                                     hs.eventtap.event.types.rightMouseDragged,
+                                     hs.eventtap.event.types.otherMouseDragged}, onMouseMoved)
 
 -- 内部状態を IME 状態に合わせる
 local function applyImeState(japanese)
     ImeState.japanese = japanese
     if japanese then
-        if not ImeState.mouseTimer then
-            ImeState.mouseTimer = hs.timer.doEvery(IME_CONFIG.MOUSE_INDICATOR.UPDATE_INTERVAL, onMouseTick)
+        if not ImeState.mouseTap:isEnabled() then
+            ImeState.mouseTap:start()
         end
-    elseif ImeState.mouseTimer then
-        ImeState.mouseTimer:stop()
-        ImeState.mouseTimer = nil
+    elseif ImeState.mouseTap:isEnabled() then
+        ImeState.mouseTap:stop()
     end
     updateMouseIndicatorVisibility()
+end
+
+-- 入力ソースが外部で変更された場合や、切り替え後に実際の状態へ合わせ直す場合
+local function onInputSourceChanged()
+    local japanese = isJapaneseSource(hs.keycodes.currentSourceID())
+    if japanese ~= ImeState.japanese then
+        ImeState.suppressed = false
+        ImeState.anchor = hs.mouse.absolutePosition()
+    end
+    applyImeState(japanese)
 end
 
 -- JIS キーボードの「英数」「かな」キー
@@ -263,14 +276,15 @@ local function switchInputSource(japanese)
     end
     ImeState.switchTimer = hs.timer.doAfter(0.3, function()
         ImeState.switchTimer = nil
-        if isJapaneseSource(hs.keycodes.currentSourceID()) == japanese then
-            return
-        end
-        for _, sourceID in ipairs(japanese and INPUT_SOURCES.JAPANESE or INPUT_SOURCES.ROMAN) do
-            if hs.keycodes.currentSourceID(sourceID) then
-                return
+        if isJapaneseSource(hs.keycodes.currentSourceID()) ~= japanese then
+            for _, sourceID in ipairs(japanese and INPUT_SOURCES.JAPANESE or INPUT_SOURCES.ROMAN) do
+                if hs.keycodes.currentSourceID(sourceID) then
+                    break
+                end
             end
         end
+        -- どちらの方法でも切り替えられなかった場合に備え、内部状態を実際の入力ソースに合わせ直す
+        onInputSourceChanged()
     end)
 end
 
@@ -283,35 +297,27 @@ setIme = function(japanese)
     applyImeState(japanese)
 end
 
--- 入力ソースが外部で変更された場合
-local function onInputSourceChanged()
-    local japanese = isJapaneseSource(hs.keycodes.currentSourceID())
-    if japanese ~= ImeState.japanese then
+-- タイピング停止後にマウスインジケーターを復活させる
+ImeState.restoreTimer = hs.timer.delayed.new(IME_CONFIG.MOUSE_INDICATOR.RESTORE_DELAY, function()
+    if ImeState.suppressed and ImeState.japanese then
         ImeState.suppressed = false
-        ImeState.anchor = hs.mouse.absolutePosition()
+        updateMouseIndicatorVisibility()
     end
-    applyImeState(japanese)
-end
+end)
 
 -- キー入力時にマウスインジケーターを一時的に非表示にする
 local function onTyping()
     if not ImeState.japanese then
         return
     end
+    -- タイピング中はその場で入力しているので、英数切り替え判定の基準位置を現在位置に移す
+    ImeState.anchor = hs.mouse.absolutePosition()
     if not ImeState.suppressed then
         ImeState.suppressed = true
         updateMouseIndicatorVisibility()
     end
-    -- タイピング停止後に復活（キー入力のたびにリセット）
-    if ImeState.restoreTimer then
-        ImeState.restoreTimer:stop()
-    end
-    ImeState.restoreTimer = hs.timer.doAfter(IME_CONFIG.MOUSE_INDICATOR.RESTORE_DELAY, function()
-        if ImeState.suppressed and ImeState.japanese then
-            ImeState.suppressed = false
-            updateMouseIndicatorVisibility()
-        end
-    end)
+    -- キー入力のたびに復活までの時間をリセット
+    ImeState.restoreTimer:start()
 end
 
 -- ========================================
