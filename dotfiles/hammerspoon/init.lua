@@ -671,6 +671,34 @@ end)
 
 F18Tap:start()
 
+-- ========================================
+-- Terminal.app で Cmd+i をインスペクタではなく端末に渡す
+-- ========================================
+
+-- Terminal.app は Cmd 付きのキーを端末に渡せないため、Meta-i (ESC i) に置き換えて送る
+TERMINAL_BUNDLE_IDS = {"com.apple.Terminal"}
+
+TerminalCmdITap = hs.eventtap.new({hs.eventtap.event.types.keyDown, hs.eventtap.event.types.keyUp}, function(event)
+    if hs.keycodes.map[event:getKeyCode()] ~= "i" or not matchModifiers(event:getFlags(), {"cmd"}) then
+        return false
+    end
+    local app = hs.application.frontmostApplication()
+    if not app or not contains(TERMINAL_BUNDLE_IDS, app:bundleID()) then
+        return false
+    end
+    if event:getType() == hs.eventtap.event.types.keyUp then
+        return true
+    end
+    return true, {
+        hs.eventtap.event.newKeyEvent({}, "escape", true),
+        hs.eventtap.event.newKeyEvent({}, "escape", false),
+        hs.eventtap.event.newKeyEvent({}, "i", true),
+        hs.eventtap.event.newKeyEvent({}, "i", false)
+    }
+end)
+
+TerminalCmdITap:start()
+
 hs.keycodes.inputSourceChanged(onInputSourceChanged)
 onInputSourceChanged()
 
