@@ -1,9 +1,5 @@
 hs.loadSpoon("EmmyLua")
 
--- `hs` コマンドを ~/.local/bin に入れる（ターミナルから `hs -c 'hs.reload()'` などで操作できる）
-require("hs.ipc")
-hs.ipc.cliInstall(os.getenv("HOME") .. "/.local")
-
 -- github.com/kui/kui-ahk と同等の挙動を macOS で再現する設定
 --   * F18 をモディファイアキーとした第2レイヤー（未定義キーは無効化）
 --   * IME 切り替え時の全画面中央オーバーレイ
@@ -12,6 +8,19 @@ hs.ipc.cliInstall(os.getenv("HOME") .. "/.local")
 
 local function log(message)
     hs.console.printStyledtext(os.date("[%Y-%m-%d %H:%M:%S] ") .. message)
+end
+
+-- `hs` コマンドを ~/.local/bin に入れる（ターミナルから `hs -c 'hs.reload()'` などで操作できる）
+-- cliInstall は man ページの置き場所を作らず、一部だけ入った状態（"broken"）では何もしないので、
+-- 片付けてから置き場所を作って入れ直す
+require("hs.ipc")
+local CLI_PREFIX = os.getenv("HOME") .. "/.local"
+if hs.ipc.cliStatus(CLI_PREFIX, true) ~= true then
+    hs.ipc.cliUninstall(CLI_PREFIX, true)
+    os.execute("mkdir -p '" .. CLI_PREFIX .. "/bin' '" .. CLI_PREFIX .. "/share/man/man1'")
+    if hs.ipc.cliInstall(CLI_PREFIX, true) ~= true then
+        log("hs コマンドのインストールに失敗しました: " .. CLI_PREFIX)
+    end
 end
 
 local MODIFIER_KEYS = {"shift", "cmd", "alt", "ctrl", "fn"}
@@ -619,10 +628,11 @@ local function matchModifiers(eventFlags, triggerMods)
     return true
 end
 
-F18Pressed = false
+local f18Pressed = false
 -- F18 押下中に握りつぶしたキー（対応する keyUp も握りつぶす）
-F18SwallowedKeys = {}
+local f18SwallowedKeys = {}
 
+-- 他から参照されないので、GC されないようにグローバルで保持する
 F18Tap = hs.eventtap.new({hs.eventtap.event.types.keyDown, hs.eventtap.event.types.keyUp}, function(event)
     -- hs.eventtap.keyStroke で自分が送出したイベントはそのまま通す
     if event:getProperty(hs.eventtap.event.properties.eventSourceUnixProcessID) == hs.processInfo.processID then
@@ -634,13 +644,13 @@ F18Tap = hs.eventtap.new({hs.eventtap.event.types.keyDown, hs.eventtap.event.typ
     local isKeyDown = event:getType() == hs.eventtap.event.types.keyDown
 
     if char == "f18" then
-        F18Pressed = isKeyDown
+        f18Pressed = isKeyDown
         return true
     end
 
     if not isKeyDown then
-        if F18SwallowedKeys[keyCode] then
-            F18SwallowedKeys[keyCode] = nil
+        if f18SwallowedKeys[keyCode] then
+            f18SwallowedKeys[keyCode] = nil
             return true
         end
         return false
@@ -648,7 +658,7 @@ F18Tap = hs.eventtap.new({hs.eventtap.event.types.keyDown, hs.eventtap.event.typ
 
     onTyping()
 
-    if not F18Pressed then
+    if not f18Pressed then
         return false
     end
 
@@ -665,7 +675,7 @@ F18Tap = hs.eventtap.new({hs.eventtap.event.types.keyDown, hs.eventtap.event.typ
     end
 
     -- 未定義のキーも含め、F18 押下中のキー入力はすべて握りつぶす
-    F18SwallowedKeys[keyCode] = true
+    f18SwallowedKeys[keyCode] = true
     return true
 end)
 
